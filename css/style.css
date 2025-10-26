@@ -1,0 +1,124 @@
+/* ===== Global ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Inter', sans-serif;
+}
+
+body {
+  background: #f8faff;
+  color: #1a1a1a;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+a { color: #7b61ff; text-decoration: none; }
+.section { padding: 2rem; flex: 1; }
+.center { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.title { font-size: 1.8rem; font-weight: 700; }
+.subtitle { font-size: 1rem; color: #666; margin-top: 0.3rem; }
+.mt-2 { margin-top: 1rem; }
+.mt-3 { margin-top: 1.5rem; }
+.text-muted { color: #777; }
+
+/* ===== Buttons ===== */
+.btn {
+  background: linear-gradient(90deg, #7b61ff, #a17bff);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 0.8rem 1.4rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.btn:hover { opacity: 0.9; }
+
+/* ===== Cards ===== */
+.card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  padding: 1.5rem;
+  max-width: 700px;
+  margin: 1.5rem auto;
+}
+
+/* ===== Forms ===== */
+.form-group { margin-top: 1rem; text-align: left; }
+.form-label { display: block; font-weight: 500; margin-bottom: 0.3rem; }
+.form-input, select {
+  width: 100%;
+  padding: 0.7rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  outline: none;
+}
+
+/* ===== Tables ===== */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+.table th, .table td {
+  border: 1px solid #e4e4e4;
+  padding: 0.8rem;
+  text-align: left;
+}
+.table th {
+  background: #f4f4ff;
+  color: #555;
+}
+.table tr:hover {
+  background: #fafaff;
+}
+
+/* ===== Weather Box ===== */
+.weather-box {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background: #f6f7ff;
+  border-radius: 12px;
+  padding: 1rem;
+  margin: 1rem 0;
+}
+
+/* ===== Calendar Grid ===== */
+.calendar {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+}
+.day {
+  background: white;
+  border-radius: 10px;
+  padding: 1rem;
+  text-align: center;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+.day:hover { background: #f1eeff; }
+
+/* ===== Auth Page ===== */
+.auth-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.auth-tab {
+  padding: 0.6rem 1.4rem;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  background: #fff;
+  font-weight: 500;
+}
+.auth-tab.active {
+  background: linear-gradient(90deg, #7b61ff, #a17bff);
+  color: #fff;
+  border: none;
+}
