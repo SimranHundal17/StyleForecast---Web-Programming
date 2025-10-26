@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Accessories - Style Forecast</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="page-wrapper">
+
+    <header class="header">
+      <h1 class="title">Accessories</h1>
+      <p class="subtitle">Manage your accessories below.</p>
+    </header>
+
+    <main class="section">
+      <div class="card">
+        <table class="styled-table">
+          <thead>
+            <tr>
+              <th>Accessory Name</th>
+              <th>Type</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Leather Belt</td>
+              <td>Belt</td>
+              <td><button class="btn btn-small">Remove</button></td>
+            </tr>
+            <tr>
+              <td>Silver Earrings</td>
+              <td>Jewelry</td>
+              <td><button class="btn btn-small">Remove</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card mt-3">
+        <h2 class="subtitle">Add New Accessory</h2>
+        <form>
+          <label for="acc-name" class="label">Accessory Name</label>
+          <input type="text" id="acc-name" class="input-field" placeholder="e.g., Sunglasses">
+
+          <label for="acc-type" class="label">Type</label>
+          <select id="acc-type" class="input-field">
+            <option>Belt</option>
+            <option>Jewelry</option>
+            <option>Hat</option>
+            <option>Sunglasses</option>
+            <option>Scarf</option>
+          </select>
+
+          <button type="submit" class="btn mt-2">Add Accessory</button>
+        </form>
+      </div>
+    </main>
+  </div>
+</body>
+</html>
