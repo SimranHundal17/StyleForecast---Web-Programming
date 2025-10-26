@@ -1,67 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
-  
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
   <title>Outfit History - Style Forecast</title>
-
   <link rel="stylesheet" href="css/style.css" />
 </head>
-
 <body>
   <div class="page-wrapper">
 
+    <!-- Header -->
     <header class="header">
       <div class="header-left">
-        <div class="logo-box">☁</div>
+        <div class="logo-box">☁️</div>
         <div class="app-name">Style Forecast</div>
       </div>
-
       <div class="header-right">
-        <span class="welcome-text">Welcome, simran</span>
+        <span class="welcome-text">Welcome, Simran</span>
         <button class="btn logout-button">Logout</button>
       </div>
     </header>
- 
+
+    <!-- Main Nav -->
     <nav class="nav-tabs">
       <a href="wardrobe.html" class="nav-tab-link">👚 Wardrobe</a>
       <a href="accessories.html" class="nav-tab-link">👜 Accessories</a>
-      <a href="get-outfit.html" class="nav-tab-link">🪄 Get Outfit</a>
+      <a href="get-outfit.html" class="nav-tab-link active">🪄 Get Outfit</a>
       <a href="plan-ahead.html" class="nav-tab-link">📅 Plan Ahead</a>
       <a href="profile.html" class="nav-tab-link">⚙ Profile</a>
     </nav>
- 
+
+    <!-- Sub Nav -->
     <div class="sub-nav">
-      <button class="sub-nav-btn">Generate</button>
-      <button class="sub-nav-btn active">History</button>
+      <a href="get-outfit.html" class="sub-nav-btn">Generate Outfit</a>
+      <a href="outfit-history.html" class="sub-nav-btn active">Outfit History</a>
     </div>
 
+    <!-- Main Section -->
     <main class="section">
 
       <section class="card outfit-history-card">
+        <h1 class="title">Outfit History</h1>
+        <p class="subtitle">Your previously generated outfits will appear here.</p>
 
-        <div class="card-header">
-          <h1 class="title">Outfit History</h1>
-          <p class="subtitle">View and review your past outfit suggestions</p>
-        </div>
-
+        <!-- Empty state -->
         <div class="empty-state">
-
           <div class="empty-state-icon">⟳</div>
-
           <div class="empty-state-title">No history yet</div>
-
           <div class="empty-state-desc">
             Generate and rate outfits to see them here
           </div>
         </div>
-
       </section>
 
     </main>
 
+    <!-- Footer -->
     <footer class="footer">
       <p class="footer-text">© 2025 Style Forecast</p>
     </footer>
@@ -69,4 +63,3 @@
   </div>
 </body>
 </html>
-

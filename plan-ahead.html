@@ -7,25 +7,45 @@
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+  <div class="page-wrapper">
 
-  <section class="section">
-    <div class="card">
-      <h2 class="title">Plan Ahead</h2>
-      <p class="subtitle">Plan your outfits for upcoming days.</p>
-
-      <div class="calendar">
-        <div class="day">Mon<br><small>Outfit: –</small></div>
-        <div class="day">Tue<br><small>Outfit: –</small></div>
-        <div class="day">Wed<br><small>Outfit: –</small></div>
-        <div class="day">Thu<br><small>Outfit: –</small></div>
-        <div class="day">Fri<br><small>Outfit: –</small></div>
-        <div class="day">Sat<br><small>Outfit: –</small></div>
-        <div class="day">Sun<br><small>Outfit: –</small></div>
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <div class="logo-box">☁️</div>
+        <div class="app-name">Style Forecast</div>
       </div>
+      <div class="header-right">
+        <span class="welcome-text">Welcome, Simran</span>
+        <button class="btn logout-button">Logout</button>
+      </div>
+    </header>
 
-      <button class="btn mt-3">Add Plan</button>
-    </div>
-  </section>
+    <!-- Navigation -->
+    <nav class="nav-tabs">
+      <a href="wardrobe.html" class="nav-tab-link">👚 Wardrobe</a>
+      <a href="accessories.html" class="nav-tab-link">👜 Accessories</a>
+      <a href="get-outfit.html" class="nav-tab-link">🪄 Get Outfit</a>
+      <a href="plan-ahead.html" class="nav-tab-link active">📅 Plan Ahead</a>
+      <a href="profile.html" class="nav-tab-link">⚙ Profile</a>
+    </nav>
 
+    <!-- Main Content -->
+    <main class="section">
+      <div class="card">
+        <h1 class="title">Plan Ahead</h1>
+        <p class="subtitle">Organize your outfits for upcoming events or trips in advance.</p>
+
+        <div class="empty-state">
+          <div class="empty-state-icon">🧳</div>
+          <div class="empty-state-title">No plans added yet</div>
+          <div class="empty-state-desc">
+            Use the planner to prepare your outfits ahead of time.
+          </div>
+          <button class="empty-state-button">+ Add Plan</button>
+        </div>
+      </div>
+    </main>
+  </div>
 </body>
 </html>
