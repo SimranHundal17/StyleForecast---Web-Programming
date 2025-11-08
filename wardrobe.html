@@ -18,7 +18,6 @@
   <link rel="stylesheet" href="css/style.css" />
 </head>
 
-
 <body>
 
   <!-- Bootstrap Navbar -->
@@ -33,7 +32,7 @@
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto">
           <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
-          <li class="nav-item"><a class="nav-link" href="wardrobe.html">Wardrobe</a></li>
+          <li class="nav-item"><a class="nav-link active" href="wardrobe.html">Wardrobe</a></li>
           <li class="nav-item"><a class="nav-link" href="outfit-history.html">Outfit History</a></li>
           <li class="nav-item"><a class="nav-link" href="profile.html">Profile</a></li>
         </ul>
@@ -51,7 +50,15 @@
             <p class="subtitle">Manage your clothing collection</p>
           </div>
           <div class="wardrobe-header-action">
-            <button class="btn add-item-button">+ Add Item</button>
+            <!-- Кнопка теперь открывает модалку -->
+            <button
+              type="button"
+              class="btn add-item-button btn-primary"
+              data-bs-toggle="modal"
+              data-bs-target="#addItemModal"
+            >
+              + Add Item
+            </button>
           </div>
         </div>
 
@@ -74,7 +81,72 @@
           </div>
           <button class="btn empty-state-button">+ Add Your First Item</button>
         </div>
+
+        <!-- Demo wardrobe items (Bootstrap Cards) -->
+        <div class="wardrobe-items-section container mt-4">
+          <div class="row g-4">
+
+            <div class="col-md-4">
+              <div class="wardrobe-item-card">
+                <div class="wardrobe-item-image">👕</div>
+                <div class="wardrobe-item-title">Blue Denim Shirt</div>
+                <div class="wardrobe-item-meta">Casual wear • Clean</div>
+                <button class="wardrobe-item-btn">Mark as Worn</button>
+              </div>
+            </div>
+
+            <div class="col-md-4">
+              <div class="wardrobe-item-card">
+                <div class="wardrobe-item-image">🧥</div>
+                <div class="wardrobe-item-title">Leather Jacket</div>
+                <div class="wardrobe-item-meta">Party wear • Needs Wash</div>
+                <button class="wardrobe-item-btn">Mark as Clean</button>
+              </div>
+            </div>
+
+          </div>
+        </div>
       </section>
+
+      <!-- Bootstrap Modal: Add New Clothing Item -->
+      <div class="modal fade" id="addItemModal" tabindex="-1" aria-labelledby="addItemLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="addItemLabel">Add New Clothing Item</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+              <form>
+                <div class="mb-3">
+                  <label class="form-label">Item Name</label>
+                  <input type="text" class="form-control" placeholder="e.g., Blue Shirt">
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Category</label>
+                  <select class="form-select">
+                    <option>Casual</option>
+                    <option>Formal</option>
+                    <option>Sports</option>
+                  </select>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Status</label>
+                  <select class="form-select">
+                    <option>Clean</option>
+                    <option>Needs Wash</option>
+                  </select>
+                </div>
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+              <button class="btn btn-success">Add Item</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </main>
 
     <footer class="footer">
@@ -82,12 +154,12 @@
     </footer>
   </div>
 
-  <!-- Bootstrap JS (navbar, etc) -->
+  <!-- Bootstrap JS (navbar, modal, etc) -->
   <script
     src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
     crossorigin="anonymous"
   ></script>
 </body>
-</html>
 
+</html>
