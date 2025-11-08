@@ -378,6 +378,7 @@ p, .subtitle {
    WARDROBE PAGE
 ========================================= */
 
+/* Общая карточка (весь контент страницы) */
 .card {
   background: #fff;
   border-radius: 1rem;
@@ -509,7 +510,7 @@ p, .subtitle {
 }
 
 .wardrobe-item-image {
-  font-size: 2rem; /* пока эмодзи вместо фото */
+  font-size: 2rem;
 }
 
 .wardrobe-item-title {
