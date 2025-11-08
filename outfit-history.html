@@ -4,33 +4,43 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Outfit History - Style Forecast</title>
-  <link rel="stylesheet" href="css/style.css" />
+
+  <!-- Bootstrap CSS -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+    crossorigin="anonymous"
+  />
+
+  <!-- My general style -->
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+
+  <!-- Bootstrap Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+      <a class="navbar-brand fw-bold" href="index.html">☁️ Style Forecast</a>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="wardrobe.html">Wardrobe</a></li>
+          <li class="nav-item"><a class="nav-link" href="outfit-history.html">Outfit History</a></li>
+          <li class="nav-item"><a class="nav-link" href="profile.html">Profile</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
   <div class="page-wrapper">
 
-    <!-- Header -->
-    <header class="header">
-      <div class="header-left">
-        <div class="logo-box">☁️</div>
-        <div class="app-name">Style Forecast</div>
-      </div>
-      <div class="header-right">
-        <span class="welcome-text">Welcome, Simran</span>
-        <button class="btn logout-button">Logout</button>
-      </div>
-    </header>
-
-    <!-- Main Nav -->
-    <nav class="nav-tabs">
-      <a href="wardrobe.html" class="nav-tab-link">👚 Wardrobe</a>
-      <a href="accessories.html" class="nav-tab-link">👜 Accessories</a>
-      <a href="get-outfit.html" class="nav-tab-link active">🪄 Get Outfit</a>
-      <a href="plan-ahead.html" class="nav-tab-link">📅 Plan Ahead</a>
-      <a href="profile.html" class="nav-tab-link">⚙ Profile</a>
-    </nav>
-
-    <!-- Sub Nav -->
+    <!-- Sub Nav (for Get Outfit / History) -->
     <div class="sub-nav">
       <a href="get-outfit.html" class="sub-nav-btn">Generate Outfit</a>
       <a href="outfit-history.html" class="sub-nav-btn active">Outfit History</a>
@@ -61,5 +71,12 @@
     </footer>
 
   </div>
+
+  <!-- Bootstrap JS (navbar, etc) -->
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"
+  ></script>
 </body>
 </html>
