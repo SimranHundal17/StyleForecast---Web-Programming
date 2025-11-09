@@ -1,0 +1,41 @@
+/* ============================
+   OUTFIT HISTORY PAGE
+============================ */
+.history-items-section {
+  margin-top: 2.5rem;
+}
+
+.history-item-card {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 1.3rem 1.5rem;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+  border: 1px solid #f0f2ff;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  transition: all 0.25s ease;
+}
+
+.history-item-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+}
+
+.history-item-date {
+  font-size: 0.85rem;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.history-item-outfit {
+  font-size: 0.98rem;
+  font-weight: 600;
+  color: #252552;
+}
+
+.history-item-meta {
+  font-size: 0.9rem;
+  color: #777aa5;
+}
