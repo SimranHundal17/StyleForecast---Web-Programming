@@ -1,0 +1,85 @@
+/* =========================================
+   INTRO PAGE
+========================================= */
+.intro-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 85vh;
+  text-align: center;
+  padding: 2.5rem 1rem;
+}
+
+.intro-container h1 {
+  font-size: 2.6rem;
+  color: #4f46e5;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.cloud-icon {
+  font-size: 2.2rem;
+}
+
+.intro-container p {
+  color: #6b7280;
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+}
+
+.features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.feature-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* Magical Button (Intro Only) */
+.get-started-btn {
+  background: linear-gradient(90deg, #6366f1, #a855f7);
+  color: white;
+  border: none;
+  padding: 0.9rem 1.6rem;
+  font-size: 1rem;
+  border-radius: 9999px;
+  cursor: pointer;
+  margin-top: 2rem;
+  position: relative;
+  overflow: hidden;
+  transition: 0.3s;
+}
+
+.get-started-btn::after {
+  content: "✨";
+  position: absolute;
+  right: 1rem;
+  opacity: 0.8;
+  animation: sparkle 2s infinite linear;
+}
+
+@keyframes sparkle {
+  0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.8; }
+  50% { transform: translateY(-3px) rotate(20deg); opacity: 1; }
+}
+
+.get-started-btn:hover {
+  opacity: 0.9;
+  transform: scale(1.03);
+}
