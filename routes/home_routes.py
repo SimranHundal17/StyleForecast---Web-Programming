@@ -78,7 +78,7 @@ def add_item_route(current_user):
 
 # ========== Outfit history page ==========
 
-@home_bp.route("/history")
+@home_bp.route("/outfit_history")
 @token_required
 def outfit_history(current_user):
     """
