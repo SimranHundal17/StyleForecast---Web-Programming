@@ -49,7 +49,6 @@ def add_item_route(current_user):
     """
     Handle form POST for adding a new clothing item.
     """
-
     # Read data from form fields (name/category/status).
     name = request.form.get("name")
     category = request.form.get("category")
