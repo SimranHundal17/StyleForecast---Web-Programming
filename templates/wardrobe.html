@@ -28,13 +28,13 @@
 
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto">
-          <li class="nav-item"><a class="nav-link active" href="{{ url_for('wardrobe') }}">Wardrobe</a></li>
-          <li class="nav-item"><a class="nav-link" href="{{ url_for('accessories') }}">Accessories</a></li>
-          <li class="nav-item"><a class="nav-link" href="{{ url_for('get_outfit') }}">Get Outfit</a></li>
-          <li class="nav-item"><a class="nav-link" href="{{ url_for('outfit_history') }}">Outfit History</a></li>
-          <li class="nav-item"><a class="nav-link" href="{{ url_for('plan_ahead') }}">Plan Ahead</a></li>
-          <li class="nav-item"><a class="nav-link" href="{{ url_for('profile') }}">Profile</a></li>
-          <li class="nav-item"><a class="nav-link text-danger" href="{{ url_for('login') }}">Logout</a></li>
+          <li class="nav-item"><a class="nav-link active" href="{{ url_for('home.wardrobe') }}">Wardrobe</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('home.accessories') }}">Accessories</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('home.get_outfit') }}">Get Outfit</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('home.outfit_history') }}">Outfit History</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('home.plan_ahead') }}">Plan Ahead</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('home.profile') }}">Profile</a></li>
+          <li class="nav-item"><a class="nav-link text-danger" href="{{ url_for('home.login') }}">Logout</a></li>
         </ul>
       </div>
     </div>
