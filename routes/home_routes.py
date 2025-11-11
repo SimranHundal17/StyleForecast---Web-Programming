@@ -9,7 +9,6 @@ from model.wardrobe_model import get_all_items, add_item as add_wardrobe_item
 try:
     from utils.auth import token_required
 except ImportError:
-    Temporary stub if auth is not implemented yet.
     def token_required(f):
         def wrapper(*args, **kwargs):
             # Call the original function with fake current_user.
@@ -33,7 +32,7 @@ def intro():
 @token_required
 def wardrobe(current_user):
     """
-    Wardrobe page – shows all items from wardrobe_model.    
+    Wardrobe page - shows all items from wardrobe_model.    
     """
     items = get_all_items()  # list of dicts with clothes
     return render_template("wardrobe.html", items=items, current_user=current_user)
