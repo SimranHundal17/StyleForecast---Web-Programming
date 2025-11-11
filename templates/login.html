@@ -54,7 +54,7 @@
         <a href="#" class="switch-link" onclick="toggleForm(event)">Sign Up</a>
       </p>
 
-      <a href="index.html" class="back-home-link">← Back to Home</a>
+      <a href="{{ url_for('home.intro') }}" class="back-home-link">← Back to Home</a>
 
     </div>
   </div>
@@ -90,7 +90,7 @@
 
       // Redirect after animation
       setTimeout(() => {
-        window.location.href = "{{ url_for('get_outfit') }}";
+        window.location.href = "{{ url_for('home.get_outfit') }}";
       }, 2000);
     });
   </script>
