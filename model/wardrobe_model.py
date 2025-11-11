@@ -1,48 +1,25 @@
-# "Database" in memory — a list of dictionaries with clothing items
-WARDROBE = [
-    {
-        "id": 1,
-        "name": "Blue Shirt",
-        "category": "Casual",
-        "status": "Clean",
-    },
-    {
-        "id": 2,
-        "name": "Black Jeans",
-        "category": "Casual",
-        "status": "Needs Wash",
-    },
+# models/wardrobe_model.py
+
+wardrobe_items = [
+    {"id": 1, "name": "Blue Denim Shirt", "category": "Shirt", "occasion": "Casual", "color": "Blue", "status": "Clean", "wear_count": 1},
+    {"id": 2, "name": "Black Jeans", "category": "Pants", "occasion": "Casual", "color": "Black", "status": "Clean", "wear_count": 2},
+    {"id": 3, "name": "White Formal Shirt", "category": "Shirt", "occasion": "Formal", "color": "White", "status": "Needs Wash", "wear_count": 3},
+    {"id": 4, "name": "Leather Jacket", "category": "Jacket", "occasion": "Party", "color": "Brown", "status": "Clean", "wear_count": 1},
 ]
 
 
 def get_all_items():
-    """
-    Return all items from the wardrobe.
-        This function is used by the /wardrobe route
-        to send the item list into the wardrobe.html template.
-    """
-    return WARDROBE
+    """Return all wardrobe items."""
+    return wardrobe_items
 
 
-def add_item(name, category, status):
-    """
-    Add a new item to the wardrobe.
-        name      — item name (string)
-        category  — category (Casual, Formal, Gym, etc.)
-        status    — state (Clean / Needs Wash)
-        For now everything is stored only in memory, no real DB.
-    """
+def get_items_by_status(status):
+    """Return items with given status (Clean or Needs Wash)."""
+    return [i for i in wardrobe_items if i["status"].lower() == status.lower()]
 
-    if not name:
-        return
 
-    # Build a new dictionary with item data
-    new_item = {
-        "id": len(WARDROBE) + 1,   # RU: простой авто-инкремент ID / EN: simple auto-increment ID
-        "name": name,
-        "category": category or "Other",
-        "status": status or "Clean",
-    }
-
-    # Append the new item to the list
-    WARDROBE.append(new_item)
+def add_item(item):
+    """Add new clothing item."""
+    item["id"] = len(wardrobe_items) + 1
+    wardrobe_items.append(item)
+    return item
