@@ -20,7 +20,7 @@
   <!-- Bootstrap Navbar -->
   <nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(90deg, #6366f1, #8b5cf6);">
     <div class="container-fluid">
-      <a class="navbar-brand fw-bold" href="index.html">☁️ Style Forecast</a>
+      <a class="navbar-brand fw-bold" href="{{ url_for('home.intro') }}">☁️ Style Forecast</a>
 
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
         <span class="navbar-toggler-icon"></span>
@@ -69,39 +69,39 @@
           <button class="filter-chip">Outdoor</button>
         </div>
 
-        <div class="empty-state">
-          <div class="empty-state-icon">👕</div>
-          <div class="empty-state-title">No items yet</div>
-          <div class="empty-state-desc">
-            Start building your digital wardrobe by adding your first clothing item.
-          </div>
-          <button class="btn empty-state-button">+ Add Your First Item</button>
+      <!-- Пустое состояние, если вещей нет -->
+      {% if not items %}
+      <div class="empty-state">
+        <div class="empty-state-icon">👕</div>
+        <div class="empty-state-title">No items yet</div>
+        <div class="empty-state-desc">
+          Start building your digital wardrobe by adding your first clothing item.
         </div>
+        <button class="btn empty-state-button">+ Add Your First Item</button>
+      </div>
+      {% else %}
 
-        <!-- Demo wardrobe items (Bootstrap Cards) -->
-        <div class="wardrobe-items-section container mt-4">
-          <div class="row g-4">
-
-            <div class="col-md-4">
-              <div class="wardrobe-item-card">
-                <div class="wardrobe-item-image">👕</div>
-                <div class="wardrobe-item-title">Blue Denim Shirt</div>
-                <div class="wardrobe-item-meta">Casual wear • Clean</div>
-                <button class="wardrobe-item-btn">Mark as Worn</button>
+      <!-- Список вещей из Flask (WARDROBE) -->
+      <div class="wardrobe-items-section">
+        <div class="row g-3">
+          {% for item in items %}
+          <div class="col-md-4">
+            <div class="wardrobe-item-card">
+              <div class="wardrobe-item-image">👕</div>
+              <div class="wardrobe-item-title">{{ item.name }}</div>
+              <div class="wardrobe-item-meta">
+                {{ item.category }} • {{ item.status }}
               </div>
+              <button class="wardrobe-item-btn">
+                Mark as worn
+              </button>
             </div>
-
-            <div class="col-md-4">
-              <div class="wardrobe-item-card">
-                <div class="wardrobe-item-image">🧥</div>
-                <div class="wardrobe-item-title">Leather Jacket</div>
-                <div class="wardrobe-item-meta">Party wear • Needs Wash</div>
-                <button class="wardrobe-item-btn">Mark as Clean</button>
-              </div>
-            </div>
-
           </div>
+          {% endfor %}
         </div>
+      </div>
+
+      {% endif %}
       </section>
 
       <!-- Bootstrap Modal: Add New Clothing Item -->
