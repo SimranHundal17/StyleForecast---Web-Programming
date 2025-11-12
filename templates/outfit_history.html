@@ -1,26 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Outfit History - Style Forecast</title>
 
   <!-- Bootstrap CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-  <!-- Общие стили проекта -->
+  <!-- Project styles -->
   <link rel="stylesheet" href="{{ url_for('static', filename='global.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='outfit_history.css') }}">
 </head>
-
 <body>
 
-  <!-- Navbar  -->
+  <!-- Navbar -->
   <nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(90deg, #6366f1, #8b5cf6);">
     <div class="container-fluid">
-      <a class="navbar-brand fw-bold" href="index.html">☁️ Style Forecast</a>
+      <a class="navbar-brand fw-bold" href="{{ url_for('home.intro') }}">☁️ Style Forecast</a>
 
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
         <span class="navbar-toggler-icon"></span>
@@ -41,14 +38,13 @@
   </nav>
 
   <div class="page-wrapper">
-
     <main class="section">
       <section class="card outfit-history-card">
         <h1 class="title">Outfit History</h1>
-        <p class="subtitle">View and review your past outfit suggestions.</p>
+        <p class="subtitle">Your previously generated outfits will appear here.</p>
 
-        <!-- Empty state -->
-        <div class="empty-state">
+        <!-- Empty state (JS спрячет, если есть записи) -->
+        <div class="empty-state{% if entries %} d-none{% endif %}">
           <div class="empty-state-icon">⟳</div>
           <div class="empty-state-title">No history yet</div>
           <div class="empty-state-desc">
@@ -56,26 +52,33 @@
           </div>
         </div>
 
-        <!-- Мини-карточки истории аутфитов -->
-        <div class="history-items-section container mt-4">
-          <div class="row g-4">
-
-            <div class="col-md-4">
-              <div class="history-item-card">
-                <div class="history-item-date">Yesterday • 21°C, Sunny</div>
-                <div class="history-item-outfit">👕 T-Shirt • 👖 Jeans • 👟 Sneakers</div>
-                <div class="history-item-meta">Mood: Casual • Rating: ⭐⭐⭐⭐☆</div>
-              </div>
-            </div>
-
-            <div class="col-md-4">
-              <div class="history-item-card">
-                <div class="history-item-date">2 days ago • 15°C, Cloudy</div>
-                <div class="history-item-outfit">🧥 Trench Coat • 👖 Trousers • 🧣 Scarf</div>
-                <div class="history-item-meta">Mood: Smart • Rating: ⭐⭐⭐⭐⭐</div>
-              </div>
-            </div>
-
+        <!-- Секция списка: серверный рендер + место для JS -->
+        <div class="history-items-section container mt-3">
+          <div class="row g-3">
+            {% if entries %}
+              {% for row in entries %}
+                <div class="col-md-4">
+                  <div class="history-item-card">
+                    <div class="history-item-date">
+                      {{ row.date }}{% if row.location %} • {{ row.location }}{% endif %}{% if row.weather %} • {{ row.weather }}{% endif %}
+                    </div>
+                    <div class="history-item-outfit">
+                      {{ row.occasion }}{% if row.mood %} ({{ row.mood }}){% endif %}
+                    </div>
+                    <div class="history-item-meta">
+                      {% if row.outfit %}
+                        {% for piece in row.outfit %}
+                          {{ piece }}{% if not loop.last %}, {% endif %}
+                        {% endfor %} •
+                      {% endif %}
+                      ⭐ {{ row.rating }}
+                      {% if row.liked %} • ❤️ Liked{% endif %}
+                    </div>
+                  </div>
+                </div>
+              {% endfor %}
+            {% endif %}
+            <!-- Если entries нет, JS заполнит этот .row из /history/data -->
           </div>
         </div>
 
@@ -89,8 +92,10 @@
 
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-    crossorigin="anonymous"></script>
-</body>
+          integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+          crossorigin="anonymous"></script>
 
+  <!-- History loader JS (у тебя лежит прямо в /static) -->
+  <script src="{{ url_for('static', filename='outfit_history.js') }}"></script>
+</body>
 </html>

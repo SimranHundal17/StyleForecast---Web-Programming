@@ -1,9 +1,11 @@
 # routes/home_routes.py
 # Routes for intro page, wardrobe, outfit history, profile and other pages.
 
-from flask import render_template, redirect, request, url_for
+from flask import render_template, redirect, request, url_for, jsonify
 from routes import home_bp
 from model.wardrobe_model import get_all_items, add_item as add_wardrobe_item
+from model.outfit_history_model import get_all_history
+from model.login_model import get_current_user, update_user
 
 # Try to import token_required decorator (login protection).
 try:
@@ -80,34 +82,117 @@ def add_item_route(current_user):
 @home_bp.route("/outfit_history")
 @token_required
 def outfit_history(current_user):
-    """
-    Outfit history page (for now just renders template).
-    """
-    return render_template("outfit_history.html", current_user=current_user)
+    """Outfit history page."""
+    entries = get_all_history()
+    return render_template(
+        "outfit_history.html",
+        current_user=current_user,
+        entries=entries
+    )
 
+@home_bp.route("/history/data")
+@token_required
+def history_data(current_user):
+    """Return outfit history as JSON for frontend JS."""
+    return jsonify(get_all_history())
 
 # ========== Profile page ==========
 
 @home_bp.route("/profile", methods=["GET", "POST"])
 @token_required
 def profile(current_user):
-    """
-    Profile page (later we can update name/email here).
-    """
+    """Profile page with simple POST update of name/email."""
+    user = get_current_user()   # берём «текущего» пользователя из in-memory
 
-    # In the future you can read name/email from request.form on POST.
     if request.method == "POST":
-        entered_name = request.form.get("name")
-        entered_email = request.form.get("email")
-    else:
-        entered_name = None
-        entered_email = None
+        name  = request.form.get("name")  or user["name"]
+        email = request.form.get("email") or user["email"]
+
+        # Обновляем запись (по текущему email)
+        update_user(email=user["email"], data={"name": name, "email": email})
+
+        # перечитываем профиль после апдейта
+        user = get_current_user()
 
     return render_template(
         "profile.html",
         current_user=current_user,
-        entered_name=entered_name,
-        entered_email=entered_email,
+        user=user,
     )
 
+# ==========================
+# JSON API for Wardrobe Page
+# ==========================
 
+# --- helper: pick emoji by category (already exists, keep as is) ---
+def _icon_for(category: str) -> str:
+    """Return a suitable emoji for a given clothing category."""
+    cat = (category or "").lower()
+    if "shirt" in cat:
+        return "👕"
+    if "jacket" in cat:
+        return "🧥"
+    if "pant" in cat or "jean" in cat or "trouser" in cat:
+        return "👖"
+    if "shoe" in cat or "sneaker" in cat:
+        return "👟"
+    return "👚"
+
+
+@home_bp.route("/wardrobe/data")
+@token_required
+def wardrobe_data(current_user):
+    """
+    Return wardrobe items as JSON with optional filtering via query params.
+    Supported params:
+      - filter: 'all' | 'needs' | 'clean' | category name
+        (e.g. 'casual', 'formal', 'gym', 'party', 'outdoor')
+    """
+    raw = get_all_items()
+
+    # Read filter from query string (e.g., /wardrobe/data?filter=needs)
+    f = (request.args.get("filter") or "all").strip().lower()
+
+    # Filter logic (simple, case-insensitive)
+    def match(item: dict) -> bool:
+        if f in ("all", "", None):
+            return True
+        status = (item.get("status") or "").lower()
+        category = (item.get("category") or "").lower()
+
+        if f in ("needs", "needs wash"):
+            return status == "needs wash"
+        if f in ("clean",):
+            return status == "clean"
+
+        # Treat any other value as a category filter
+        return f in category
+
+    filtered = [it for it in raw if match(it)]
+
+    # Enrich with icon on the fly (do not mutate original)
+    enriched = []
+    for it in filtered:
+        row = dict(it)
+        row["icon"] = row.get("icon") or _icon_for(row.get("category"))
+        enriched.append(row)
+
+    return jsonify(enriched)
+
+
+@home_bp.route("/wardrobe/update", methods=["POST"])
+@token_required
+def wardrobe_update(current_user):
+    """Switch item status (Clean <-> Needs Wash) by given ID."""
+    data = request.get_json(silent=True) or {}
+    item_id = data.get("id")
+    if not item_id:
+        return jsonify({"ok": False, "error": "id required"}), 400
+
+    items = get_all_items()
+    for it in items:
+        if it.get("id") == int(item_id):
+            it["status"] = "Needs Wash" if (it.get("status") or "").lower() == "clean" else "Clean"
+            return jsonify({"ok": True})
+
+    return jsonify({"ok": False, "error": "not found"}), 404
