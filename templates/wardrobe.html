@@ -9,8 +9,6 @@
   <link
     href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
     rel="stylesheet"
-    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
-    crossorigin="anonymous"
   />
 
   <!-- Styles -->
@@ -65,20 +63,19 @@
         </div>
 
         <!-- Filters -->
-        <div class="filter-row">
+        <div class="filter-row" id="filters">
           <span class="filter-label">🔍 Filter:</span>
-          <button class="filter-chip filter-active" type="button">All</button>
-          <button class="filter-chip" type="button">Needs Wash</button>
-          <button class="filter-chip" type="button">Casual</button>
-          <button class="filter-chip" type="button">Gym</button>
-          <button class="filter-chip" type="button">Party</button>
-          <button class="filter-chip" type="button">Formal</button>
-          <button class="filter-chip" type="button">Outdoor</button>
+          <button class="filter-chip filter-active" data-filter="all">All</button>
+          <button class="filter-chip" data-filter="needs">Needs Wash</button>
+          <button class="filter-chip" data-filter="casual">Casual</button>
+          <button class="filter-chip" data-filter="gym">Gym</button>
+          <button class="filter-chip" data-filter="party">Party</button>
+          <button class="filter-chip" data-filter="formal">Formal</button>
+          <button class="filter-chip" data-filter="outdoor">Outdoor</button>
         </div>
 
-        <!-- Empty state -->
-        {% if not items %}
-        <div class="empty-state">
+        <!-- Empty state (JS will hide it if items exist) -->
+        <div class="empty-state" id="empty-state">
           <div class="empty-state-icon">👕</div>
           <div class="empty-state-title">No items yet</div>
           <div class="empty-state-desc">
@@ -93,26 +90,11 @@
             + Add Your First Item
           </button>
         </div>
-        {% else %}
 
-        <!-- Items from Flask -->
+        <!-- List container: JS injects cards here -->
         <div class="wardrobe-items-section">
-          <div class="row g-3">
-            {% for item in items %}
-            <div class="col-md-4">
-              <div class="wardrobe-item-card">
-                <div class="wardrobe-item-image">👕</div>
-                <div class="wardrobe-item-title">{{ item.name }}</div>
-                <div class="wardrobe-item-meta">
-                  {{ item.category }} • {{ item.status }}
-                </div>
-                <button class="wardrobe-item-btn" type="button">Mark as worn</button>
-              </div>
-            </div>
-            {% endfor %}
-          </div>
+          <div class="row g-3" id="wardrobe-grid"></div>
         </div>
-        {% endif %}
 
       </section>
 
@@ -145,6 +127,9 @@
                     <option value="Casual">Casual</option>
                     <option value="Formal">Formal</option>
                     <option value="Sports">Sports</option>
+                    <option value="Gym">Gym</option>
+                    <option value="Party">Party</option>
+                    <option value="Outdoor">Outdoor</option>
                   </select>
                 </div>
 
@@ -175,31 +160,24 @@
   </div>
 
   <!-- Bootstrap JS -->
-  <script
-    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-    crossorigin="anonymous"
-  ></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
   <!-- Wardrobe dynamic rendering -->
   <script src="{{ url_for('static', filename='wardrobe.js') }}"></script>
 
   <!-- Fix for stuck modal/backdrop + hide on submit -->
   <script>
-    document.addEventListener('DOMContentLoaded', function () {      
+    document.addEventListener('DOMContentLoaded', function () {
       document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
       document.body.classList.remove('modal-open');
       document.body.style.overflow = '';
 
-      // Hide modal on form submit
       const form = document.getElementById('addItemForm');
-      if (form) {
+      if (form && typeof bootstrap !== 'undefined') {
         form.addEventListener('submit', function () {
           const modalEl = document.getElementById('addItemModal');
-          if (modalEl && typeof bootstrap !== 'undefined') {
-            const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
-            modal.hide();
-          }
+          const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+          modal.hide();
         });
       }
     });
