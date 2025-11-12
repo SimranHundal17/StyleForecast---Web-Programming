@@ -6,6 +6,7 @@ from routes import home_bp
 from model.wardrobe_model import get_all_items, add_item as add_wardrobe_item
 from model.outfit_history_model import get_all_history
 from model.login_model import get_current_user, update_user
+from flask import jsonify
 
 # Try to import token_required decorator (login protection).
 try:
@@ -82,10 +83,19 @@ def add_item_route(current_user):
 @home_bp.route("/outfit_history")
 @token_required
 def outfit_history(current_user):
-    """ Outfit history page. """
-    entires = get_all_history()
-    return render_template("outfit_history.html", current_user=current_user, entires=entires)
+    """Outfit history page."""
+    entries = get_all_history()
+    return render_template(
+        "outfit_history.html",
+        current_user=current_user,
+        entries=entries
+    )
 
+@home_bp.route("/history/data")
+@token_required
+def history_data(current_user):
+    """Return outfit history as JSON for frontend JS."""
+    return jsonify(get_all_history())
 
 # ========== Profile page ==========
 
