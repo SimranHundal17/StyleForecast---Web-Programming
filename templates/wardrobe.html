@@ -181,6 +181,9 @@
     crossorigin="anonymous"
   ></script>
 
+  <!-- Wardrobe dynamic rendering -->
+  <script src="{{ url_for('static', filename='wardrobe.js') }}"></script>
+
   <!-- Fix for stuck modal/backdrop + hide on submit -->
   <script>
     document.addEventListener('DOMContentLoaded', function () {      
@@ -188,7 +191,7 @@
       document.body.classList.remove('modal-open');
       document.body.style.overflow = '';
 
-      // Аккуратно закрываем модалку перед отправкой формы
+      // Hide modal on form submit
       const form = document.getElementById('addItemForm');
       if (form) {
         form.addEventListener('submit', function () {

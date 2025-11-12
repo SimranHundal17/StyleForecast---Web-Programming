@@ -150,10 +150,60 @@ def get_outfit():
 
 
 # ========== Plan Ahead page ==========
-
 @home_bp.route("/plan-ahead")
 def plan_ahead():
     """
     Plan Ahead page for now just renders plan_ahead.html template.
     """
     return render_template("plan_ahead.html")
+
+
+# ==========================
+# JSON API for Wardrobe Page
+# ==========================
+
+from flask import jsonify
+
+# --- Helper: assign emoji icon based on clothing category ---
+def _icon_for(category: str) -> str:
+    """Return a suitable emoji for a given clothing category."""
+    cat = (category or "").lower()
+    if "shirt" in cat:
+        return "👕"
+    if "jacket" in cat:
+        return "🧥"
+    if "pant" in cat or "jean" in cat or "trouser" in cat:
+        return "👖"
+    if "shoe" in cat or "sneaker" in cat:
+        return "👟"
+    return "👚"
+
+# --- JSON: return all wardrobe items ---
+@home_bp.route("/wardrobe/data")
+@token_required
+def wardrobe_data(current_user):
+    """Return all wardrobe items as JSON for frontend JS."""
+    items = get_all_items()
+    enriched = []
+    for it in items:
+        row = dict(it)
+        row["icon"] = row.get("icon") or _icon_for(row.get("category"))
+        enriched.append(row)
+    return jsonify(enriched)
+
+# --- JSON: toggle Clean <-> Needs Wash status by item ID ---
+@home_bp.route("/wardrobe/update", methods=["POST"])
+@token_required
+def wardrobe_update(current_user):
+    """Switch item status (Clean <-> Needs Wash) by given ID."""
+    data = request.get_json(silent=True) or {}
+    item_id = data.get("id")
+    if not item_id:
+        return jsonify({"ok": False, "error": "id required"}), 400
+
+    items = get_all_items()
+    for it in items:
+        if it.get("id") == int(item_id):
+            it["status"] = "Needs Wash" if it.get("status") == "Clean" else "Clean"
+            return jsonify({"ok": True})
+    return jsonify({"ok": False, "error": "not found"}), 404
