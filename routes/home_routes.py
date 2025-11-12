@@ -110,39 +110,4 @@ def profile(current_user):
         entered_email=entered_email,
     )
 
-# ========== Accessories page ==========
 
-@home_bp.route("/accessories")
-def accessories():
-    """
-    Accessories page for now just renders accessories.html template.
-    """
-    return render_template("accessories.html")
-
-# ========== Login page ==========
-
-@home_bp.route("/login")
-def login():
-    """
-    Temporary login page route (just renders login.html).
-    """
-    return render_template("login.html")
-
-# ========== Get Outfit page ==========
-
-@home_bp.route("/get-outfit")
-def get_outfit():
-    """
-    Get Outfit page for now just renders get_outfit.html template.
-    """
-    return render_template("get_outfit.html")
-
-
-# ========== Plan Ahead page ==========
-
-@home_bp.route("/plan-ahead")
-def plan_ahead():
-    """
-    Plan Ahead page for now just renders plan_ahead.html template.
-    """
-    return render_template("plan_ahead.html")

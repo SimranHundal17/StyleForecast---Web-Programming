@@ -32,7 +32,7 @@ def verify_user(email, password):
     """Verify email/password combination."""
     user = get_user_by_email(email)
     if user and user["password"] == password:
-        return {k: v for k, v in user.items() if k != "password"}
+        return user
     return None
 
 
