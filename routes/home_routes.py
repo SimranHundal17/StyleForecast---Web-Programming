@@ -4,6 +4,8 @@
 from flask import render_template, redirect, request, url_for
 from routes import home_bp
 from model.wardrobe_model import get_all_items, add_item as add_wardrobe_item
+from model.outfit_history_model import get_all_history
+from model.login_model import get_current_user, update_user
 
 # Try to import token_required decorator (login protection).
 try:
@@ -80,10 +82,9 @@ def add_item_route(current_user):
 @home_bp.route("/outfit_history")
 @token_required
 def outfit_history(current_user):
-    """
-    Outfit history page (for now just renders template).
-    """
-    return render_template("outfit_history.html", current_user=current_user)
+    """ Outfit history page. """
+    entires = get_all_history()
+    return render_template("outfit_history.html", current_user=current_user, entires=entires)
 
 
 # ========== Profile page ==========
@@ -91,23 +92,23 @@ def outfit_history(current_user):
 @home_bp.route("/profile", methods=["GET", "POST"])
 @token_required
 def profile(current_user):
-    """
-    Profile page (later we can update name/email here).
-    """
+    """Profile page with simple POST update of name/email."""
+    user = get_current_user()   # берём «текущего» пользователя из in-memory
 
-    # In the future you can read name/email from request.form on POST.
     if request.method == "POST":
-        entered_name = request.form.get("name")
-        entered_email = request.form.get("email")
-    else:
-        entered_name = None
-        entered_email = None
+        name  = request.form.get("name")  or user["name"]
+        email = request.form.get("email") or user["email"]
+
+        # Обновляем запись (по текущему email)
+        update_user(email=user["email"], data={"name": name, "email": email})
+
+        # перечитываем профиль после апдейта
+        user = get_current_user()
 
     return render_template(
         "profile.html",
         current_user=current_user,
-        entered_name=entered_name,
-        entered_email=entered_email,
+        user=user,
     )
 
 # ========== Accessories page ==========
