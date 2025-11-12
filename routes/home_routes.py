@@ -1,12 +1,11 @@
 # routes/home_routes.py
 # Routes for intro page, wardrobe, outfit history, profile and other pages.
 
-from flask import render_template, redirect, request, url_for
+from flask import render_template, redirect, request, url_for, jsonify
 from routes import home_bp
 from model.wardrobe_model import get_all_items, add_item as add_wardrobe_item
 from model.outfit_history_model import get_all_history
 from model.login_model import get_current_user, update_user
-from flask import jsonify
 
 # Try to import token_required decorator (login protection).
 try:
@@ -162,9 +161,7 @@ def plan_ahead():
 # JSON API for Wardrobe Page
 # ==========================
 
-from flask import jsonify
-
-# --- Helper: assign emoji icon based on clothing category ---
+# --- helper: pick emoji by category (already exists, keep as is) ---
 def _icon_for(category: str) -> str:
     """Return a suitable emoji for a given clothing category."""
     cat = (category or "").lower()
@@ -178,20 +175,48 @@ def _icon_for(category: str) -> str:
         return "👟"
     return "👚"
 
-# --- JSON: return all wardrobe items ---
+
 @home_bp.route("/wardrobe/data")
 @token_required
 def wardrobe_data(current_user):
-    """Return all wardrobe items as JSON for frontend JS."""
-    items = get_all_items()
+    """
+    Return wardrobe items as JSON with optional filtering via query params.
+    Supported params:
+      - filter: 'all' | 'needs' | 'clean' | category name
+        (e.g. 'casual', 'formal', 'gym', 'party', 'outdoor')
+    """
+    raw = get_all_items()
+
+    # Read filter from query string (e.g., /wardrobe/data?filter=needs)
+    f = (request.args.get("filter") or "all").strip().lower()
+
+    # Filter logic (simple, case-insensitive)
+    def match(item: dict) -> bool:
+        if f in ("all", "", None):
+            return True
+        status = (item.get("status") or "").lower()
+        category = (item.get("category") or "").lower()
+
+        if f in ("needs", "needs wash"):
+            return status == "needs wash"
+        if f in ("clean",):
+            return status == "clean"
+
+        # Treat any other value as a category filter
+        return f in category
+
+    filtered = [it for it in raw if match(it)]
+
+    # Enrich with icon on the fly (do not mutate original)
     enriched = []
-    for it in items:
+    for it in filtered:
         row = dict(it)
         row["icon"] = row.get("icon") or _icon_for(row.get("category"))
         enriched.append(row)
+
     return jsonify(enriched)
 
-# --- JSON: toggle Clean <-> Needs Wash status by item ID ---
+
 @home_bp.route("/wardrobe/update", methods=["POST"])
 @token_required
 def wardrobe_update(current_user):
@@ -204,6 +229,7 @@ def wardrobe_update(current_user):
     items = get_all_items()
     for it in items:
         if it.get("id") == int(item_id):
-            it["status"] = "Needs Wash" if it.get("status") == "Clean" else "Clean"
+            it["status"] = "Needs Wash" if (it.get("status") or "").lower() == "clean" else "Clean"
             return jsonify({"ok": True})
+
     return jsonify({"ok": False, "error": "not found"}), 404
