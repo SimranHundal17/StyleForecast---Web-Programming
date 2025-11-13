@@ -43,8 +43,8 @@
         <h1 class="title">Outfit History</h1>
         <p class="subtitle">Your previously generated outfits will appear here.</p>
 
-        <!-- Empty state (JS спрячет, если есть записи) -->
-        <div class="empty-state{% if entries %} d-none{% endif %}">
+        <!-- Empty state (will be hidden by JS when entries exist) -->
+        <div class="empty-state" id="empty-state">
           <div class="empty-state-icon">⟳</div>
           <div class="empty-state-title">No history yet</div>
           <div class="empty-state-desc">
@@ -52,36 +52,10 @@
           </div>
         </div>
 
-        <!-- Секция списка: серверный рендер + место для JS -->
-        <div class="history-items-section container mt-3">
-          <div class="row g-3">
-            {% if entries %}
-              {% for row in entries %}
-                <div class="col-md-4">
-                  <div class="history-item-card">
-                    <div class="history-item-date">
-                      {{ row.date }}{% if row.location %} • {{ row.location }}{% endif %}{% if row.weather %} • {{ row.weather }}{% endif %}
-                    </div>
-                    <div class="history-item-outfit">
-                      {{ row.occasion }}{% if row.mood %} ({{ row.mood }}){% endif %}
-                    </div>
-                    <div class="history-item-meta">
-                      {% if row.outfit %}
-                        {% for piece in row.outfit %}
-                          {{ piece }}{% if not loop.last %}, {% endif %}
-                        {% endfor %} •
-                      {% endif %}
-                      ⭐ {{ row.rating }}
-                      {% if row.liked %} • ❤️ Liked{% endif %}
-                    </div>
-                  </div>
-                </div>
-              {% endfor %}
-            {% endif %}
-            <!-- Если entries нет, JS заполнит этот .row из /history/data -->
-          </div>
-        </div>
-
+        <!-- History grid (JS will inject cards here) -->
+        <section class="history-items-section">
+          <div class="row g-3" id="history-grid"></div>
+        </section>
       </section>
     </main>
 
@@ -95,7 +69,7 @@
           integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
           crossorigin="anonymous"></script>
 
-  <!-- History loader JS (у тебя лежит прямо в /static) -->
+  <!-- History loader JS -->
   <script src="{{ url_for('static', filename='outfit_history.js') }}"></script>
 </body>
 </html>
