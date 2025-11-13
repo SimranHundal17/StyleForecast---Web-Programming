@@ -2,15 +2,21 @@
 
 from flask import Flask
 from routes.home_routes import home_bp
+from routes.auth_routes import auth_bp
+from routes.get_outfit_routes import outfit_bp
+from routes.accessories_routes import accessories_bp
+from routes.plan_ahead_routes import plan_bp
 
 # Create Flask app
 app = Flask(__name__)
+app.secret_key = "your-flask-secret-key"
 
 # Register the "home" blueprint with all pages (intro, wardrobe, etc.)
 app.register_blueprint(home_bp)
-
-# Secret key (needed if you use sessions/forms later)
-app.config["SECRET_KEY"] = "our_secret_key_to_local_dev"
+app.register_blueprint(auth_bp)
+app.register_blueprint(outfit_bp)
+app.register_blueprint(accessories_bp)
+app.register_blueprint(plan_bp)
 
 # Root route – just redirect to /intro
 @app.route("/")
