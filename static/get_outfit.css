@@ -1,14 +1,60 @@
-/* ============================
-   GET OUTFIT PAGE STYLES
-   ============================ */
+/* =========================================
+   GET OUTFIT PAGE — MATCHING WARDROBE LOOK
+========================================= */
+
+/* Main card structure */
+.outfit-card {
+  background: #fff;
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  margin-bottom: 2rem;
+}
+
+/* Header row (title + subtitle) */
+.header-row {
+  margin-bottom: 1.5rem;
+}
+
+.header-row .title {
+  font-size: 1.8rem;
+  color: #4338ca;
+  margin-bottom: 0.2rem;
+}
+
+.header-row .subtitle {
+  color: #6b7280;
+}
+
+/* Inputs container */
+.input-section {
+  margin-bottom: 2rem;
+}
+
+/* Buttons (matching Add Item button) */
+.generate-btn {
+  background: #6366f1;
+  color: #fff;
+  border: none;
+  padding: 0.7rem 1.5rem;
+  border-radius: 0.6rem;
+  font-weight: 600;
+  transition: 0.3s ease;
+}
+
+.generate-btn:hover {
+  background: #4f46e5;
+  transform: scale(1.05);
+}
+
+/* WEATHER BOX */
 .weather-box {
   background: linear-gradient(90deg, #eef2ff, #f5f3ff);
   border-radius: 1rem;
-  padding: 1.5rem 2rem;
+  padding: 1.5rem 1.8rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 1.5rem 0 2rem;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
 }
 
@@ -23,57 +69,113 @@
 }
 
 .weather-temp {
-  font-size: 1.8rem;
+  font-size: 1.6rem;
+  font-weight: 600;
   color: #4f46e5;
   margin: 0;
 }
 
 .weather-desc {
+  font-size: 0.95rem;
   color: #6b7280;
-  font-size: 1rem;
 }
 
 .weather-location {
-  font-size: 1rem;
+  font-size: 0.95rem;
   color: #4b5563;
 }
 
+/* OUTFIT PREVIEW CONTAINER */
 .outfit-preview {
   display: flex;
-  justify-content: center;
   flex-wrap: wrap;
   gap: 1rem;
-  margin: 2rem 0;
+  margin-top: 1.4rem;
+  justify-content: center;
 }
 
+/* Outfit chips/cards */
 .outfit-item {
-  background: white;
-  border: 2px solid #e5e7eb;
+  background: #ffffff;
   border-radius: 1rem;
-  padding: 1rem 1.5rem;
-  font-size: 1.2rem;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
-  transition: all 0.3s ease;
+  padding: 1rem 1.4rem;
+  border: 2px solid #eef2ff;
+  font-size: 1.15rem;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.05);
+  transition: 0.25s ease;
 }
 
 .outfit-item:hover {
   transform: translateY(-3px);
   border-color: #6366f1;
-  box-shadow: 0 6px 15px rgba(99, 102, 241, 0.15);
+  box-shadow: 0 8px 24px rgba(99, 102, 241, 0.15);
 }
 
-.generate-btn {
-  background: linear-gradient(90deg, #6366f1, #8b5cf6);
+/* Loading spinner text */
+#loadingSpinner p {
+  color: #4f46e5;
+  font-weight: 500;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .outfit-card {
+    padding: 1.5rem;
+  }
+
+  .weather-box {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+  }
+}
+
+#locationSuggestions {
+    background: white;
+    border: 1px solid #ddd;
+    max-height: 200px;
+    overflow-y: auto;
+    position: absolute;
+    width: 100%;
+    z-index: 10;
+    border-radius: 10px;
+}
+
+.autocomplete-item {
+    padding: 10px;
+    cursor: pointer;
+}
+
+.autocomplete-item:hover {
+    background: #f0f0f0;
+}
+
+.autocomplete-item.error {
+    color: red;
+}
+
+.autocomplete-item.invalid {
+    color: #dc2626;
+    font-weight: 600;
+    background: #fee2e2;
+}
+
+.add-item-button {
+  background-color: #6366f1;
   color: white;
   border: none;
-  padding: 0.9rem 2rem;
-  border-radius: 9999px;
+  padding: 0.7rem 1.5rem;
+  border-radius: 0.6rem;
   font-weight: 600;
-  cursor: pointer;
   transition: all 0.3s ease;
+  width: 100%;        
+  text-align: center;
+  display: block;
 }
 
-.generate-btn:hover {
+.add-item-button:hover {
+  background-color: #4f46e5;
   transform: scale(1.05);
-  box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
 }
+
+

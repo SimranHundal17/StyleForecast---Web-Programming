@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,8 +10,10 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='global.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='profile.css') }}">
 </head>
+
 <body>
 
+  <div class="page-wrapper">
   <!-- Navbar -->
   <nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(90deg, #6366f1, #8b5cf6);">
     <div class="container-fluid">
@@ -23,7 +26,8 @@
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto">
           <li class="nav-item"><a class="nav-link" href="{{ url_for('home.wardrobe') }}">Wardrobe</a></li>
-          <li class="nav-item"><a class="nav-link" href="{{ url_for('accessories.accessories_page') }}">Accessories</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('accessories.accessories_page') }}">Accessories</a>
+          </li>
           <li class="nav-item"><a class="nav-link" href="{{ url_for('outfit.get_outfit_page') }}">Get Outfit</a></li>
           <li class="nav-item"><a class="nav-link" href="{{ url_for('home.outfit_history') }}">Outfit History</a></li>
           <li class="nav-item"><a class="nav-link" href="{{ url_for('plan.plan_ahead_page') }}">Plan Ahead</a></li>
@@ -34,34 +38,33 @@
     </div>
   </nav>
 
-  <div class="page-wrapper">
-    <main class="section">
-      <div class="card profile-card">
-        <h1 class="title">Your Profile</h1>
-        <p class="subtitle">View and edit your account details and preferences.</p>
+  <main class="section">
+    <div class="card profile-card">
+      <h1 class="title">Your Profile</h1>
+      <p class="subtitle">View and edit your account details and preferences.</p>
 
-        <div class="profile-header">
-          <img src="https://via.placeholder.com/100" alt="Profile Picture" class="profile-pic">
-          <div class="profile-info">
-            <h2 class="profile-name">{{ user.name }}</h2>
-            <p class="profile-email">{{ user.email }}</p>
-          </div>
+      <div class="profile-header">
+        <img src="https://via.placeholder.com/100" alt="Profile Picture" class="profile-pic">
+        <div class="profile-info">
+          <h2 class="profile-name">{{ user.name }}</h2>
+          <p class="profile-email">{{ user.email }}</p>
+        </div>
+      </div>
+
+      <!-- форма обновляет этот же роут -->
+      <form class="profile-form" method="POST" action="{{ url_for('home.profile') }}">
+        <div class="mb-3">
+          <label for="name" class="form-label">Full Name</label>
+          <input type="text" class="form-control" id="name" name="name" value="{{ user.name }}">
         </div>
 
-        <!-- форма обновляет этот же роут -->
-        <form class="profile-form" method="POST" action="{{ url_for('home.profile') }}">
-          <div class="mb-3">
-            <label for="name" class="form-label">Full Name</label>
-            <input type="text" class="form-control" id="name" name="name" value="{{ user.name }}">
-          </div>
+        <div class="mb-3">
+          <label for="email" class="form-label">Email Address</label>
+          <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}">
+        </div>
 
-          <div class="mb-3">
-            <label for="email" class="form-label">Email Address</label>
-            <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}">
-          </div>
-
-          <!-- при желании можно добавить style/climate, если они есть в user -->
-          <!--
+        <!-- при желании можно добавить style/climate, если они есть в user -->
+        <!--
           <div class="mb-3">
             <label for="style" class="form-label">Preferred Style</label>
             <select id="style" name="style" class="form-select">
@@ -82,16 +85,17 @@
           </div>
           -->
 
-          <button type="submit" class="btn btn-success w-100 save-btn">Save Changes</button>
-        </form>
-      </div>
-    </main>
+        <button type="submit" class="btn btn-success w-100 save-btn">Save Changes</button>
+      </form>
+    </div>
+  </main>
 
-    <footer class="footer">
-      <p class="footer-text">© 2025 Style Forecast</p>
-    </footer>
+  <footer class="footer">
+    <p class="footer-text">© 2025 Style Forecast</p>
+  </footer>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>
