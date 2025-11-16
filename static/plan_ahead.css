@@ -1,46 +1,95 @@
-/* ============================
-   PLAN AHEAD PAGE STYLES
-============================ */
-.calendar-container {
-  overflow-x: auto;
+.plan-card {
+  max-width: 720px;
+  margin: 2rem auto;
   border-radius: 1rem;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+  padding: 2rem;
+  background: #fff;
 }
 
-.calendar-table {
-  width: 100%;
-  border-collapse: collapse;
+.plan-card .title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #252552;
+}
+
+.plan-card .subtitle {
   font-size: 1rem;
+  color: #777aa5;
 }
 
-.calendar-table th {
-  background: #6366f1;
-  color: white;
-  text-align: left;
-  padding: 0.8rem 1rem;
-  font-weight: 600;
-}
-
-.calendar-table td {
-  padding: 0.9rem 1rem;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.calendar-table tr:hover {
-  background: #f3f4f6;
-}
-
-.remove-btn {
-  background: #ef4444;
+.add-item-button {
+  background-color: #6366f1;
   color: white;
   border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  transition: 0.3s ease;
+  padding: 0.7rem 1.5rem;
+  border-radius: 0.6rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
 }
-
-.remove-btn:hover {
-  background: #dc2626;
+.add-item-button:hover {
+  background-color: #4f46e5;
   transform: scale(1.05);
 }
 
+/* Calendar Grid */
+.calendar-container {
+  overflow-x: auto;
+}
+#calendar {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.3rem;
+  margin-top: 0.5rem;
+}
+.calendar-day {
+  padding: 0.6rem;
+  border-radius: 0.5rem;
+  border: 1px solid #d1d5db;
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s ease;
+}
+.calendar-day:hover {
+  background-color: #e0e7ff;
+}
+.calendar-day.selected {
+  background-color: #6366f1;
+  color: white;
+  font-weight: 600;
+}
+
+/* Location autocomplete */
+.autocomplete-suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  background: white;
+  border: 1px solid #d1d5db;
+  border-top: none;
+  max-height: 180px;
+  overflow-y: auto;
+  border-radius: 0 0 0.5rem 0.5rem;
+}
+.autocomplete-item {
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
+.autocomplete-item:hover {
+  background-color: #f3f4f6;
+}
+.autocomplete-item.text-danger {
+  color: #ef4444;
+  cursor: default;
+}
+
+/* Outfit preview */
+#previewBox .outfit-item {
+  padding: 0.5rem 0;
+}

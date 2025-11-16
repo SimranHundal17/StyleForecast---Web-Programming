@@ -23,19 +23,19 @@
       <h1 class="auth-title">Welcome Back</h1>
       <p class="auth-subtitle">Log in to your Style Forecast account</p>
 
-      <!-- ✅ SUCCESS ALERT (hidden initially) -->
+      <!--SUCCESS ALERT-->
       <div id="loginSuccess" class="alert alert-success text-center d-none" role="alert">
         ✅ Login Successful! Redirecting...
       </div>
 
-      <!-- ✅ LOADING SPINNER (hidden initially) -->
+      <!-- LOADING SPINNER (hidden initially) -->
       <div id="loginLoading" class="text-center my-3 d-none">
         <div class="spinner-border text-primary"></div>
         <p class="mt-2">Signing you in...</p>
       </div>
 
-      <!-- ✅ FORM -->
-      <form id="loginForm" method="POST" action="{{ url_for('auth.login_post') }}">
+      <!-- FORM -->
+      <form id="loginForm">
         <div class="mb-3">
           <label for="email" class="form-label">📧 Email</label>
           <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>
@@ -59,32 +59,9 @@
     </div>
   </div>
 
-  <script>
-    // ✅ Toggle Login / Sign-Up Mode
-    function toggleForm(event) {
-      event.preventDefault();
-      const title = document.querySelector('.auth-title');
-      const subtitle = document.querySelector('.auth-subtitle');
-      const button = document.getElementById("submitBtn");
-      const footer = document.querySelector('.auth-footer');
-
-      if (title.textContent === "Welcome Back") {
-        title.textContent = "Create Account";
-        subtitle.textContent = "Sign up for your new Style Forecast account";
-        button.textContent = "Sign Up";
-        footer.innerHTML = 'Already have an account? <a href="#" class="switch-link" onclick="toggleForm(event)">Login</a>';
-      } else {
-        title.textContent = "Welcome Back";
-        subtitle.textContent = "Log in to your Style Forecast account";
-        button.textContent = "Login";
-        footer.innerHTML = 'Don’t have an account? <a href="#" class="switch-link" onclick="toggleForm(event)">Sign Up</a>';
-      }
-    }
-
-  </script>
-
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="{{ url_for('static', filename='login.js') }}"></script>
 
 </body>
 

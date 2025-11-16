@@ -1,5 +1,6 @@
 # app.py
-
+from dotenv import load_dotenv
+load_dotenv()
 from flask import Flask
 from routes.home_routes import home_bp
 from routes.auth_routes import auth_bp

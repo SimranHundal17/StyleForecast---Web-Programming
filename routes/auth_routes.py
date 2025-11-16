@@ -25,7 +25,6 @@ def login():
 
     return render_template('login.html', users=get_all_users())
 
-
 @auth_bp.route("/login", methods=["POST"])
 def login_post():
     email = request.form.get("email")
@@ -33,26 +32,25 @@ def login_post():
 
     user = verify_user(email, password)
 
+    # Verify user exists and password matches
     if user and user["password"] == password:
-        # Generate JWT token
         token_payload = {
             "email": user["email"],
             "user_id": user["id"],
             "exp": datetime.utcnow() + timedelta(hours=24)
         }
         token = jwt.encode(token_payload, JWT_SECRET_KEY, algorithm=JWT_ALGORITHM)
-
-        # 🔧 Ensure token is a string
         if isinstance(token, bytes):
             token = token.decode("utf-8")
 
-        # Store in Flask session
         session["token"] = token
         session["email"] = user["email"]
 
-        return redirect(url_for("outfit.get_outfit_page"))
-    else:
-        return render_template("login.html", error="Invalid email or password")
+        # Respond with JSON (no redirect)
+        return {"success": True, "redirect_url": url_for("outfit.get_outfit_page")}
+
+    # Invalid credentials → respond with JSON
+    return {"success": False, "message": "Invalid email or password"}, 401
 
 @auth_bp.route('/logout')
 def logout():
