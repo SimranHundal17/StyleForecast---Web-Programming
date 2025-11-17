@@ -2,10 +2,10 @@
 
 accessories = [
     {"id": 1, "name": "Leather Belt", "type": "Belt"},
-    {"id": 2, "name": "Silver Earrings", "type": "Jewelry"},
+    {"id": 2, "name": "Silver Earrings", "type": "Jewellery"},
     {"id": 3, "name": "Watch", "type": "Watch"},
     {"id": 4, "name": "Umbrella", "type": "Utility"},
-    {"id": 5, "name": "Sunglasses", "type": "Accessory"},
+    {"id": 5, "name": "Black Sunglasses", "type": "Sunglasses"},
 ]
 
 

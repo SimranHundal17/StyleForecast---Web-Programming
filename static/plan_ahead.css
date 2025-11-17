@@ -1,95 +1,64 @@
-.plan-card {
-  max-width: 720px;
-  margin: 2rem auto;
-  border-radius: 1rem;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
-  padding: 2rem;
+/* static/plan_ahead.css */
+/* Reuse the same look-and-feel as wardrobe/get-outfit */
+
+/* Card */
+.calendar-card {
   background: #fff;
+  border-radius: 1rem;
+  padding: 1.5rem 2rem;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+  margin-bottom: 2rem;
 }
 
-.plan-card .title {
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: #252552;
-}
+.header-row { margin-bottom: 1.2rem; }
+.header-row .title { font-size: 1.8rem; color: #4338ca; font-weight:700; }
+.header-row .subtitle { color:#6b7280; }
 
-.plan-card .subtitle {
-  font-size: 1rem;
-  color: #777aa5;
-}
-
-.add-item-button {
-  background-color: #6366f1;
-  color: white;
-  border: none;
-  padding: 0.7rem 1.5rem;
-  border-radius: 0.6rem;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-.add-item-button:hover {
-  background-color: #4f46e5;
-  transform: scale(1.05);
-}
-
-/* Calendar Grid */
-.calendar-container {
-  overflow-x: auto;
-}
-#calendar {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 0.3rem;
-  margin-top: 0.5rem;
-}
+/* Calendar */
+.week-header { font-weight:700; color:#4b5563; margin-bottom:0.4rem; text-align:center; }
+.calendar-grid { display:grid; grid-template-columns: repeat(7, 1fr); gap:0.35rem; }
 .calendar-day {
-  padding: 0.6rem;
-  border-radius: 0.5rem;
-  border: 1px solid #d1d5db;
-  text-align: center;
-  cursor: pointer;
-  user-select: none;
-  transition: all 0.2s ease;
+  padding:0.75rem 0;
+  border:1px solid #d0d4e4;
+  border-radius:0.6rem;
+  background:#fafaff;
+  color:#374151;
+  text-align:center;
+  cursor:pointer;
+  transition:0.2s;
+  font-weight:500;
+  user-select:none;
 }
-.calendar-day:hover {
-  background-color: #e0e7ff;
-}
-.calendar-day.selected {
-  background-color: #6366f1;
-  color: white;
-  font-weight: 600;
-}
+.calendar-day:hover { background:#eef2ff; }
+.calendar-day.disabled { background:#e5e5e5; color:#9ca3af; cursor:not-allowed; }
+.calendar-day.selected { background:#6366f1 !important; color:#fff !important; border-color:#6366f1; }
+.calendar-day.range { background:#a5b1ff !important; color:#fff !important; }
 
-/* Location autocomplete */
+/* Modal autocomplete */
 .autocomplete-suggestions {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  z-index: 10;
   background: white;
-  border: 1px solid #d1d5db;
-  border-top: none;
+  border: 1px solid #d6d6d6;
   max-height: 180px;
   overflow-y: auto;
-  border-radius: 0 0 0.5rem 0.5rem;
+  position: absolute;
+  width: 100%;
+  z-index: 9999;
+  border-radius: 0 0 .5rem .5rem;
+  display: none;
 }
-.autocomplete-item {
-  padding: 0.5rem 1rem;
-  cursor: pointer;
-}
-.autocomplete-item:hover {
-  background-color: #f3f4f6;
-}
-.autocomplete-item.text-danger {
-  color: #ef4444;
-  cursor: default;
-}
+.autocomplete-item { padding:0.55rem 0.75rem; cursor:pointer; }
+.autocomplete-item:hover { background:#f1f3f9; }
 
 /* Outfit preview */
-#previewBox .outfit-item {
-  padding: 0.5rem 0;
+.outfit-preview { display:flex; flex-wrap:wrap; gap:0.5rem; margin-top:0.75rem; }
+.outfit-item {
+  background:#eef2ff;
+  color:#4338ca;
+  padding:0.5rem 0.75rem;
+  border-radius:0.5rem;
+  font-weight:600;
 }
+
+/* Rating stars */
+.stars span { font-size:1.5rem; cursor:pointer; color:#d1d5db; }
+.stars span.selected, .stars span:hover { color:#facc15; }

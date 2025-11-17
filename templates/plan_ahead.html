@@ -1,30 +1,37 @@
+<!-- templates/plan_ahead.html -->
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Plan Ahead - Style Forecast</title>
+
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
   <link rel="stylesheet" href="{{ url_for('static', filename='global.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='plan_ahead.css') }}">
 </head>
+
 <body>
   <div class="page-wrapper">
 
-    <!-- Navbar -->
+    <!-- NAVBAR (same pattern as other templates) -->
     <nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(90deg, #6366f1, #8b5cf6);">
       <div class="container-fluid">
-        <a class="navbar-brand fw-bold" href="index.html">☁️ Style Forecast</a>
+        <a class="navbar-brand fw-bold" href="{{ url_for('home.intro') }}">☁️ Style Forecast</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav ms-auto">
             <li class="nav-item"><a class="nav-link" href="{{ url_for('home.wardrobe') }}">Wardrobe</a></li>
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('accessories.accessories_page') }}">Accessories</a></li>
+            <li class="nav-item"><a class="nav-link"
+                href="{{ url_for('accessories.accessories_page') }}">Accessories</a></li>
             <li class="nav-item"><a class="nav-link" href="{{ url_for('outfit.get_outfit_page') }}">Get Outfit</a></li>
             <li class="nav-item"><a class="nav-link" href="{{ url_for('home.outfit_history') }}">Outfit History</a></li>
-            <li class="nav-item"><a class="nav-link active" href="{{ url_for('plan.plan_ahead_page') }}">Plan Ahead</a></li>
+            <li class="nav-item"><a class="nav-link active" href="{{ url_for('plan.plan_ahead_page') }}">Plan Ahead</a>
+            </li>
             <li class="nav-item"><a class="nav-link" href="{{ url_for('home.profile') }}">Profile</a></li>
             <li class="nav-item"><a class="nav-link text-danger" href="{{ url_for('auth.logout') }}">Logout</a></li>
           </ul>
@@ -32,76 +39,115 @@
       </div>
     </nav>
 
-    <!-- Main Content -->
     <main class="section">
-      <div class="card p-4 plan-card">
+      <div class="card calendar-card">
+        <div class="header-row">
+          <h1 class="title">Plan Ahead</h1>
+          <p class="subtitle">Select dates and create outfit plans ahead of time.</p>
+        </div>
 
-        <h1 class="title mb-3">Plan Ahead</h1>
-        <p class="subtitle mb-4">Organize outfits for events or trips using the calendar.</p>
-
-        <form id="planForm">
-
-          <!-- Plan Type -->
-          <div class="mb-3">
-            <label for="planType" class="form-label">Plan Type</label>
-            <select class="form-select" id="planType" required>
-              <option value="one-day">One-Day Event</option>
-              <option value="trip">Trip</option>
+        <div class="row mb-3">
+          <div class="col-md-4">
+            <label class="form-label fw-semibold">Plan Type</label>
+            <select id="planType" class="form-select">
+              <option value="one">One-day Event</option>
+              <option value="multi">Multi-day Trip</option>
             </select>
           </div>
-
-          <!-- Calendar -->
-          <div class="mb-3 calendar-container">
-            <label class="form-label">Select Date(s)</label>
-            <div id="calendar"></div>
+          <div class="col-md-4">
+            <label class="form-label fw-semibold">Year</label>
+            <select id="yearSelect" class="form-select"></select>
           </div>
-
-          <!-- Location -->
-          <div class="mb-3 position-relative">
-            <label for="locationInput" class="form-label">Location</label>
-            <input type="text" class="form-control" id="locationInput" placeholder="Enter city">
-            <div class="autocomplete-suggestions" id="locationSuggestions"></div>
+          <div class="col-md-4">
+            <label class="form-label fw-semibold">Month</label>
+            <select id="monthSelect" class="form-select"></select>
           </div>
+        </div>
 
-          <!-- Occasion -->
-          <div class="mb-3">
-            <label for="occasion" class="form-label">Occasion</label>
-            <select class="form-select" id="occasion">
-              <option value="Office">Office</option>
-              <option value="Casual">Casual</option>
-              <option value="Party">Party</option>
-              <option value="Other">Other</option>
-            </select>
-          </div>
+        <div class="calendar-grid week-header">
+          <div>Sun</div>
+          <div>Mon</div>
+          <div>Tue</div>
+          <div>Wed</div>
+          <div>Thu</div>
+          <div>Fri</div>
+          <div>Sat</div>
+        </div>
 
-          <!-- Weather -->
-          <div class="mb-3">
-            <label for="weather" class="form-label">Weather (Optional)</label>
-            <select class="form-select" id="weather">
-              <option value="">Auto Detect</option>
-              <option value="Sunny">Sunny</option>
-              <option value="Rainy">Rainy</option>
-              <option value="Snowy">Snowy</option>
-              <option value="Cloudy">Cloudy</option>
-              <option value="Windy">Windy</option>
-            </select>
-          </div>
-
-          <!-- Generate Outfit -->
-          <button type="submit" class="add-item-button">👗 Generate Outfit</button>
-
-        </form>
-
-        <!-- Outfit Preview -->
-        <div id="previewBox" class="mt-4"></div>
-
+        <div id="calendar" class="calendar-grid"></div>
       </div>
     </main>
 
   </div>
 
+  <!-- Modal -->
+  <div class="modal fade" id="planModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content p-3 modal-rounded">
+        <div class="modal-header">
+          <h5 class="modal-title fw-bold">Plan Details</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+
+        <div class="modal-body">
+          <p id="modalDateRange" class="fw-bold"></p>
+
+          <label class="form-label fw-semibold">Location</label>
+          <input id="locationInput" class="form-control location-input" placeholder="Enter city">
+          <div class="autocomplete-suggestions" id="locationSuggestions"></div>
+
+          <label class="form-label fw-semibold mt-3">Occasion</label>
+          <select id="occasionInput" class="form-select">
+            <option value="Casual">Casual</option>
+            <option value="Formal">Formal</option>
+            <option value="Party">Party</option>
+            <option value="Gym">Gym</option>
+            <option value="Rainy">Rainy</option>
+          </select>
+
+          <label class="form-label fw-semibold mt-3">Weather (optional)</label>
+          <select id="weatherInput" class="form-select">
+            <option value="">Auto-detect</option>
+            <option value="Sunny">Sunny</option>
+            <option value="Rainy">Rainy</option>
+            <option value="Snowy">Snowy</option>
+            <option value="Cloudy">Cloudy</option>
+            <option value="Windy">Windy</option>
+            <option value="Not Available">Not Available</option>
+          </select>
+
+          <div class="outfit-preview mt-3" id="outfitPreview"></div>
+
+          <div class="text-center mt-3" id="feedbackButtons" style="display:none;">
+            <button class="btn btn-success me-2" id="likeBtn">👍 Like</button>
+            <button class="btn btn-danger" id="dislikeBtn">👎 Dislike</button>
+            <button class="btn btn-outline-danger ms-2" id="deleteBtn">Delete</button>
+          </div>
+
+          <div class="rating-box mt-3 text-center d-none" id="ratingBox">
+            <p class="fw-bold">Rate this outfit:</p>
+            <div id="starsContainer" class="stars">
+              <span data-v="1">⭐</span>
+              <span data-v="2">⭐</span>
+              <span data-v="3">⭐</span>
+              <span data-v="4">⭐</span>
+              <span data-v="5">⭐</span>
+            </div>
+            <button id="skipRatingBtn" class="btn btn-outline-secondary mt-2">Skip Rating</button>
+          </div>
+
+          <div class="alert alert-success text-center mt-3 d-none" id="saveMessage">Outfit saved!</div>
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button id="savePlanBtn" class="btn btn-primary">Generate Outfit</button>
+        </div>
+      </div>
+    </div>
+  </div>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="{{ url_for('static', filename='plan_ahead.js') }}"></script>
-  <script src="{{ url_for('static', filename='plan_ahead_location.js') }}"></script>
 </body>
+
 </html>

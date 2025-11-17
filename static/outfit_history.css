@@ -5,17 +5,29 @@
   margin-top: 2.5rem;
 }
 
-.history-item-card {
-  background: #ffffff;
-  border-radius: 18px;
-  padding: 1.3rem 1.5rem;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
-  border: 1px solid #f0f2ff;
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-  transition: all 0.25s ease;
+.outfit-history-card {
+  background: #fff;
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  margin-bottom: 2rem;
 }
+
+/* Header row (title + subtitle) */
+.header-row {
+  margin-bottom: 1.5rem;
+}
+
+.header-row .title {
+  font-size: 1.8rem;
+  color: #4338ca;
+  margin-bottom: 0.2rem;
+}
+
+.header-row .subtitle {
+  color: #6b7280;
+}
+
 
 .history-item-card:hover {
   transform: translateY(-4px);

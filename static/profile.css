@@ -1,6 +1,30 @@
 /* ============================
    PROFILE PAGE
    ============================ */
+
+.profile-card {
+  background: #fff;
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  margin-bottom: 2rem;
+}
+
+/* Header row (title + subtitle) */
+.header-row {
+  margin-bottom: 1.5rem;
+}
+
+.header-row .title {
+  font-size: 1.8rem;
+  color: #4338ca;
+  margin-bottom: 0.2rem;
+}
+
+.header-row .subtitle {
+  color: #6b7280;
+}
+
 .profile-header {
   display: flex;
   align-items: center;
