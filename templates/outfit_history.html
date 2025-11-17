@@ -17,58 +17,59 @@
 <body>
 
   <div class="page-wrapper">
-  <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(90deg, #6366f1, #8b5cf6);">
-    <div class="container-fluid">
-      <a class="navbar-brand fw-bold" href="{{ url_for('home.intro') }}">☁️ Style Forecast</a>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(90deg, #6366f1, #8b5cf6);">
+      <div class="container-fluid">
+        <a class="navbar-brand fw-bold" href="{{ url_for('home.intro') }}">☁️ Style Forecast</a>
 
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-        <span class="navbar-toggler-icon"></span>
-      </button>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+          <span class="navbar-toggler-icon"></span>
+        </button>
 
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ms-auto">
-          <li class="nav-item"><a class="nav-link" href="{{ url_for('home.wardrobe') }}">Wardrobe</a></li>
-          <li class="nav-item"><a class="nav-link" href="{{ url_for('accessories.accessories_page') }}">Accessories</a></li>
-          <li class="nav-item"><a class="nav-link" href="{{ url_for('outfit.get_outfit_page') }}">Get Outfit</a></li>
-          <li class="nav-item"><a class="nav-link active" href="{{ url_for('home.outfit_history') }}">Outfit History</a></li>
-          <li class="nav-item"><a class="nav-link" href="{{ url_for('plan.plan_ahead_page') }}">Plan Ahead</a></li>
-          <li class="nav-item"><a class="nav-link" href="{{ url_for('home.profile') }}">Profile</a></li>
-          <li class="nav-item"><a class="nav-link text-danger" href="{{ url_for('auth.logout') }}">Logout</a></li>
-        </ul>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('home.wardrobe') }}">Wardrobe</a></li>
+            <li class="nav-item"><a class="nav-link"
+                href="{{ url_for('accessories.accessories_page') }}">Accessories</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('outfit.get_outfit_page') }}">Get Outfit</a></li>
+            <li class="nav-item"><a class="nav-link active" href="{{ url_for('home.outfit_history') }}">Outfit
+                History</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('plan.plan_ahead_page') }}">Plan Ahead</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('home.profile') }}">Profile</a></li>
+            <li class="nav-item"><a class="nav-link text-danger" href="{{ url_for('auth.logout') }}">Logout</a></li>
+          </ul>
+        </div>
       </div>
-    </div>
-  </nav>
+    </nav>
 
-  <main class="section">
-    <section class="card outfit-history-card">
-      <div class="header-row">
+    <main class="section">
+      <section class="card outfit-history-card">
+        <div class="header-row">
           <div>
             <h1 class="title">Outfit History</h1>
             <p class="subtitle">Your previously generated outfits will appear here.</p>
           </div>
         </div>
-      
-
-      <!-- Empty state (will be hidden by JS when entries exist) -->
-      <div class="empty-state" id="empty-state">
-        <div class="empty-state-icon">⟳</div>
-        <div class="empty-state-title">No history yet</div>
-        <div class="empty-state-desc">
-          Generate and rate outfits to see them here.
+        
+        <!-- Empty state (will be hidden by JS when entries exist) -->
+        <div class="empty-state" id="empty-state">
+          <div class="empty-state-icon">⟳</div>
+          <div class="empty-state-title">No history yet</div>
+          <div class="empty-state-desc">
+            Generate and rate outfits to see them here.
+          </div>
         </div>
-      </div>
 
-      <!-- History grid (JS will inject cards here) -->
-      <section class="history-items-section">
-        <div class="row g-3" id="history-grid"></div>
+        <!-- History grid (JS will inject cards here) -->
+        <section class="history-items-section">
+          <div class="row g-3" id="history-grid"></div>
+        </section>
       </section>
-    </section>
-  </main>
+    </main>
 
-  <footer class="footer">
-    <p class="footer-text">© 2025 Style Forecast</p>
-  </footer>
+    <footer class="footer">
+      <p class="footer-text">© 2025 Style Forecast</p>
+    </footer>
   </div>
 
   <!-- Bootstrap JS -->
