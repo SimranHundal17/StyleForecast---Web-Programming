@@ -1,12 +1,14 @@
 from flask import render_template, request, jsonify, redirect, url_for
 from routes import home_bp
 from model.wardrobe_model import get_all_items, add_item as add_wardrobe_item
+from functools import wraps
 
 # fake auth fallback
 try:
     from utils.auth import token_required
-except:
+except ImportError:
     def token_required(f):
+        @wraps(f)
         def wrapper(*a, **kw):
             return f(current_user="Guest", *a, **kw)
         return wrapper
