@@ -2,7 +2,7 @@
 # Routes for profile page (HTML + JSON API for profile.js)
 
 from flask import render_template, request, jsonify
-from routes import home_bp
+from routes import profile_bp
 from model.login_model import get_current_user, update_user
 
 # Try real auth, otherwise use simple stub
@@ -21,7 +21,7 @@ except ImportError:
 
 # ========== Profile page (HTML) ==========
 
-@home_bp.route("/profile", methods=["GET", "POST"])
+@profile_bp.route("/profile", methods=["GET", "POST"])
 @token_required
 def profile(current_user):
     """
@@ -49,7 +49,7 @@ def profile(current_user):
 
 # ========== Profile JSON API (for static/profile.js) ==========
 
-@home_bp.route("/profile/data")
+@profile_bp.route("/profile/data")
 @token_required
 def profile_data(current_user):
     """
@@ -64,7 +64,7 @@ def profile_data(current_user):
     })
 
 
-@home_bp.route("/profile/save", methods=["POST"])
+@profile_bp.route("/profile/save", methods=["POST"])
 @token_required
 def profile_save(current_user):
     """

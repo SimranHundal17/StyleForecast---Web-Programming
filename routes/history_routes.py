@@ -2,7 +2,7 @@
 # All routes related to outfit history (HTML + JSON API).
 
 from flask import render_template, jsonify
-from routes import home_bp
+from routes import history_bp
 from model.outfit_history_model import get_all_history
 
 try:
@@ -17,7 +17,7 @@ except ImportError:
         return wrapper
 
 
-@home_bp.route("/outfit_history")
+@history_bp.route("/")
 @token_required
 def outfit_history(current_user):
     """Render Outfit History page using hardcoded list."""
@@ -29,7 +29,7 @@ def outfit_history(current_user):
     )
 
 
-@home_bp.route("/history/data")
+@history_bp.route("/data")
 @token_required
 def history_data(current_user):
     """Return outfit history as JSON for outfit_history.js."""

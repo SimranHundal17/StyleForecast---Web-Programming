@@ -19,7 +19,7 @@
     <!-- NAVBAR -->
     <nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(90deg, #6366f1, #8b5cf6);">
       <div class="container-fluid">
-        <a class="navbar-brand fw-bold" href="{{ url_for('home.intro') }}">☁️ Style Forecast</a>
+        <a class="navbar-brand fw-bold" href="{{ url_for('intro.intro') }}">☁️ Style Forecast</a>
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
           <span class="navbar-toggler-icon"></span>
@@ -27,16 +27,16 @@
 
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav ms-auto">
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('home.wardrobe') }}">Wardrobe</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('wardrobe.wardrobe') }}">Wardrobe</a></li>
             <li class="nav-item"><a class="nav-link"
                 href="{{ url_for('accessories.accessories_page') }}">Accessories</a>
             </li>
             <li class="nav-item"><a class="nav-link active" href="{{ url_for('outfit.get_outfit_page') }}">Get
                 Outfit</a>
             </li>
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('home.outfit_history') }}">Outfit History</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('history.outfit_history') }}">Outfit History</a></li>
             <li class="nav-item"><a class="nav-link" href="{{ url_for('plan.plan_ahead_page') }}">Plan Ahead</a></li>
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('home.profile') }}">Profile</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('profile.profile') }}">Profile</a></li>
             <li class="nav-item"><a class="nav-link text-danger" href="{{ url_for('auth.logout') }}">Logout</a></li>
           </ul>
         </div>

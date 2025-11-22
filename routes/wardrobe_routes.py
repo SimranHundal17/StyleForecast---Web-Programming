@@ -1,5 +1,5 @@
 from flask import render_template, request, jsonify, redirect, url_for
-from routes import home_bp
+from routes import wardrobe_bp
 from model.wardrobe_model import get_all_items, add_item as add_wardrobe_item
 from functools import wraps
 
@@ -23,14 +23,14 @@ def _icon_for(category: str) -> str:
     return "👚"
 
 # Wardrobe page
-@home_bp.route("/wardrobe")
+@wardrobe_bp.route("/")
 @token_required
 def wardrobe(current_user):
     items = get_all_items()
     return render_template("wardrobe.html", items=items, current_user=current_user)
 
 # Add Item
-@home_bp.route("/add-item", methods=["POST"])
+@wardrobe_bp.route("/add-item", methods=["POST"])
 @token_required
 def add_item_route(current_user):
     name = request.form.get("name")
@@ -50,7 +50,7 @@ def add_item_route(current_user):
     return redirect(url_for("home.wardrobe"))
 
 # JSON: get filtered items
-@home_bp.route("/wardrobe/data")
+@wardrobe_bp.route("/data")
 @token_required
 def wardrobe_data(current_user):
     f = (request.args.get("filter") or "all").lower()
@@ -75,7 +75,7 @@ def wardrobe_data(current_user):
     return jsonify(enriched)
 
 # JSON: toggle status
-@home_bp.route("/wardrobe/update", methods=["POST"])
+@wardrobe_bp.route("/update", methods=["POST"])
 @token_required
 def wardrobe_update(current_user):
     data = request.get_json() or {}
