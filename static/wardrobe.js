@@ -69,6 +69,36 @@ function setupFilters() {
 document.addEventListener('DOMContentLoaded', () => {
   setupFilters();
   loadWardrobe('all'); // initial load
+  // Hook "Add Item" form to use fetch instead of full page reload
+  const form = document.getElementById('addItemForm');
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault(); // stop normal form submit
+
+      const formData = new FormData(form);
+
+      // Send form data to Flask route /wardrobe/add-item
+      await fetch('/wardrobe/add-item', {
+        method: 'POST',
+        body: formData
+      });
+
+      // Hide modal
+      const modalEl = document.getElementById('addItemModal');
+      if (modalEl && typeof bootstrap !== 'undefined') {
+        const modal =
+          bootstrap.Modal.getInstance(modalEl) ||
+          new bootstrap.Modal(modalEl);
+        modal.hide();
+      }
+
+      // Reset form fields
+      form.reset();
+
+      // Reload wardrobe with current filter
+      loadWardrobe(CURRENT_FILTER);
+    });
+  }
 });
 
 // Expose for inline onclick

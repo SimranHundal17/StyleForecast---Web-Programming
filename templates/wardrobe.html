@@ -152,23 +152,5 @@
   <!-- Wardrobe dynamic rendering -->
   <script src="{{ url_for('static', filename='wardrobe.js') }}"></script>
 
-  <!-- Fix for stuck modal/backdrop + hide on submit -->
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-      document.body.classList.remove('modal-open');
-      document.body.style.overflow = '';
-
-      const form = document.getElementById('addItemForm');
-      if (form && typeof bootstrap !== 'undefined') {
-        form.addEventListener('submit', function () {
-          const modalEl = document.getElementById('addItemModal');
-          const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
-          modal.hide();
-        });
-      }
-    });
-  </script>
 </body>
-
 </html>
