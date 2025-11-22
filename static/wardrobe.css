@@ -2,7 +2,7 @@
    WARDROBE PAGE
 ========================================= */
 
-/* Общая карточка (весь контент страницы) */
+/* Jeneral card - all page content */
 .card {
   background: #fff;
   border-radius: 1rem;
@@ -11,7 +11,7 @@
   margin-bottom: 2rem;
 }
 
-/* Заголовок и кнопка "Add Item" */
+/* Header and button "Add Item" */
 .wardrobe-header-row {
   display: flex;
   justify-content: space-between;
@@ -41,7 +41,7 @@
   transform: scale(1.05);
 }
 
-/* Фильтры (All, Casual, Gym и т.д.) */
+/* Filters (All, Casual, Gym and etc.) */
 .filter-row {
   display: flex;
   align-items: center;
@@ -73,7 +73,7 @@
   color: white;
 }
 
-/* Пустое состояние ("No items yet") */
+/* Empty condition ("No items yet") */
 .empty-state {
   text-align: center;
   padding: 3rem 1rem;
@@ -111,7 +111,7 @@
   background: #7c3aed;
 }
 
-/* Мини-карточки вещей */
+/* Small cards */
 .wardrobe-items-section {
   margin-top: 3rem;
 }
@@ -165,3 +165,50 @@
   background: #e0e7ff;
   transform: translateY(-2px);
 }
+
+/* Backdrop should not block the modal */
+.modal-backdrop {
+z-index: 1040 !important;
+pointer-events: none !important;
+}
+
+/* Modal window appears above backdrop */
+.modal {
+z-index: 1050 !important;
+}
+
+/* Modal dialog is fully clickable */
+.modal-dialog {
+pointer-events: auto !important;
+}
+
+/* Modal content is clickable */
+.modal-content {
+pointer-events: auto !important;
+}
+
+/* All form elements inside modal are clickable */
+.modal-body input,
+.modal-body select,
+.modal-body textarea,
+.modal-body button,
+.modal-footer button {
+pointer-events: auto !important;
+}
+
+/* Prevent body scrolling when modal is open */
+body.modal-open {
+overflow: hidden;
+padding-right: 0 !important;
+}
+
+/* Modal animation */
+.modal.show .modal-dialog {
+transform: none;
+}
+
+/* Ensure form inside modal is active */
+.modal form {
+pointer-events: auto !important;
+}
+

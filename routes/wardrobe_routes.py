@@ -1,9 +1,21 @@
-from flask import render_template, request, jsonify, redirect, url_for
-from routes import wardrobe_bp
-from model.wardrobe_model import get_all_items, add_item as add_wardrobe_item
+# routes/wardrobe_routes.py
+
+from flask import render_template, request, jsonify
 from functools import wraps
 
-# fake auth fallback
+# Import blueprint from routes/__init__.py
+from routes import wardrobe_bp
+
+# Import model functions
+from model.wardrobe_model import (
+    get_all_items,
+    get_items_by_filter,
+    add_item,
+    update_item_status,
+    get_item_by_id
+)
+
+# Fake auth fallback
 try:
     from utils.auth import token_required
 except ImportError:
@@ -13,79 +25,79 @@ except ImportError:
             return f(current_user="Guest", *a, **kw)
         return wrapper
 
-# Helper for icons
-def _icon_for(category: str) -> str:
-    c = (category or "").lower()
-    if "shirt" in c: return "👕"
-    if "jacket" in c: return "🧥"
-    if "pant" in c or "jean" in c or "trouser" in c: return "👖"
-    if "shoe" in c or "sneaker" in c: return "👟"
-    return "👚"
 
-# Wardrobe page
 @wardrobe_bp.route("/")
 @token_required
 def wardrobe(current_user):
-    items = get_all_items()
-    return render_template("wardrobe.html", items=items, current_user=current_user)
+    """Render wardrobe page."""
+    return render_template("wardrobe.html", current_user=current_user)
 
-# Add Item
-@wardrobe_bp.route("/add-item", methods=["POST"])
-@token_required
-def add_item_route(current_user):
-    name = request.form.get("name")
-    category = request.form.get("category")
-    status = request.form.get("status")
 
-    new_item = {
-        "name": name,
-        "category": category or "Other",
-        "status": status or "Clean",
-        "occasion": request.form.get("occasion", "Casual"),
-        "color": request.form.get("color", "Unknown"),
-        "wear_count": 0,
-    }
-
-    add_wardrobe_item(new_item)
-    return redirect(url_for("home.wardrobe"))
-
-# JSON: get filtered items
 @wardrobe_bp.route("/data")
 @token_required
 def wardrobe_data(current_user):
-    f = (request.args.get("filter") or "all").lower()
-    raw = get_all_items()
+    """API endpoint to get filtered wardrobe items."""
+    filter_value = request.args.get("filter", "all")
+    items = get_items_by_filter(filter_value)
+    return jsonify(items)
 
-    def match(it):
-        status = (it.get("status") or "").lower()
-        category = (it.get("category") or "").lower()
 
-        if f in ("all", ""): return True
-        if f in ("needs", "needs wash"): return status == "needs wash"
-        if f == "clean": return status == "clean"
-        return f in category
+@wardrobe_bp.route("/add-item", methods=["POST"])
+@token_required
+def add_item_route(current_user):
+    """Add a new wardrobe item."""
+    try:
+        name = request.form.get("name", "").strip()
+        category = request.form.get("category", "Casual")
+        status = request.form.get("status", "Clean")
+        color = request.form.get("color", "").strip()
+        
+        if not name:
+            return jsonify({"error": "Name is required"}), 400
+        
+        new_item = add_item(name, category, status, color)
+        return jsonify(new_item), 201
+        
+    except Exception as e:
+        print(f"Error adding item: {e}")
+        return jsonify({"error": str(e)}), 500
 
-    enriched = []
-    for item in raw:
-        if match(item):
-            row = dict(item)
-            row["icon"] = row.get("icon") or _icon_for(row.get("category"))
-            enriched.append(row)
 
-    return jsonify(enriched)
-
-# JSON: toggle status
 @wardrobe_bp.route("/update", methods=["POST"])
 @token_required
 def wardrobe_update(current_user):
-    data = request.get_json() or {}
-    item_id = data.get("id")
-    if not item_id:
-        return jsonify({"ok": False, "error": "id required"}), 400
+    """Toggle item status between Clean and Needs Wash."""
+    try:
+        data = request.get_json()
+        item_id = data.get("id")
+        
+        if not item_id:
+            return jsonify({"error": "ID is required"}), 400
+        
+        updated_item = update_item_status(int(item_id))
+        
+        if not updated_item:
+            return jsonify({"error": "Item not found"}), 404
+        
+        return jsonify({"ok": True, "item": updated_item}), 200
+        
+    except Exception as e:
+        print(f"Error updating item: {e}")
+        return jsonify({"error": str(e)}), 500
+    
+@wardrobe_bp.route("/api/items/<int:item_id>", methods=["DELETE"])
+@token_required
+def delete_item(current_user, item_id):
+    """
+    Delete wardrobe item by ID (in-memory).
+    Used by wardrobe.js via fetch DELETE.
+    """
+    items = get_all_items()
 
-    for it in get_all_items():
-        if it.get("id") == int(item_id):
-            it["status"] = "Needs Wash" if it["status"] == "Clean" else "Clean"
+    # We modify the list in-place so change persists in memory
+    for idx, it in enumerate(items):
+        if it.get("id") == item_id:
+            del items[idx]
             return jsonify({"ok": True})
 
     return jsonify({"ok": False, "error": "not found"}), 404
