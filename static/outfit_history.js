@@ -1,6 +1,6 @@
 async function loadHistory() {
   try {
-    const res = await fetch("/history/data");
+    const res = await fetch("/outfit_history/data");
     const history = await res.json();
 
     const grid = document.querySelector(".history-items-section .row");

@@ -35,7 +35,7 @@ locationInput.addEventListener("input", () => {
     if (!query) return;
 
     autocompleteTimeout = setTimeout(async () => {
-        const url = `/api/location/autocomplete?q=${encodeURIComponent(query)}`;
+        const url = `/get_outfit/api/location/autocomplete?q=${encodeURIComponent(query)}`;
 
         const response = await fetch(url, { credentials: "include" });
         const results = await response.json();
@@ -88,7 +88,7 @@ window.addEventListener("DOMContentLoaded", () => {
         const lat = pos.coords.latitude;
         const lon = pos.coords.longitude;
 
-        const url = `/api/location/reverse?lat=${lat}&lon=${lon}`;
+        const url = `/get_outfit/api/location/reverse?lat=${lat}&lon=${lon}`;
         const response = await fetch(url, { credentials: "include" });
         const data = await response.json();
 
@@ -116,7 +116,7 @@ generateBtn.addEventListener("click", async () => {
     feedbackButtons.style.display = "none";
     ratingBox.classList.add("d-none");
 
-    const response = await fetch("/api/get_outfit", {
+    const response = await fetch("/get_outfit/api/get_outfit", {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -191,7 +191,7 @@ likeBtn.addEventListener("dblclick", async () => {
     if (!lastGenerated) return;
 
     if (!ratingBox.classList.contains("d-none")) {
-        const res = await fetch("/api/save_outfit", {
+        const res = await fetch("/get_outfit/api/save_outfit", {
             method: "POST",
             credentials: "include",
             headers: { "Content-Type": "application/json" },
@@ -216,7 +216,7 @@ document.querySelectorAll("#starsContainer span").forEach(star => {
     star.addEventListener("click", async () => {
         const rating = star.dataset.v;
 
-        const res = await fetch("/api/save_outfit", {
+        const res = await fetch("/get_outfit/api/save_outfit", {
             method: "POST",
             credentials: "include",
             headers: { "Content-Type": "application/json" },
