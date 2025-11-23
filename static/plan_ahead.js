@@ -63,7 +63,7 @@ locationInput.addEventListener("input", () => {
 
   autocompleteTimeout = setTimeout(async () => {
     try {
-      const res = await fetch(`/api/location/autocomplete?q=${encodeURIComponent(q)}`, { credentials: "include" });
+      const res = await fetch(`/get_outfit/api/location/autocomplete?q=${encodeURIComponent(q)}`, { credentials: "include" });
       const results = await res.json();
       suggestionsBox.innerHTML = "";
       suggestionsBox.style.display = "block";
@@ -106,7 +106,7 @@ if (navigator.geolocation) {
     try {
       const lat = pos.coords.latitude;
       const lon = pos.coords.longitude;
-      const url = `/api/location/reverse?lat=${lat}&lon=${lon}`;
+      const url = `/get_outfit/api/location/reverse?lat=${lat}&lon=${lon}`;
       const res = await fetch(url, { credentials: "include" });
       const data = await res.json();
       if (!data.error) {
@@ -239,7 +239,7 @@ savePlanBtn.addEventListener("click", async () => {
       // fetch weather for each date
       for (let i = 0; i < selectedDates.length; i++) {
         const date = selectedDates[i];
-        const res = await fetch(`/api/weather_for_date?lat=${selectedLat}&lon=${selectedLon}&date=${date}`);
+        const res = await fetch(`/plan_ahead/api/weather_for_date?lat=${selectedLat}&lon=${selectedLon}&date=${date}`);
         const data = await res.json();
         if (data.error) {
           alert(`Weather not available for ${date}. Please select manually.`);
@@ -263,7 +263,7 @@ savePlanBtn.addEventListener("click", async () => {
       const date = selectedDates[i];
       const planData = savedPlans[date];
 
-      const res = await fetch("/api/get_outfit", {
+      const res = await fetch("/get_outfit/api/get_outfit", {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
