@@ -1,4 +1,6 @@
 # app.py
+import os
+from utils.db import db   # initializes MongoDB one time
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -14,7 +16,7 @@ from routes.plan_ahead_routes import plan_bp
 from routes.profile_routes import profile_bp
 
 app = Flask(__name__)
-app.secret_key = "your-flask-secret-key"
+app.secret_key = os.getenv("SECRET_KEY")
 
 # Register blueprints
 app.register_blueprint(intro_bp)

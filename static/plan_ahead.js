@@ -35,6 +35,21 @@ let autocompleteTimeout = null;
 
 const today = new Date();
 
+async function loadSavedPlans() {
+  const res = await fetch("/plan/plans", { credentials: "include" });
+  const plans = await res.json();
+
+  savedPlans = {};
+
+  plans.forEach(p => {
+    savedPlans[p.date] = p;  // store full object returned by backend
+  });
+
+  generateCalendar();
+}
+
+loadSavedPlans();
+
 // Fill year/month
 for (let y = today.getFullYear(); y <= today.getFullYear() + 2; y++) {
   const opt = document.createElement("option");
@@ -43,7 +58,7 @@ for (let y = today.getFullYear(); y <= today.getFullYear() + 2; y++) {
   if (y === today.getFullYear()) opt.selected = true;
   yearSelect.appendChild(opt);
 }
-const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 months.forEach((m, i) => {
   const opt = document.createElement("option");
   opt.value = i;
@@ -59,7 +74,7 @@ locationInput.addEventListener("input", () => {
   selectedLat = null; selectedLon = null;
   savePlanBtn.disabled = true;
   clearTimeout(autocompleteTimeout);
-  if (!q) { suggestionsBox.style.display='none'; return; }
+  if (!q) { suggestionsBox.style.display = 'none'; return; }
 
   autocompleteTimeout = setTimeout(async () => {
     try {
@@ -83,7 +98,7 @@ locationInput.addEventListener("input", () => {
           selectedLat = item.lat;
           selectedLon = item.lon;
           suggestionsBox.innerHTML = "";
-          suggestionsBox.style.display='none';
+          suggestionsBox.style.display = 'none';
           savePlanBtn.disabled = false;
         });
         suggestionsBox.appendChild(div);
@@ -96,7 +111,7 @@ locationInput.addEventListener("input", () => {
 
 document.addEventListener("click", e => {
   if (!locationInput.contains(e.target)) {
-    suggestionsBox.innerHTML = ""; suggestionsBox.style.display='none';
+    suggestionsBox.innerHTML = ""; suggestionsBox.style.display = 'none';
   }
 });
 
@@ -115,7 +130,7 @@ if (navigator.geolocation) {
         savePlanBtn.disabled = false;
       }
     } catch (err) { /* ignore */ }
-  }, () => {});
+  }, () => { });
 }
 
 // Calendar generation
@@ -131,7 +146,7 @@ function generateCalendar() {
   for (let d = 1; d <= lastDate; d++) {
     const div = document.createElement("div");
     div.className = "calendar-day";
-    const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
     div.textContent = d;
 
     if (new Date(dateStr) < new Date(today.toDateString())) div.classList.add("disabled");
@@ -165,8 +180,8 @@ function onCalendarClick(dateStr, dayEl) {
       const start = new Date(selectedDates[0]);
       const end = new Date(selectedDates[1]);
       selectedDates = [];
-      for(let d=start; d<=end; d.setDate(d.getDate()+1)){
-        const ds = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+      for (let d = start; d <= end; d.setDate(d.getDate() + 1)) {
+        const ds = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
         selectedDates.push(ds);
       }
       openModalForDates(selectedDates);
@@ -180,7 +195,7 @@ function onCalendarClick(dateStr, dayEl) {
 // modal logic
 function openModalForDates(dates) {
   currentSlideIndex = 0;
-  modalDateRange.textContent = dates.length === 1 ? dates[0] : `${dates[0]} → ${dates[dates.length-1]}`;
+  modalDateRange.textContent = dates.length === 1 ? dates[0] : `${dates[0]} → ${dates[dates.length - 1]}`;
   planModal.show();
 
   const first = dates[0];
@@ -282,6 +297,8 @@ savePlanBtn.addEventListener("click", async () => {
 
       // show outfit preview
       planData.outfit = data.outfit;
+      planData.location = locationInput.value;   // <-- ADD THIS
+      planData.occasion = occasionInput.value;   // <-- optional, but good to save
       outfitPreview.innerHTML = ""; // clear for first slide
       data.outfit.forEach(it => {
         const d = document.createElement("div");
@@ -299,10 +316,126 @@ savePlanBtn.addEventListener("click", async () => {
   }
 });
 
+async function savePlanWithRating(rating) {
+  const date = selectedDates[0];
+  const plan = savedPlans[date];
+
+  // send rating + liked=true
+  await fetch("/plan/rate", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({
+      id: plan.id,
+      rating: rating,
+      liked: true
+    })
+  });
+
+  ratingBox.classList.add("d-none");
+  planModal.hide();
+  loadSavedPlans(); // refresh highlights
+}
+
+// LIKE → Save + allow rating
+likeBtn.addEventListener("click", () => {
+  if (!lastGenerated) return;
+  ratingBox.classList.remove("d-none");
+});
+
+// DISLIKE → regenerate outfit
+dislikeBtn.addEventListener("click", () => {
+  savePlanBtn.click();
+});
+
+// DELETE → remove plan for all selected dates
+deleteBtn.addEventListener("click", async () => {
+  const date = selectedDates[0];
+  const plan = savedPlans[date];
+
+  await fetch("/plan/delete", {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ id: plan.id })
+  });
+
+  planModal.hide();
+  loadSavedPlans();
+});
+
+// OPTIONAL RATING
+document.querySelectorAll("#ratingBox span").forEach(star => {
+  star.addEventListener("click", () => {
+    const rating = parseInt(star.dataset.v);
+    savePlanWithRating(rating);
+    ratingBox.classList.add("d-none");
+  });
+});
+
+// SKIP RATING → save outfit with rating = null
+skipRatingBtn.addEventListener("click", async () => {
+  const date = selectedDates[0];
+  const plan = savedPlans[date];
+
+  await fetch("/plan/rate", {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      id: plan.id,
+      rating: null,
+      liked: true
+    })
+  });
+
+  planModal.hide();
+  loadSavedPlans();
+});
+
 // existing logic for like, dislike, delete, rating, skipRating remains unchanged
 // ...
 
 // When modal closes, persist highlights
+async function saveLikedPlan(rating = null) {
+  const date = selectedDates[0];
+  const plan = savedPlans[date];
+
+  // 1️⃣ First update outfit + details to backend
+  await fetch("/plan/update", {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      id: plan.id,
+      outfit: lastGenerated.outfit,
+      weather: lastGenerated.weather,
+      occasion: lastGenerated.occasion,
+      location: lastGenerated.location,
+      lat: selectedLat,
+      lon: selectedLon
+    })
+  });
+
+  // 2️⃣ If user rated or skipped rating → save rating
+  if (rating !== null) {
+    await fetch("/plan/rate", {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        id: plan.id,
+        rating: rating,
+        liked: true
+      })
+    });
+  }
+
+  // Close modal & refresh
+  planModal.hide();
+  loadSavedPlans();
+}
+
 document.getElementById('planModal').addEventListener('hidden.bs.modal', () => {
   generateCalendar();
   selectedDates = [];

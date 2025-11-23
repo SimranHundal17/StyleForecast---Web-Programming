@@ -1,114 +1,124 @@
-# model/plan_ahead_model.py
 from datetime import datetime, timedelta
+from utils.db import db
 
-# In-memory plans list. Each plan is a dict:
-# { id, date (YYYY-MM-DD), location, lat, lon, occasion, weather, outfit, liked, rating, group_id }
-plans = []
-_next_id_counter = 1
-_next_group_counter = 1
+plans = db["plans"]
 
-def _next_id():
-    global _next_id_counter
-    v = _next_id_counter
-    _next_id_counter += 1
-    return v
+# We keep counters because your app depends on id and group_id
+# We initialize them by checking existing DB entries
+def _get_next_id():
+    last = plans.find_one(sort=[("id", -1)])
+    return (last["id"] + 1) if last else 1
 
-def _next_group_id():
-    global _next_group_counter
-    v = _next_group_counter
-    _next_group_counter += 1
-    return v
+def _get_next_group_id():
+    last = plans.find_one(sort=[("group_id", -1)])
+    return (last["group_id"] + 1) if last else 1
 
+
+# -------------------------
+# GET ALL PLANS
+# -------------------------
 def get_all_plans():
-    return plans.copy()
+    return list(plans.find())
 
+
+# -------------------------
+# GET PLANS FOR A DATE
+# -------------------------
 def get_plans_for_date(date_str):
-    return [p for p in plans if p.get("date") == date_str]
+    return list(plans.find({"date": date_str}))
 
+
+# -------------------------
+# GET PLAN BY ID
+# -------------------------
 def get_plan_by_id(pid):
-    for p in plans:
-        if p.get("id") == int(pid):
-            return p
-    return None
+    return plans.find_one({"id": int(pid)})
 
+
+# -------------------------
+# ADD SINGLE-DAY PLAN
+# -------------------------
 def add_plan_entry(entry):
-    """
-    entry: dict must contain 'date', 'location' (optional), 'lat','lon','occasion'
-    Adds id + defaults.
-    """
-    e = dict(entry)
-    e["id"] = _next_id()
-    e.setdefault("location", "")
-    e.setdefault("lat", None)
-    e.setdefault("lon", None)
-    e.setdefault("occasion", "Casual")
-    e.setdefault("weather", "")
-    e.setdefault("outfit", [])
-    e.setdefault("liked", False)
-    e.setdefault("rating", None)
-    e.setdefault("group_id", None)  # group id for multi-day ranges
-    plans.append(e)
-    return e
+    new_entry = dict(entry)
+    new_entry["id"] = _get_next_id()
 
+    # Defaults (keep matching your original model)
+    new_entry.setdefault("location", "")
+    new_entry.setdefault("lat", None)
+    new_entry.setdefault("lon", None)
+    new_entry.setdefault("occasion", "Casual")
+    new_entry.setdefault("weather", "")
+    new_entry.setdefault("outfit", [])
+    new_entry.setdefault("liked", False)
+    new_entry.setdefault("rating", None)
+    new_entry.setdefault("group_id", None)
+
+    plans.insert_one(new_entry)
+    return new_entry
+
+
+# -------------------------
+# ADD RANGE OF DATES
+# -------------------------
 def add_plan_range(start_date_str, end_date_str, base_entry):
-    """
-    Add one entry per date inclusive. base_entry is dict with location/lat/lon/occasion
-    Returns list of created entries.
-    """
     start = datetime.strptime(start_date_str, "%Y-%m-%d").date()
     end = datetime.strptime(end_date_str, "%Y-%m-%d").date()
+
     if end < start:
         start, end = end, start
-    group = _next_group_id()
+
+    group = _get_next_group_id()
     created = []
+
     current = start
     while current <= end:
         e = dict(base_entry)
         e["date"] = current.strftime("%Y-%m-%d")
-        created_entry = add_plan_entry(e)
-        created_entry["group_id"] = group
-        created.append(created_entry)
+        new_entry = add_plan_entry(e)
+
+        # Update its group_id
+        plans.update_one({"id": new_entry["id"]}, {"$set": {"group_id": group}})
+        new_entry["group_id"] = group
+
+        created.append(new_entry)
         current += timedelta(days=1)
+
     return created
 
+
+# -------------------------
+# UPDATE PLAN FIELDS
+# -------------------------
 def update_plan(entry_id, **kwargs):
-    """
-    Update fields for a single plan. Allowed keys: location, lat, lon, occasion, weather, outfit, liked, rating
-    Returns updated plan or None.
-    """
-    p = get_plan_by_id(entry_id)
-    if not p:
-        return None
-    for k, v in kwargs.items():
-        if k in p:
-            p[k] = v
-    return p
+    plans.update_one({"id": int(entry_id)}, {"$set": kwargs})
+    return get_plan_by_id(entry_id)
 
+
+# -------------------------
+# UPDATE RATING & LIKE
+# -------------------------
 def update_plan_rating(entry_id, rating=None, liked=None):
-    p = get_plan_by_id(entry_id)
-    if not p:
-        return None
+    update = {}
     if rating is not None:
-        p["rating"] = rating
+        update["rating"] = rating
     if liked is not None:
-        p["liked"] = bool(liked)
-    return p
+        update["liked"] = bool(liked)
 
+    plans.update_one({"id": int(entry_id)}, {"$set": update})
+    return get_plan_by_id(entry_id)
+
+
+# -------------------------
+# DELETE SINGLE PLAN ENTRY
+# -------------------------
 def delete_plan(entry_id):
-    global plans
-    pid = int(entry_id)
-    found = False
-    for p in plans:
-        if p.get("id") == pid:
-            found = True
-            break
-    if not found:
-        return False
-    plans = [pl for pl in plans if pl.get("id") != pid]
+    plans.delete_one({"id": int(entry_id)})
     return True
 
+
+# -------------------------
+# DELETE GROUP OF PLANS
+# -------------------------
 def delete_group(group_id):
-    global plans
-    gid = int(group_id)
-    plans = [pl for pl in plans if pl.get("group_id") != gid]
+    plans.delete_many({"group_id": int(group_id)})
     return True

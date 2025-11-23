@@ -34,19 +34,70 @@
         <p class="mt-2">Signing you in...</p>
       </div>
 
-      <!-- FORM -->
-      <form id="loginForm" method="POST" action="{{ url_for('auth.login') }}">
-        <div class="mb-3">
-          <label for="email" class="form-label">📧 Email</label>
-          <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>
+      <form id="loginForm">
+
+        <!-- SIGNUP FIELDS -->
+        <div id="signupFields" class="d-none">
+
+          <div class="mb-3">
+            <label class="form-label">First Name</label>
+            <input type="text" class="form-control auth-input" id="first_name">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Last Name</label>
+            <input type="text" class="form-control auth-input" id="last_name">
+          </div>
+
         </div>
 
+        <!-- EMAIL -->
+        <div class="mb-3">
+          <label for="email" class="form-label">📧 Email</label>
+          <input type="email" class="form-control auth-input" id="email" required>
+        </div>
+
+        <!-- PASSWORD -->
         <div class="mb-3">
           <label for="password" class="form-label">🔑 Password</label>
-          <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required>
+          <input type="password" class="form-control auth-input" id="password" required>
+        </div>
+
+        <!-- CONFIRM PASSWORD (SIGNUP ONLY) -->
+        <div id="signupPasswordFields" class="d-none">
+          <div class="mb-3">
+            <label class="form-label">Confirm Password</label>
+            <input type="password" class="form-control auth-input" id="confirm_password">
+          </div>
+        </div>
+
+        <!-- EXTRA SIGNUP FIELDS -->
+        <div id="signupExtraFields" class="d-none">
+
+          <div class="mb-3">
+            <label class="form-label">Gender</label>
+            <select id="gender" class="form-control auth-input">
+              <option value="">Select gender</option>
+              <option value="female">Female</option>
+              <option value="male">Male</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Age</label>
+            <input type="number" class="form-control auth-input" id="age" min="1">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Days until clothes become dirty</label>
+            <input type="number" class="form-control auth-input" id="days_until_dirty" min="1">
+          </div>
+
         </div>
 
         <button type="submit" class="btn btn-primary w-100" id="submitBtn">Login</button>
+
       </form>
 
       <p class="auth-footer mt-3">

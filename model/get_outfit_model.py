@@ -89,3 +89,4 @@ def generate_outfit(lat, lon, occasion):
         "wind": wind,
         "outfit": outfit,
     }
+

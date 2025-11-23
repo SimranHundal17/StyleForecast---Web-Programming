@@ -1,15 +1,23 @@
 """
-Authentication routes: login and logout.
+Authentication routes: login, signup, and logout.
 """
 
 from flask import render_template, request, redirect, url_for, session, jsonify
 import jwt
 from datetime import datetime, timedelta
 from routes import auth_bp
-from model.login_model import verify_user, get_all_users, find_user_by_email, create_user
+from model.login_model import (
+    verify_user,
+    get_all_users,
+    create_user,
+    get_user_by_email
+)
 from utils.auth import JWT_SECRET_KEY, JWT_ALGORITHM
 
 
+# ---------------------------------------
+# LOGIN PAGE (GET)
+# ---------------------------------------
 @auth_bp.route('/login', methods=['GET'])
 def login():
     """
@@ -26,6 +34,9 @@ def login():
     return render_template('login.html', users=get_all_users())
 
 
+# ---------------------------------------
+# LOGIN SUBMISSION (POST)
+# ---------------------------------------
 @auth_bp.route("/login", methods=["POST"])
 def login_post():
     """
@@ -43,6 +54,7 @@ def login_post():
             "user_id": user["id"],
             "exp": datetime.utcnow() + timedelta(hours=24)
         }
+
         token = jwt.encode(token_payload, JWT_SECRET_KEY, algorithm=JWT_ALGORITHM)
         if isinstance(token, bytes):
             token = token.decode("utf-8")
@@ -50,42 +62,16 @@ def login_post():
         session["token"] = token
         session["email"] = user["email"]
 
-        # Respond with JSON (no redirect)
-        return jsonify({"success": True, "redirect_url": url_for("outfit.get_outfit_page")})
+        # Respond with JSON instead of redirect
+        return {"success": True, "redirect_url": url_for("outfit.get_outfit_page")}
 
-    # Invalid credentials → respond with JSON
-    return jsonify({"success": False, "message": "Invalid email or password"}), 401
-
-
-@auth_bp.route("/register", methods=["POST"])
-def register():
-    """
-    Register a new user from login.js signup mode.
-    Returns JSON with success and message.
-    """
-    email = (request.form.get("email") or "").strip()
-    password = (request.form.get("password") or "").strip()
-    name = (request.form.get("name") or "").strip()  # сейчас из формы не идёт, но пусть будет
-
-    if not email or not password:
-        return jsonify({"success": False, "message": "Email and password are required."}), 400
-
-    # check if user already exists
-    if find_user_by_email(email) is not None:
-        return jsonify({"success": False, "message": "User with this email already exists."}), 409
-
-    try:
-        user = create_user(email=email, password=password, name=name)
-    except ValueError as e:
-        return jsonify({"success": False, "message": str(e)}), 400
-
-    # тут можно сразу авторизовать, но пока просто даём сообщение
-    return jsonify({
-        "success": True,
-        "message": "Account created. You can now log in.",
-    }), 201
+    # Invalid credentials
+    return {"success": False, "message": "Invalid email or password"}, 401
 
 
+# ---------------------------------------
+# LOGOUT
+# ---------------------------------------
 @auth_bp.route('/logout')
 def logout():
     """
@@ -94,3 +80,49 @@ def logout():
     session.pop('token', None)
     session.pop('email', None)
     return redirect(url_for('auth.login'))
+
+
+# ---------------------------------------
+# REAL SIGNUP (POST)
+# ---------------------------------------
+@auth_bp.route("/signup", methods=["POST"])
+def signup():
+    data = request.json
+
+    email = data.get("email")
+    password = data.get("password")
+    confirm = data.get("confirm_password")
+    first = data.get("first_name")
+    last = data.get("last_name")
+    gender = data.get("gender")
+    age = data.get("age")
+    days_dirty = data.get("days_until_dirty")
+
+    # Check required fields
+    if not all([email, password, confirm, first, last, gender, age, days_dirty]):
+        return jsonify({"success": False, "message": "Please fill all fields."}), 400
+
+    if password != confirm:
+        return jsonify({"success": False, "message": "Passwords do not match."}), 400
+
+    # Check if email already exists
+    if get_user_by_email(email):
+        return jsonify({"success": False, "message": "Email already registered."}), 400
+
+    # Create the new user
+    new_user = {
+        "email": email,
+        "password": password,  # (Password hashing can be added later)
+        "first_name": first,
+        "last_name": last,
+        "gender": gender,
+        "age": int(age),
+        "days_until_dirty": int(days_dirty)
+    }
+
+    created = create_user(new_user)
+
+    if created is None:
+        return jsonify({"success": False, "message": "Unable to create user."}), 500
+
+    return jsonify({"success": True, "message": "Account created successfully!"}), 201

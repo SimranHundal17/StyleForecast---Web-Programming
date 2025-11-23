@@ -1,11 +1,13 @@
-import os
 from pymongo import MongoClient
+import os
+from dotenv import load_dotenv
 
-# Read Mongo URL from environment variable (later we'll set it)
-MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017")
+load_dotenv()
+
+MONGO_URI = os.getenv("MONGO_URI")
+DB_NAME = os.getenv("DATABASE_NAME", "styleforecast")
 
 client = MongoClient(MONGO_URI)
+db = client[DB_NAME]
 
-# Our database name
-db = client["styleforecast"]
-
+print("✅ Connected to MongoDB:", DB_NAME)
