@@ -128,7 +128,7 @@ def save_outfit(current_user):
         return jsonify({"error": "Missing outfit data"}), 400
 
     entry = {
-        "date": datetime.now().strftime("%Y-%m-%d"),
+        "date": data.get("date") or datetime.now().strftime("%Y-%m-%d"),
         "location": location,
         "weather": weather,
         "outfit": outfit,
