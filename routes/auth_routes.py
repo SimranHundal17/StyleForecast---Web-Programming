@@ -2,11 +2,11 @@
 Authentication routes: login and logout.
 """
 
-from flask import render_template, request, redirect, url_for, session
+from flask import render_template, request, redirect, url_for, session, jsonify
 import jwt
 from datetime import datetime, timedelta
 from routes import auth_bp
-from model.login_model import verify_user, get_all_users
+from model.login_model import verify_user, get_all_users, find_user_by_email, create_user
 from utils.auth import JWT_SECRET_KEY, JWT_ALGORITHM
 
 
@@ -25,8 +25,12 @@ def login():
 
     return render_template('login.html', users=get_all_users())
 
+
 @auth_bp.route("/login", methods=["POST"])
 def login_post():
+    """
+    Handle login POST request.
+    """
     email = request.form.get("email")
     password = request.form.get("password")
 
@@ -47,10 +51,40 @@ def login_post():
         session["email"] = user["email"]
 
         # Respond with JSON (no redirect)
-        return {"success": True, "redirect_url": url_for("outfit.get_outfit_page")}
+        return jsonify({"success": True, "redirect_url": url_for("outfit.get_outfit_page")})
 
     # Invalid credentials → respond with JSON
-    return {"success": False, "message": "Invalid email or password"}, 401
+    return jsonify({"success": False, "message": "Invalid email or password"}), 401
+
+
+@auth_bp.route("/register", methods=["POST"])
+def register():
+    """
+    Register a new user from login.js signup mode.
+    Returns JSON with success and message.
+    """
+    email = (request.form.get("email") or "").strip()
+    password = (request.form.get("password") or "").strip()
+    name = (request.form.get("name") or "").strip()  # сейчас из формы не идёт, но пусть будет
+
+    if not email or not password:
+        return jsonify({"success": False, "message": "Email and password are required."}), 400
+
+    # check if user already exists
+    if find_user_by_email(email) is not None:
+        return jsonify({"success": False, "message": "User with this email already exists."}), 409
+
+    try:
+        user = create_user(email=email, password=password, name=name)
+    except ValueError as e:
+        return jsonify({"success": False, "message": str(e)}), 400
+
+    # тут можно сразу авторизовать, но пока просто даём сообщение
+    return jsonify({
+        "success": True,
+        "message": "Account created. You can now log in.",
+    }), 201
+
 
 @auth_bp.route('/logout')
 def logout():

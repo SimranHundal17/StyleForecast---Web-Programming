@@ -4,7 +4,7 @@ users = [
         "id": 1,
         "name": "Jane Doe",
         "email": "jane@example.com",
-        "password": "1234",
+        "password": "123456",
         "style": "Casual",
         "climate": "Warm",
         "wash_after_wears": 3
@@ -13,7 +13,7 @@ users = [
         "id": 2,
         "name": "John Smith",
         "email": "john@example.com",
-        "password": "abcd",
+        "password": "123456",
         "style": "Formal",
         "climate": "Moderate",
         "wash_after_wears": 2
@@ -55,3 +55,41 @@ def update_user(email, data):
                     user[key] = value
             return {k: v for k, v in user.items() if k != "password"}
     return None
+
+def find_user_by_email(email: str):
+    """Return user dict by email or None if not found."""
+    email = (email or "").strip().lower()
+    for user in get_all_users():
+        if user.get("email", "").lower() == email:
+            return user
+    return None
+
+def create_user(email: str, password: str, name: str | None = None):
+    """
+    Create a new user and return it.    
+    """
+    global users
+
+    email = (email or "").strip()
+    password = (password or "").strip()
+    name = (name or "").strip() or email.split("@")[0]
+
+    if not email or not password:
+        raise ValueError("Email and password are required")
+
+    # check duplicates
+    if find_user_by_email(email) is not None:
+        raise ValueError("User with this email already exists")
+
+    # simple incremental id
+    new_id = max((u.get("id", 0) for u in users), default=0) + 1
+
+    new_user = {
+      "id": new_id,
+      "email": email,
+      "password": password,
+      "name": name,
+    }
+
+    users.append(new_user)
+    return new_user

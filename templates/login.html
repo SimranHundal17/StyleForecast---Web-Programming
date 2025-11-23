@@ -35,7 +35,7 @@
       </div>
 
       <!-- FORM -->
-      <form id="loginForm">
+      <form id="loginForm" method="POST" action="{{ url_for('auth.login') }}">
         <div class="mb-3">
           <label for="email" class="form-label">📧 Email</label>
           <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>
@@ -54,7 +54,7 @@
         <a href="#" class="switch-link" onclick="toggleForm(event)">Sign Up</a>
       </p>
 
-      <a href="{{ url_for('home.intro') }}" class="back-home-link">← Back to Home</a>
+      <a href="{{ url_for('intro.intro') }}" class="back-home-link">← Back to Home</a>
 
     </div>
   </div>
