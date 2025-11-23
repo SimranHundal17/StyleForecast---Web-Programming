@@ -39,6 +39,9 @@ def login():
 # ---------------------------------------
 @auth_bp.route("/login", methods=["POST"])
 def login_post():
+    """
+    Handle login POST request.
+    """
     email = request.form.get("email")
     password = request.form.get("password")
 

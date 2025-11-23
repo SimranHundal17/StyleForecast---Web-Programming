@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let accessories = [];
 
     async function loadAccessories(filter = "all") {
-        const res = await fetch("/api/accessories");
+        const res = await fetch("/accessories/api/accessories");
         accessories = await res.json();
 
         const filtered = filter === "all" ? accessories : accessories.filter(a => a.type === filter);
@@ -46,7 +46,7 @@ document.addEventListener("DOMContentLoaded", () => {
             grid.appendChild(card);
 
             card.querySelector(".wardrobe-item-btn").addEventListener("click", async () => {
-                await fetch(`/api/accessories/${acc.id}`, { method: "DELETE" });
+                await fetch(`/accessories/api/accessories/${acc.id}`, { method: "DELETE" });
                 loadAccessories(document.querySelector(".filter-chip.filter-active").dataset.filter);
             });
         });
@@ -67,7 +67,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const name = document.getElementById("accName").value;
         const type = document.getElementById("accType").value;
 
-        await fetch("/api/accessories", {
+        await fetch("/accessories/api/accessories", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ name, type })

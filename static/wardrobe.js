@@ -1,75 +1,247 @@
-// Current filter state
-let CURRENT_FILTER = 'all';
+// static/wardrobe.js
 
-// Render a single card
-function cardHTML(item) {
-  const btnLabel = (item.status || '').toLowerCase() === 'clean' ? 'Mark as Worn' : 'Mark as Clean';
-  return `
-    <div class="col-md-4">
-      <div class="wardrobe-item-card">
-        <div class="wardrobe-item-image">${item.icon || '👕'}</div>
-        <div class="wardrobe-item-title">${item.name}</div>
-        <div class="wardrobe-item-meta">${item.category} • ${item.status}</div>
-        <button class="wardrobe-item-btn" onclick="updateItemStatus(${item.id})">
-          ${btnLabel}
-        </button>
-      </div>
-    </div>
-  `;
+// Current filter state
+let currentFilter = 'all';
+
+// Icon mapping by category
+function getIconByCategory(category) {
+  const icons = {
+    'Casual': '👕',
+    'Formal': '👔',
+    'Sports': '🏃',
+    'Gym': '🏋️',
+    'Party': '🎉',
+    'Outdoor': '🥾'
+  };
+  return icons[category] || '👚';
+}
+
+// Create a single card element
+function createCardElement(item) {
+  const col = document.createElement('div');
+  col.className = 'col-md-4';
+
+  const card = document.createElement('div');
+  card.className = 'wardrobe-item-card';
+
+  const icon = document.createElement('div');
+  icon.className = 'wardrobe-item-image';
+  icon.textContent = item.icon || getIconByCategory(item.category);
+
+  const title = document.createElement('div');
+  title.className = 'wardrobe-item-title';
+  title.textContent = item.name;
+
+  const meta = document.createElement('div');
+  meta.className = 'wardrobe-item-meta';
+  meta.textContent = `${item.category} • ${item.status}`;
+
+  // Button row container
+  const btnRow = document.createElement('div');
+  btnRow.className = 'd-flex gap-2 mt-2';
+
+  // Toggle status button
+  const toggleBtn = document.createElement('button');
+  toggleBtn.className = 'wardrobe-item-btn';
+  toggleBtn.textContent = (item.status || '').toLowerCase() === 'clean'
+    ? 'Mark as Worn'
+    : 'Mark as Clean';
+
+  toggleBtn.addEventListener('click', async () => {
+    await updateItemStatus(item.id);
+  });
+
+  // Remove button
+  const removeBtn = document.createElement('button');
+  removeBtn.className = 'wardrobe-item-btn';
+  removeBtn.textContent = 'Remove';
+
+  removeBtn.addEventListener('click', async () => {
+    await removeItem(item.id);
+  });
+
+  // Assemble buttons row
+  btnRow.appendChild(toggleBtn);
+  btnRow.appendChild(removeBtn);
+
+  // Assemble card
+  card.appendChild(icon);
+  card.appendChild(title);
+  card.appendChild(meta);
+  card.appendChild(btnRow);
+  col.appendChild(card);
+
+  return col;
 }
 
 // Load items for a given filter and render the grid
 async function loadWardrobe(filter = 'all') {
-  CURRENT_FILTER = filter;
+  currentFilter = filter;
+
   const grid = document.getElementById('wardrobe-grid');
   const empty = document.getElementById('empty-state');
+  
   if (!grid) return;
 
-  grid.innerHTML = ''; // clear
+  // Clear grid
+  grid.innerHTML = '';
 
-  const res = await fetch(`/wardrobe/data?filter=${encodeURIComponent(filter)}`);
-  const items = await res.json();
+  try {
+    const res = await fetch(`/wardrobe/data?filter=${encodeURIComponent(filter)}`);
+    
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+    
+    const items = await res.json();
 
-  if (!items || items.length === 0) {
-    if (empty) empty.style.display = '';
-    return;
+    if (!items || items.length === 0) {
+      if (empty) empty.style.display = '';
+      return;
+    }
+
+    if (empty) empty.style.display = 'none';
+
+    // Use DocumentFragment for better performance
+    const fragment = document.createDocumentFragment();
+    items.forEach(item => {
+      fragment.appendChild(createCardElement(item));
+    });
+    
+    grid.appendChild(fragment);
+    
+  } catch (error) {
+    console.error('Failed to load wardrobe:', error);
+    if (empty) {
+      empty.querySelector('.empty-state-desc').textContent = 'Failed to load items. Please try again.';
+      empty.style.display = '';
+    }
   }
-  if (empty) empty.style.display = 'none';
-
-  const html = items.map(cardHTML).join('');
-  grid.innerHTML = html;
 }
 
 // Toggle status and reload with the same filter
 async function updateItemStatus(id) {
-  await fetch('/wardrobe/update', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({ id })
-  });
-  loadWardrobe(CURRENT_FILTER);
+  try {
+    const res = await fetch('/wardrobe/update', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id })
+    });
+    
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+    
+    await loadWardrobe(currentFilter);
+    
+  } catch (error) {
+    console.error('Failed to update item status:', error);
+    alert('Failed to update item. Please try again.');
+  }
 }
 
-// Wire up filter chips
+// Remove item and reload with the same filter
+async function removeItem(id) {
+  try {
+    const res = await fetch(`/wardrobe/api/items/${id}`, {
+      method: 'DELETE'
+    });
+
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+
+    await loadWardrobe(currentFilter);
+  } catch (error) {
+    console.error('Failed to remove item:', error);
+    alert('Failed to remove item. Please try again.');
+  }
+}
+
+// Setup filter chips
 function setupFilters() {
   const chips = document.querySelectorAll('.filter-chip');
+  
   chips.forEach(chip => {
     chip.addEventListener('click', () => {
-      // Active class toggle
+      // Remove active class from all chips
       chips.forEach(c => c.classList.remove('filter-active'));
+      
+      // Add active class to clicked chip
       chip.classList.add('filter-active');
 
-      const f = (chip.dataset.filter || 'all').toLowerCase();
-      loadWardrobe(f);
+      const filter = chip.dataset.filter || 'all';
+      loadWardrobe(filter);
     });
   });
 }
 
-// Init
+// Add Item form via fetch
+function setupAddForm() {
+  const form = document.getElementById('addItemForm');
+  const modalEl = document.getElementById('addItemModal');
+
+  if (!form || !modalEl) return;
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+ 
+    const formData = new FormData(form);
+    
+    // Disable submit button to prevent double submission
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const originalText = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Adding...';
+
+    try {
+      const res = await fetch('/wardrobe/add-item', {
+        method: 'POST',
+        body: formData
+      });
+      
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+
+      // Get modal instance
+      const modal = bootstrap.Modal.getInstance(modalEl);
+      
+      if (modal) {
+        // Close modal
+        modal.hide();
+        
+        // Reset form after modal is hidden
+        modalEl.addEventListener('hidden.bs.modal', function cleanup() {
+          form.reset();
+          submitBtn.disabled = false;
+          submitBtn.textContent = originalText;
+          modalEl.removeEventListener('hidden.bs.modal', cleanup);
+        }, { once: true });
+      } else {
+        // Fallback if no instance
+        form.reset();
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText;
+      }
+
+      // Reload wardrobe with current filter
+      await loadWardrobe(currentFilter);
+      
+    } catch (error) {
+      console.error('Failed to add item:', error);
+      alert('Failed to add item. Please try again.');
+      
+      // Re-enable button on error
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalText;
+    }
+  });
+}
+
+// Initialize on DOM ready
 document.addEventListener('DOMContentLoaded', () => {
   setupFilters();
-  loadWardrobe('all'); // initial load
+  setupAddForm();
+  loadWardrobe('all');
 });
-
-// Expose for inline onclick
-window.updateItemStatus = updateItemStatus;
