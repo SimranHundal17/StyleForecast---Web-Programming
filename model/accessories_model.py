@@ -1,14 +1,21 @@
+# model/accessories_model.py
 from utils.db import db
+from bson.objectid import ObjectId
 
 accessories = db["accessories"]
 
 def get_all_accessories():
-    return list(accessories.find())
+    items = []
+    for item in accessories.find():
+        item["_id"] = str(item["_id"])  # convert for JSON
+        items.append(item)
+    return items
 
 def add_accessory(name, type_):
     item = {"name": name, "type": type_}
-    accessories.insert_one(item)
+    result = accessories.insert_one(item)
+    item["_id"] = str(result.inserted_id)
     return item
 
 def remove_accessory(accessory_id):
-    accessories.delete_one({"id": accessory_id})
+    return accessories.delete_one({"_id": ObjectId(accessory_id)})

@@ -224,7 +224,7 @@ document.addEventListener("DOMContentLoaded", () => {
           days_until_dirty: daysDirty
         };
 
-        const response = await fetch("/signup", {
+        const response = await fetch("/auth/signup", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(signupData)
@@ -251,7 +251,7 @@ document.addEventListener("DOMContentLoaded", () => {
       // ------------------------------------------
       // LOGIN MODE
       // ------------------------------------------
-      const response = await fetch("/login", {
+      const response = await fetch("/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: new URLSearchParams({ email, password }),
