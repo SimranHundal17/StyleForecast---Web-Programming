@@ -91,66 +91,66 @@
 
       </section>
 
-      <!-- Add Item Modal -->
-      <div class="modal fade" id="addItemModal" tabindex="-1" aria-labelledby="addItemLabel" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content">
-
-            <div class="modal-header">
-              <h5 class="modal-title" id="addItemLabel">Add New Clothing Item</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-
-            <form id="addItemForm" method="POST" action="{{ url_for('wardrobe.add_item_route') }}">
-              <div class="modal-body">
-
-                <div class="mb-3">
-                  <label class="form-label">Item Name</label>
-                  <input type="text" class="form-control" name="name" placeholder="e.g., Blue Shirt" required>
-                </div>
-
-                <div class="mb-3">
-                  <label class="form-label">Category</label>
-                  <select class="form-select" name="category" required>
-                    <option value="Casual">Casual</option>
-                    <option value="Formal">Formal</option>
-                    <option value="Sports">Sports</option>
-                    <option value="Gym">Gym</option>
-                    <option value="Party">Party</option>
-                    <option value="Outdoor">Outdoor</option>
-                  </select>
-                </div>
-
-                <div class="mb-3">
-                  <label class="form-label">Status</label>
-                  <select class="form-select" name="status" required>
-                    <option value="Clean">Clean</option>
-                    <option value="Needs Wash">Needs Wash</option>
-                  </select>
-                </div>
-
-                <div class="mb-3">
-                  <label class="form-label">Color (optional)</label>
-                  <input type="text" class="form-control" name="color" placeholder="e.g., Blue">
-                </div>
-
-              </div>
-
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="submit" class="btn btn-success">Add Item</button>
-              </div>
-            </form>
-
-          </div>
-        </div>
-      </div>
-
     </main>
 
     <footer class="footer">
       <p class="footer-text">© 2025 Style Forecast</p>
     </footer>
+  </div>
+
+  <!-- Add Item Modal -->
+  <div class="modal fade" id="addItemModal" tabindex="-1" aria-labelledby="addItemLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+
+        <div class="modal-header">
+          <h5 class="modal-title" id="addItemLabel">Add New Clothing Item</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <form id="addItemForm" method="POST" action="{{ url_for('wardrobe.add_item_route') }}">
+          <div class="modal-body">
+
+            <div class="mb-3">
+              <label class="form-label">Item Name</label>
+              <input type="text" class="form-control" name="name" placeholder="e.g., Blue Shirt" required>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Category</label>
+              <select class="form-select" name="category" required>
+                <option value="Casual">Casual</option>
+                <option value="Formal">Formal</option>
+                <option value="Sports">Sports</option>
+                <option value="Gym">Gym</option>
+                <option value="Party">Party</option>
+                <option value="Outdoor">Outdoor</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Status</label>
+              <select class="form-select" name="status" required>
+                <option value="Clean">Clean</option>
+                <option value="Needs Wash">Needs Wash</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Color (optional)</label>
+              <input type="text" class="form-control" name="color" placeholder="e.g., Blue">
+            </div>
+
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-success">Add Item</button>
+          </div>
+        </form>
+
+      </div>
+    </div>
   </div>
 
   <!-- Bootstrap JS (navbar, modal, etc) -->

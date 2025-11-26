@@ -166,49 +166,12 @@
   transform: translateY(-2px);
 }
 
-/* Backdrop should not block the modal */
 .modal-backdrop {
-z-index: 1040 !important;
-pointer-events: none !important;
+  opacity: .65 !important; /* normal dim like accessories */
 }
 
-/* Modal window appears above backdrop */
-.modal {
-z-index: 1050 !important;
-}
-
-/* Modal dialog is fully clickable */
-.modal-dialog {
-pointer-events: auto !important;
-}
-
-/* Modal content is clickable */
 .modal-content {
-pointer-events: auto !important;
+  border-radius: .8rem; /* optional beauty */
 }
 
-/* All form elements inside modal are clickable */
-.modal-body input,
-.modal-body select,
-.modal-body textarea,
-.modal-body button,
-.modal-footer button {
-pointer-events: auto !important;
-}
-
-/* Prevent body scrolling when modal is open */
-body.modal-open {
-overflow: hidden;
-padding-right: 0 !important;
-}
-
-/* Modal animation */
-.modal.show .modal-dialog {
-transform: none;
-}
-
-/* Ensure form inside modal is active */
-.modal form {
-pointer-events: auto !important;
-}
 
