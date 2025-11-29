@@ -1,6 +1,4 @@
-// static/outfit_history.js
-
-// load and render history cards from backend
+// Load and render outfit history cards
 async function loadHistory() {
   try {
     const res = await fetch("/outfit_history/data");
@@ -11,10 +9,8 @@ async function loadHistory() {
 
     if (!grid) return;
 
-    // clear grid before rendering
     grid.innerHTML = "";
 
-    // show empty state if no history
     if (!history || history.length === 0) {
       if (empty) empty.classList.remove("d-none");
       return;
@@ -27,82 +23,63 @@ async function loadHistory() {
         ? entry.outfit.join(", ")
         : entry.outfit || "";
 
+      // build card HTML (similar to wardrobe)
       grid.innerHTML += `
         <div class="col-md-4">
           <div class="history-item-card">
             <div class="history-item-date">
-              ${entry.date || ""} • ${entry.location || ""} ${
-        entry.weather ? "• " + entry.weather : ""
-      }
+              ${entry.date || ""} • ${entry.location || ""}${
+                entry.weather ? " • " + entry.weather : ""
+              }
             </div>
             <div class="history-item-outfit">${outfitText}</div>
             <div class="history-item-meta">
-              Mood: ${entry.occasion || "—"
-      } • Rating: ${entry.rating ?? "—"}
+              Mood: ${entry.mood || "—"} • Rating: ${entry.rating ?? "—"}
               ${entry.liked ? " • ❤️ Liked" : ""}
             </div>
-            <div class="history-item-actions mt-2">
-              <button 
-                class="history-item-btn history-remove-btn" 
-                data-id="${entry.id}">
-                Remove
-              </button>
-            </div>
+            <button 
+              class="history-item-btn" 
+              data-id="${entry.id}">
+              Remove
+            </button>
           </div>
         </div>
       `;
+    });
+
+    // attach click handlers for remove buttons
+    const removeButtons = grid.querySelectorAll(".history-item-btn");
+    removeButtons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const id = btn.dataset.id;
+        deleteHistoryEntry(id); // no confirm dialog
+      });
     });
   } catch (e) {
     console.error("Failed to load history:", e);
   }
 }
 
-// delete single history entry by id
+// Call API to delete one history entry
 async function deleteHistoryEntry(id) {
   try {
     const res = await fetch(`/outfit_history/api/delete/${id}`, {
       method: "DELETE",
     });
 
-    if (!res.ok) {
-      throw new Error(`HTTP error! status: ${res.status}`);
-    }
-
     const data = await res.json();
 
-    if (data.ok) {
-      // reload list after delete
-      await loadHistory();
-    } else {
-      alert("Failed to delete entry.");
+    if (!data.ok) {
+      console.error("Failed to delete history entry");
+      return;
     }
+
+    // reload list after delete
+    await loadHistory();
   } catch (e) {
     console.error("Failed to delete history entry:", e);
-    alert("Failed to delete entry. Please try again.");
   }
 }
 
-// setup click handler for remove buttons (event delegation)
-function setupHistoryActions() {
-  const grid = document.querySelector(".history-items-section .row");
-  if (!grid) return;
-
-  grid.addEventListener("click", (e) => {
-    const btn = e.target.closest(".history-remove-btn");
-    if (!btn) return;
-
-    const id = btn.dataset.id;
-    if (!id) return;
-
-    // optional confirm
-    if (confirm("Remove this outfit from history?")) {
-      deleteHistoryEntry(id);
-    }
-  });
-}
-
-// init on page load
-document.addEventListener("DOMContentLoaded", () => {
-  setupHistoryActions();
-  loadHistory();
-});
+// Init on DOM ready
+document.addEventListener("DOMContentLoaded", loadHistory);
