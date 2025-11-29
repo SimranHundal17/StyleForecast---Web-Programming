@@ -1,3 +1,5 @@
+// static/profile.js
+
 async function loadProfile() {
   const res = await fetch("/profile/profile/data");
   const user = await res.json();
