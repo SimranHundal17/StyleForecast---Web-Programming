@@ -17,6 +17,28 @@ def profile(current_user):
 
     return render_template("profile.html", user=user)
 
+@profile_bp.route("/data", methods=["GET"])
+@token_required
+def profile_data(current_user):
+    """Return current user data as JSON for profile.js."""
+    user = get_user_by_email(current_user)
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    # user from Mongo is a dict, we safely pick only needed fields
+    first_name = user.get("first_name", "")
+    last_name = user.get("last_name", "")
+    full_name = (first_name + " " + last_name).strip() or user.get("name", "")
+
+    return jsonify({
+        "name": full_name,
+        "email": user.get("email", ""),
+        "first_name": first_name,
+        "last_name": last_name,
+        "gender": user.get("gender", ""),
+        "age": user.get("age", ""),
+        "days_until_dirty": user.get("days_until_dirty", "")
+    })
 
 @profile_bp.route("/update", methods=["POST"])
 @token_required

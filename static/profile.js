@@ -1,24 +1,12 @@
 // static/profile.js
 
-async function loadProfile() {
-  const res = await fetch("/profile/profile/data");
-  const user = await res.json();
-
-  document.getElementById("name").value = user.name || "";
-  document.getElementById("email").value = user.email || "";
-  document.getElementById("style").value = user.style || "Casual";
-  document.getElementById("climate").value = user.climate || "Moderate";
-}
-
-document.addEventListener("DOMContentLoaded", loadProfile);
-
 // colors used for avatar backgrounds
 const avatarColors = [
   "#6366F1",
   "#EC4899",
   "#F59E0B",
   "#10B981",
-  "#3B82F6"
+  "#3B82F6",
 ];
 
 // returns initials from full name
@@ -52,7 +40,9 @@ function updateProfileAvatar() {
 }
 
 // run avatar update when profile loads
-document.addEventListener("DOMContentLoaded", updateProfileAvatar);
+document.addEventListener("DOMContentLoaded", () => {
+  updateProfileAvatar();
+});
 
 // update live while typing
 const nameInput = document.getElementById("name");
@@ -64,17 +54,31 @@ const form = document.querySelector(".profile-form");
 if (form) {
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
+
+    // payload that will be sent to /profile/update
     const data = {
       name: document.getElementById("name").value,
       email: document.getElementById("email").value,
-      style: document.getElementById("style").value,
-      climate: document.getElementById("climate").value
+      name: `${document.getElementById("first_name").value} ${document.getElementById("last_name").value}`.trim(),
+      email: document.getElementById("email").value,
+      password: document.getElementById("password").value,
+      confirm_password: document.getElementById("confirm_password").value,
+      gender: document.getElementById("gender").value,
+      age: document.getElementById("age").value,
+      days_until_dirty: document.getElementById("days_until_dirty").value
     };
-    await fetch("/profile/save", {
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify(data)
-    });
-    alert("✅ Profile Saved!");
+
+    try {
+      const res = await fetch("/profile/update", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      const json = await res.json();
+      console.log("Profile updated:", json);    
+    } catch (err) {
+      console.error("Failed to update profile:", err);
+    }
   });
 }

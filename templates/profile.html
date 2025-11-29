@@ -48,28 +48,142 @@
           </div>
         </div>
 
+        <!-- Avatar + short info -->
         <div class="profile-header">
           <div class="profile-avatar-wrapper">
+            <!-- Avatar circle, initials will be filled by profile.js -->
             <div id="profileAvatar" class="profile-avatar"></div>
           </div>
           <div class="profile-info">
-            <h2 id="profileNameDisplay" class="profile-name">{{ user.name }}</h2>
+            <!-- Show full name from first + last name -->
+            <h2 id="profileNameDisplay" class="profile-name">
+              {{ (user.first_name or '') ~ ' ' ~ (user.last_name or '') }}
+            </h2>
             <p id="profileEmailDisplay" class="profile-email">{{ user.email }}</p>
           </div>
         </div>
 
+        <!-- Profile form -->        
         <form class="profile-form" method="POST" action="{{ url_for('profile.profile') }}">
+          
+          <!-- First / Last name -->
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="firstName" class="form-label">First Name</label>
+              <input
+                type="text"
+                class="form-control"
+                id="firstName"
+                name="first_name"
+                value="{{ user.first_name or '' }}"
+              >
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="lastName" class="form-label">Last Name</label>
+              <input
+                type="text"
+                class="form-control"
+                id="lastName"
+                name="last_name"
+                value="{{ user.last_name or '' }}"
+              >
+            </div>
+          </div>
+
+          <!-- Full name is derived from first + last and should be read-only -->
           <div class="mb-3">
-            <label for="name" class="form-label">Full Name</label>
-            <input type="text" class="form-control" id="name" name="name" value="{{ user.name }}">
+            <label for="fullName" class="form-label">Full Name</label>
+            <input
+              type="text"
+              class="form-control"
+              id="fullName"
+              name="full_name"
+              value="{{ (user.first_name or '') ~ ' ' ~ (user.last_name or '') }}"
+              readonly
+            >
+          </div>
+
+          <!-- Email - not editable -->
+          <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input
+              type="email"
+              class="form-control"
+              id="email"
+              name="email"
+              value="{{ user.email }}"
+              disabled
+            >
+          </div>
+
+          <!-- Password change (never pre-fill existing password) -->
+          <div class="mb-3">
+            <label for="password" class="form-label">New Password</label>
+            <input
+              type="password"
+              class="form-control"
+              id="password"
+              name="password"
+              placeholder="Leave blank to keep current password"
+            >
           </div>
 
           <div class="mb-3">
-            <label for="email" class="form-label">Email Address</label>
-            <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}">
+            <label for="confirmPassword" class="form-label">Confirm New Password</label>
+            <input
+              type="password"
+              class="form-control"
+              id="confirmPassword"
+              name="confirm_password"
+              placeholder="Repeat new password"
+            >
           </div>
 
-          <button type="submit" class="btn btn-success w-100 save-btn">Save Changes</button>
+          <!-- Gender -->
+          <div class="mb-3">
+            <label for="gender" class="form-label">Gender</label>
+            <select
+              class="form-select"
+              id="gender"
+              name="gender"
+            >
+              <!-- We select current value from Mongo if present -->
+              <option value="" {% if not user.gender %}selected{% endif %}>Select gender</option>
+              <option value="male" {% if user.gender == "male" %}selected{% endif %}>Male</option>
+              <option value="female" {% if user.gender == "female" %}selected{% endif %}>Female</option>
+              <option value="other" {% if user.gender == "other" %}selected{% endif %}>Other / Prefer not to say</option>
+            </select>
+          </div>
+
+          <!-- Age -->
+          <div class="mb-3">
+            <label for="age" class="form-label">Age</label>
+            <input
+              type="number"
+              class="form-control"
+              id="age"
+              name="age"
+              min="0"
+              value="{{ user.age or '' }}"
+            >
+          </div>
+
+          <!-- Laundry cycle: days until clothes become dirty -->
+          <div class="mb-4">
+            <label for="daysUntilDirty" class="form-label">Days until clothes become dirty</label>
+            <input
+              type="number"
+              class="form-control"
+              id="daysUntilDirty"
+              name="days_until_dirty"
+              min="1"
+              value="{{ user.days_until_dirty or '' }}"
+            >
+          </div>
+
+          <button type="submit" class="btn btn-success w-100 save-btn">
+            Save Changes
+          </button>
         </form>
       </div>
     </main>
