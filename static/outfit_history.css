@@ -1,10 +1,6 @@
 /* ============================
    OUTFIT HISTORY PAGE
 ============================ */
-.history-items-section {
-  margin-top: 2.5rem;
-}
-
 .outfit-history-card {
   background: #fff;
   border-radius: 1rem;
@@ -28,6 +24,23 @@
   color: #6b7280;
 }
 
+/* Grid section */
+.history-items-section {
+  margin-top: 2.5rem;
+}
+
+/* Card look – similar to wardrobe-item-card */
+.history-item-card {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 1.5rem;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+  border: 1px solid #f0f2ff;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  transition: all 0.25s ease;
+}
 
 .history-item-card:hover {
   transform: translateY(-4px);
@@ -50,4 +63,54 @@
 .history-item-meta {
   font-size: 0.9rem;
   color: #777aa5;
+}
+
+/* Actions row under text */
+.history-item-actions {
+  margin-top: 0.6rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Pill button – like wardrobe-item-btn */
+.history-item-btn {
+  align-self: flex-start;
+  font-size: 0.85rem;
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #4f46e5;
+  border: none;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.history-item-btn:hover {
+  background: #e0e7ff;
+  transform: translateY(-2px);
+}
+
+/* Empty state (same idea как на Wardrobe) */
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #6b7280;
+}
+
+.empty-state-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.empty-state-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.empty-state-desc {
+  max-width: 420px;
+  margin: 0 auto;
 }

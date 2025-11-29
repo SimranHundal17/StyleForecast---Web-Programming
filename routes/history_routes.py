@@ -1,9 +1,8 @@
 # routes/history_routes.py
-# All routes related to outfit history (HTML + JSON API).
 
 from flask import render_template, jsonify
 from routes import history_bp
-from model.outfit_history_model import get_all_history
+from model.outfit_history_model import get_all_history, delete_history_entry
 
 try:
     from utils.auth import token_required
@@ -20,17 +19,18 @@ except ImportError:
 @history_bp.route("/")
 @token_required
 def outfit_history(current_user):
-    """Render Outfit History page using hardcoded list."""
-    entries = get_all_history()
-    return render_template(
-        "outfit_history.html",
-        entries=entries,
-        current_user=current_user,
-    )
+    return render_template("outfit_history.html", current_user=current_user)
 
 
 @history_bp.route("/data")
 @token_required
 def history_data(current_user):
-    """Return outfit history as JSON for outfit_history.js."""
-    return jsonify(get_all_history())
+    entries = get_all_history()       # <-- now pulling from Mongo
+    return jsonify(entries)
+
+
+@history_bp.route("/api/delete/<int:entry_id>", methods=["DELETE"])
+@token_required
+def history_delete(current_user, entry_id):
+    ok = delete_history_entry(entry_id)
+    return jsonify({"ok": ok})
