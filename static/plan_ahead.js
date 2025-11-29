@@ -34,9 +34,10 @@ let savedPlans = {}; // map by date string
 let autocompleteTimeout = null;
 
 const today = new Date();
+const PLAN_BASE = "/plan_ahead"; // base path for all Plan Ahead API calls
 
 async function loadSavedPlans() {
-  const res = await fetch("/plan/plans", { credentials: "include" });
+  const res = await fetch(`${PLAN_BASE}/plan/plans`, { credentials: "include" });
   const plans = await res.json();
 
   savedPlans = {};
@@ -321,7 +322,7 @@ async function savePlanWithRating(rating) {
   const plan = savedPlans[date];
 
   // send rating + liked=true
-  await fetch("/plan/rate", {
+  await fetch(`${PLAN_BASE}/plan/rate`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
@@ -353,7 +354,7 @@ deleteBtn.addEventListener("click", async () => {
   const date = selectedDates[0];
   const plan = savedPlans[date];
 
-  await fetch("/plan/delete", {
+  await fetch(`${PLAN_BASE}/plan/delete`, {
     method: "POST",
     credentials: "include",
     headers: { "Content-Type": "application/json" },
@@ -378,7 +379,7 @@ skipRatingBtn.addEventListener("click", async () => {
   const date = selectedDates[0];
   const plan = savedPlans[date];
 
-  await fetch("/plan/rate", {
+  await fetch(`${PLAN_BASE}/plan/rate`, {
     method: "POST",
     credentials: "include",
     headers: { "Content-Type": "application/json" },
@@ -402,7 +403,7 @@ async function saveLikedPlan(rating = null) {
   const plan = savedPlans[date];
 
   // 1️⃣ First update outfit + details to backend
-  await fetch("/plan/update", {
+  await fetch(`${PLAN_BASE}/plan/update`, {
     method: "POST",
     credentials: "include",
     headers: { "Content-Type": "application/json" },
@@ -419,7 +420,7 @@ async function saveLikedPlan(rating = null) {
 
   // 2️⃣ If user rated or skipped rating → save rating
   if (rating !== null) {
-    await fetch("/plan/rate", {
+    await fetch(`${PLAN_BASE}/plan/rate`, {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
