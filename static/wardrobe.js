@@ -34,7 +34,11 @@ function createCardElement(item) {
 
   const meta = document.createElement('div');
   meta.className = 'wardrobe-item-meta';
-  meta.textContent = `${item.category} • ${item.status}`;
+  const parts = [];
+  if (item.category) parts.push(item.category);
+  if (item.status) parts.push(item.status);
+  if (item.color) parts.push(item.color);
+  meta.textContent = parts.join(' • ');
 
   // Button row container
   const btnRow = document.createElement('div');
