@@ -20,16 +20,21 @@ from utils.auth import JWT_SECRET_KEY, JWT_ALGORITHM
 # -----------------------
 # LOGIN PAGE (GET)
 # -----------------------
+#@auth_bp.route('/login', methods=['GET'])
+#def login():
+    # If already logged in, redirect
+#    if "token" in session:
+#        try:
+#            jwt.decode(session["token"], JWT_SECRET_KEY, algorithms=[JWT_ALGORITHM])
+#            return redirect(url_for("outfit.get_outfit_page"))
+#        except:
+#            session.clear()
+
+#    return render_template('login.html')
+
 @auth_bp.route('/login', methods=['GET'])
 def login():
-    # If already logged in, redirect
-    if "token" in session:
-        try:
-            jwt.decode(session["token"], JWT_SECRET_KEY, algorithms=[JWT_ALGORITHM])
-            return redirect(url_for("outfit.get_outfit_page"))
-        except:
-            session.clear()
-
+    # Always show login page, even if there is a token in session
     return render_template('login.html')
 
 

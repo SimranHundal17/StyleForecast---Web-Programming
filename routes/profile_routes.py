@@ -43,6 +43,7 @@ def profile_data(current_user):
 @profile_bp.route("/update", methods=["POST"])
 @token_required
 def profile_update(current_user):
+    """Update profile fields for current user (no password hashing)."""
     data = request.get_json()
 
     if not data:
@@ -50,10 +51,33 @@ def profile_update(current_user):
 
     update_data = {}
 
+    # Basic profile fields
     for key in ["first_name", "last_name", "gender", "age", "days_until_dirty"]:
         if key in data:
             update_data[key] = data[key]
 
+    # Handle password change
+    password = data.get("password")
+    confirm_password = data.get("confirm_password")
+
+    if password or confirm_password:
+        # Both fields must be present
+        if not password or not confirm_password:
+            return jsonify({
+                "success": False,
+                "message": "Both password and confirm_password are required"
+            }), 400
+
+        if password != confirm_password:
+            return jsonify({
+                "success": False,
+                "message": "Passwords do not match"
+            }), 400
+
+        # Store password
+        update_data["password"] = password
+
+    # Apply update in Mongo
     users.update_one({"email": current_user}, {"$set": update_data})
 
     return jsonify({"success": True, "message": "Profile updated successfully"})
