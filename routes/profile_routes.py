@@ -3,6 +3,7 @@ from routes import profile_bp
 from utils.auth import token_required
 from model.login_model import get_user_by_email
 from utils.db import db
+import bcrypt
 
 users = db["users"]
 
@@ -10,12 +11,14 @@ users = db["users"]
 @profile_bp.route("/", methods=["GET"])
 @token_required
 def profile(current_user):
+    """Render profile page for the current user."""
     user = get_user_by_email(current_user)
 
     if not user:
         return "User not found", 404
 
     return render_template("profile.html", user=user)
+
 
 @profile_bp.route("/data", methods=["GET"])
 @token_required
@@ -25,7 +28,7 @@ def profile_data(current_user):
     if not user:
         return jsonify({"error": "User not found"}), 404
 
-    # user from Mongo is a dict, we safely pick only needed fields
+    # Safely pick only needed fields
     first_name = user.get("first_name", "")
     last_name = user.get("last_name", "")
     full_name = (first_name + " " + last_name).strip() or user.get("name", "")
@@ -40,10 +43,14 @@ def profile_data(current_user):
         "days_until_dirty": user.get("days_until_dirty", "")
     })
 
+
 @profile_bp.route("/update", methods=["POST"])
 @token_required
 def profile_update(current_user):
-    """Update profile fields for current user (no password hashing)."""
+    """
+    Update profile fields for current user.
+    If password is provided, it is hashed with bcrypt before storing.
+    """
     data = request.get_json()
 
     if not data:
@@ -51,12 +58,12 @@ def profile_update(current_user):
 
     update_data = {}
 
-    # Basic profile fields
+    # Basic profile fields (non-sensitive)
     for key in ["first_name", "last_name", "gender", "age", "days_until_dirty"]:
         if key in data:
             update_data[key] = data[key]
 
-    # Handle password change
+    # Handle password change (optional)
     password = data.get("password")
     confirm_password = data.get("confirm_password")
 
@@ -74,8 +81,9 @@ def profile_update(current_user):
                 "message": "Passwords do not match"
             }), 400
 
-        # Store password
-        update_data["password"] = password
+        # Hash new password with bcrypt (salt is included in the hash)
+        hashed = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
+        update_data["password"] = hashed.decode("utf-8")
 
     # Apply update in Mongo
     users.update_one({"email": current_user}, {"$set": update_data})
