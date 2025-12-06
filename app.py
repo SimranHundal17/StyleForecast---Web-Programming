@@ -1,12 +1,14 @@
 # app.py
+
 import os
 from utils.db import db   # initializes MongoDB one time
 from dotenv import load_dotenv
-load_dotenv()
+load_dotenv() # Load environment variables from .env file
 
-from flask import Flask, redirect, url_for
+from flask import Flask, redirect, url_for # Flask framework and redirect utilities
 
-from routes.intro_routes import intro_bp
+# import intro blueprints
+from routes.intro_routes import intro_bp 
 from routes.auth_routes import auth_bp
 from routes.wardrobe_routes import wardrobe_bp
 from routes.get_outfit_routes import outfit_bp
@@ -15,8 +17,9 @@ from routes.accessories_routes import accessories_bp
 from routes.plan_ahead_routes import plan_bp
 from routes.profile_routes import profile_bp
 
+# Initialize Flask app (create Flasck connection)
 app = Flask(__name__)
-app.secret_key = os.getenv("SECRET_KEY")
+app.secret_key = os.getenv("SECRET_KEY") # Set secret key for session management
 
 # Register blueprints
 app.register_blueprint(intro_bp)
@@ -33,6 +36,6 @@ app.register_blueprint(profile_bp)
 def index_redirect():
     return redirect(url_for("intro.intro"))  # blueprint "intro", view-function intro
 
+# Run the app
 if __name__ == "__main__":
     app.run(debug=True)
-
