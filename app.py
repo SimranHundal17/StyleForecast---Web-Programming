@@ -7,8 +7,12 @@ load_dotenv() # Load environment variables from .env file
 
 from flask import Flask, redirect, url_for # Flask framework and redirect utilities
 
-# import intro blueprints
-from routes.intro_routes import intro_bp 
+app = Flask(__name__)
+app.secret_key = os.getenv("SECRET_KEY")
+
+app.config["OPENWEATHER_API_KEY"] =  os.getenv("OPENWEATHER_API_KEY")
+
+from routes.intro_routes import intro_bp
 from routes.auth_routes import auth_bp
 from routes.wardrobe_routes import wardrobe_bp
 from routes.get_outfit_routes import outfit_bp
@@ -16,10 +20,6 @@ from routes.history_routes import history_bp
 from routes.accessories_routes import accessories_bp
 from routes.plan_ahead_routes import plan_bp
 from routes.profile_routes import profile_bp
-
-# Initialize Flask app (create Flasck connection)
-app = Flask(__name__)
-app.secret_key = os.getenv("SECRET_KEY") # Set secret key for session management
 
 # Register blueprints
 app.register_blueprint(intro_bp)

@@ -1,64 +1,158 @@
-/* static/plan_ahead.css */
-/* Reuse the same look-and-feel as wardrobe/get-outfit */
+/* PAGE LAYOUT CONSISTENCY */
+.section {
+  padding: 2rem;
+}
 
-/* Card */
-.calendar-card {
+.wardrobe-card {
+  padding: 2rem;
+  border-radius: 16px;
   background: #fff;
-  border-radius: 1rem;
-  padding: 1.5rem 2rem;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-  margin-bottom: 2rem;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.08);
 }
 
-.header-row { margin-bottom: 1.2rem; }
-.header-row .title { font-size: 1.8rem; color: #4338ca; font-weight:700; }
-.header-row .subtitle { color:#6b7280; }
+/* HEADER LAYOUT */
+.wardrobe-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
 
-/* Calendar */
-.week-header { font-weight:700; color:#4b5563; margin-bottom:0.4rem; text-align:center; }
-.calendar-grid { display:grid; grid-template-columns: repeat(7, 1fr); gap:0.35rem; }
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.subtitle {
+  margin-top: -4px;
+  color: #555;
+}
+
+/* TOP CONTROLS */
+.plan-top-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.date-selectors {
+  display: flex;
+  gap: 0.75rem;
+}
+
+/* CALENDAR GRID */
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+}
+
 .calendar-day {
-  padding:0.75rem 0;
-  border:1px solid #d0d4e4;
-  border-radius:0.6rem;
-  background:#fafaff;
-  color:#374151;
-  text-align:center;
-  cursor:pointer;
-  transition:0.2s;
-  font-weight:500;
-  user-select:none;
+  padding: 12px 0;
+  text-align: center;
+  background: #f3f4f6;
+  border-radius: 10px;
+  cursor: pointer;
+  user-select: none;
+  font-weight: 600;
+  transition: 0.15s;
 }
-.calendar-day:hover { background:#eef2ff; }
-.calendar-day.disabled { background:#e5e5e5; color:#9ca3af; cursor:not-allowed; }
-.calendar-day.selected { background:#6366f1 !important; color:#fff !important; border-color:#6366f1; }
-.calendar-day.range { background:#a5b1ff !important; color:#fff !important; }
 
-/* Modal autocomplete */
-.autocomplete-suggestions {
+.calendar-day:hover {
+  background: #e0e7ff;
+}
+
+.calendar-day.disabled {
+  background: #e5e7eb;
+  color: #aaa;
+  cursor: not-allowed;
+}
+
+.calendar-day.selected {
+  background: #6366f1;
+  color: white;
+}
+
+.calendar-day.range {
+  background: #c7d2fe;
+}
+
+/* AUTOCOMPLETE */
+.autocomplete-box {
+  position: relative;
   background: white;
-  border: 1px solid #d6d6d6;
-  max-height: 180px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  margin-top: 2px;
+  max-height: 150px;
   overflow-y: auto;
-  position: absolute;
+}
+
+.autocomplete-item {
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.autocomplete-item:hover {
+  background: #eef2ff;
+}
+
+/* ============================================================
+   SLIDER — FIXED VERSION (FULL WORKING)
+   ============================================================ */
+
+#sliderContainer {
   width: 100%;
-  z-index: 9999;
-  border-radius: 0 0 .5rem .5rem;
-  display: none;
+  overflow: hidden;
 }
-.autocomplete-item { padding:0.55rem 0.75rem; cursor:pointer; }
-.autocomplete-item:hover { background:#f1f3f9; }
 
-/* Outfit preview */
-.outfit-preview { display:flex; flex-wrap:wrap; gap:0.5rem; margin-top:0.75rem; }
+.slider {
+  display: flex;
+  width: 100%;
+  transition: transform 0.35s ease-in-out;
+}
+
+.slider-slide {
+  min-width: 100%;
+  max-width: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.slider-dots span {
+  font-size: 22px;
+  cursor: pointer;
+  margin: 0 4px;
+}
+
+/* OUTFIT PREVIEW */
+.outfit-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 1rem;
+}
+
 .outfit-item {
-  background:#eef2ff;
-  color:#4338ca;
-  padding:0.5rem 0.75rem;
-  border-radius:0.5rem;
-  font-weight:600;
+  padding: 8px 14px;
+  background: #eef2ff;
+  border-radius: 8px;
+  font-weight: 600;
 }
 
-/* Rating stars */
-.stars span { font-size:1.5rem; cursor:pointer; color:#d1d5db; }
-.stars span.selected, .stars span:hover { color:#facc15; }
+/* BUTTONS */
+.btn-outline-danger {
+  border-width: 2px;
+}
+
+#planModal .modal-dialog {
+  max-width: 850px;
+}
+
+@media (max-width: 768px) {
+  #planModal .modal-dialog {
+    max-width: 95%;
+    margin: auto;
+  }
+}
