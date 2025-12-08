@@ -1,10 +1,11 @@
 # app.py
+
 import os
 from utils.db import db   # initializes MongoDB one time
 from dotenv import load_dotenv
-load_dotenv()
+load_dotenv() # Load environment variables from .env file
 
-from flask import Flask, redirect, url_for
+from flask import Flask, redirect, url_for # Flask framework and redirect utilities
 
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY")
@@ -35,6 +36,6 @@ app.register_blueprint(profile_bp)
 def index_redirect():
     return redirect(url_for("intro.intro"))  # blueprint "intro", view-function intro
 
+# Run the app
 if __name__ == "__main__":
     app.run(debug=True)
-
