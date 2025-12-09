@@ -1,27 +1,28 @@
 /* =========================================
-   INTRO PAGE
+   INTRO PAGE STYLES
 ========================================= */
+
 .intro-container {
-  display: flex;
+  display: flex;                /* put all elements in a vertical layout */
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 85vh;
+  align-items: center;          /* center horizontally */
+  justify-content: center;      /* center vertically */
+  min-height: 85vh;             /* almost full-screen height */
   text-align: center;
   padding: 2.5rem 1rem;
 }
 
 .intro-container h1 {
-  font-size: 2.6rem;
+  font-size: 2.6rem;            /* big title */
   color: #4f46e5;
   margin-bottom: 0.5rem;
-  display: flex;
+  display: flex;                /* to place emoji and text nicely */
   align-items: center;
   gap: 0.4rem;
 }
 
 .cloud-icon {
-  font-size: 2.2rem;
+  font-size: 2.2rem;            /* (not used now, but for cloud icon size) */
 }
 
 .intro-container p {
@@ -30,20 +31,20 @@
   margin-bottom: 2rem;
 }
 
-/* Feature cards container - responsive grid */
+/* Responsive grid for feature cards */
 .features {
   display: grid;
-  /* auto-fit makes cards wrap nicely on smaller screens */
+  /* auto-fit helps cards wrap nicely on smaller screens */
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 1.5rem;
   margin-top: 2rem;
   width: 100%;
-  max-width: 900px;
+  max-width: 900px;             /* center and limit width */
   margin-left: auto;
   margin-right: auto;
 }
 
-/* Single feature card */
+/* Each feature card box */
 .feature-card {
   background: #ffffff;
   border-radius: 1rem;
@@ -52,38 +53,36 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  min-height: 140px; /* keeps cards visually balanced */
+  min-height: 140px;            /* keeps cards visually balanced */
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* Hover effect for feature card */
+/* Hover animation for card */
 .feature-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
 }
 
-/* Title inside feature card */
 .feature-card h3 {
   margin: 0.4rem 0 0.3rem;
   font-size: 1.1rem;
   font-weight: 600;
 }
 
-/* Description inside feature card */
 .feature-card p {
   margin: 0;
   color: #6b7280;
   font-size: 0.95rem;
 }
 
-/* Magical Button (Intro Only) */
+/* Magic "Get Started" button */
 .get-started-btn {
-  background: linear-gradient(90deg, #6366f1, #a855f7);
+  background: linear-gradient(90deg, #6366f1, #a855f7); /* nice gradient */
   color: white;
   border: none;
   padding: 0.9rem 3rem;
   font-size: 1rem;
-  border-radius: 9999px;
+  border-radius: 9999px;        /* full pill shape */
   cursor: pointer;
   margin-top: 2rem;
   position: relative;
@@ -91,22 +90,23 @@
   transition: 0.3s;
 }
 
+/* Small sparkle emoji that moves */
 .get-started-btn::after {
-  content: "✨";
+  content: "✨";                /* decorative sparkle */
   position: absolute;
   right: 1rem;
   opacity: 0.8;
-  animation: sparkle 2s infinite linear;
+  animation: sparkle 2s infinite linear; /* play animation forever */
 }
 
+/* Simple animation for sparkle */
 @keyframes sparkle {
   0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.8; }
   50% { transform: translateY(-3px) rotate(20deg); opacity: 1; }
 }
 
+/* Slight zoom on hover */
 .get-started-btn:hover {
   opacity: 0.9;
   transform: scale(1.03);
 }
-/* =========================================
-   END INTRO PAGE
