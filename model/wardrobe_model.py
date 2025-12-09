@@ -7,7 +7,7 @@ from utils.db import db, laundry_db  # main DB and laundry DB
 # main collection for wardrobe items
 wardrobe_col = db["wardrobe_items"]
 
-# separate collection for items that need wash (in another DB)
+# separate collection for items that need wash
 dirty_col = laundry_db["dirty_items"]
 
 
@@ -15,7 +15,7 @@ def _to_dict(doc):
     """Convert MongoDB document to plain dict for JSON."""
     if not doc:
         return None
-
+    # Use safe defaults if some fields are missing
     return {
         "id": doc.get("id"),
         "name": doc.get("name", ""),
@@ -51,7 +51,7 @@ def get_items_by_filter(filter_value):
 
     filter_lower = filter_value.lower()
 
-    # status filter "Needs Wash"
+    # Special handling for "Needs Wash" status
     if filter_lower in ["needs wash", "needs", "needswash"]:
         docs = wardrobe_col.find(
             {"status": {"$regex": "^needs wash$", "$options": "i"}}
@@ -93,10 +93,10 @@ def add_item(name: str, category: str, status: str, color: str = ""):
         "party": "🎉",
         "outdoor": "🥾",
     }
-
+    # Pick icon based on category (fallback icon if no match)
     icon = default_icons.get(category.lower(), "👚")
     new_id = _get_next_id()
-
+    # Build new item document
     doc = {
         "id": new_id,
         "name": name,
@@ -120,7 +120,7 @@ def add_item(name: str, category: str, status: str, color: str = ""):
                     "marked_at": datetime.utcnow(),
                 }
             },
-            upsert=True,
+            upsert=True,   # create new doc if it does not exist
         )
 
     return _to_dict(doc)
@@ -131,10 +131,11 @@ def update_item_status(item_id: int):
     Toggle item status between 'Clean' and 'Needs Wash'.
     Also synchronize state with dirty_items collection in laundry DB.
     """
+    # Find existing item in main collection
     doc = wardrobe_col.find_one({"id": int(item_id)})
     if not doc:
         return None
-
+    # Normalize current status to lower-case string
     current_status = str(doc.get("status", "Clean")).lower()
     wear_count = int(doc.get("wear_count", 0))
 
@@ -161,13 +162,13 @@ def update_item_status(item_id: int):
         # Remove from dirty_items if present
         dirty_col.delete_one({"item_id": int(item_id)})
 
-    # update main collection
+    # Update status and wear_count in main wardrobe collection
     wardrobe_col.update_one(
         {"id": int(item_id)},
         {"$set": {"status": new_status, "wear_count": wear_count}},
     )
 
-    # read back updated doc
+    # Read back updated document to return fresh data
     updated = wardrobe_col.find_one({"id": int(item_id)})
     return _to_dict(updated)
 
@@ -176,9 +177,9 @@ def delete_item(item_id: int) -> bool:
     """
     Delete item from wardrobe and remove it from dirty_items collection.
     """
+    # Remove item from main collection
     result = wardrobe_col.delete_one({"id": int(item_id)})
-
-    # also clean up from dirty_items (if it was marked as dirty)
+    # Also clean up from dirty_items (if it was marked as dirty)
     dirty_col.delete_one({"item_id": int(item_id)})
-
+    # Return True if something was actually deleted
     return result.deleted_count > 0
