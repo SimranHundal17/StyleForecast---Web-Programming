@@ -1,8 +1,9 @@
 /* =========================================
    WARDROBE PAGE
+   Styles for wardrobe main page and item cards
 ========================================= */
 
-/* Jeneral card - all page content */
+/* General card - wrapper for page content */
 .card {
   background: #fff;
   border-radius: 1rem;
@@ -11,13 +12,13 @@
   margin-bottom: 2rem;
 }
 
-/* Header and button "Add Item" */
+/* Header row with title and "Add Item" button */
 .wardrobe-header-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1.5rem;
-  flex-wrap: wrap;
+  flex-wrap: wrap; /* allow wrapping on small screens */
 }
 
 .wardrobe-header-text .title {
@@ -26,6 +27,7 @@
   margin-bottom: 0.2rem;
 }
 
+/* Primary "Add Item" button */
 .add-item-button {
   background-color: #6366f1;
   color: white;
@@ -41,11 +43,11 @@
   transform: scale(1.05);
 }
 
-/* Filters (All, Casual, Gym and etc.) */
+/* Filters row (All, Casual, Gym, etc.) */
 .filter-row {
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
+  flex-wrap: wrap;  /* filters go to the next line if needed */
   gap: 0.6rem;
   margin-bottom: 2rem;
 }
@@ -55,10 +57,11 @@
   color: #374151;
 }
 
+/* Filter chips (buttons) */
 .filter-chip {
   background: #e5e7eb;
   border: none;
-  border-radius: 9999px;
+  border-radius: 9999px;    /* full pill shape */
   padding: 0.4rem 1rem;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -68,12 +71,13 @@
   background: #d1d5db;
 }
 
+/* Active filter state */
 .filter-active {
   background: #6366f1;
   color: white;
 }
 
-/* Empty condition ("No items yet") */
+/* Empty state container ("No items yet") */
 .empty-state {
   text-align: center;
   padding: 3rem 1rem;
@@ -96,6 +100,7 @@
   margin-bottom: 1.2rem;
 }
 
+/* Button inside empty state */
 .empty-state-button {
   background: #8b5cf6;
   color: #fff;
@@ -111,11 +116,12 @@
   background: #7c3aed;
 }
 
-/* Small cards */
+/* Section that holds all wardrobe item cards */
 .wardrobe-items-section {
   margin-top: 3rem;
 }
 
+/* Single wardrobe item card */
 .wardrobe-item-card {
   background: #ffffff;
   border-radius: 18px;
@@ -128,26 +134,31 @@
   transition: all 0.25s ease;
 }
 
+/* Hover effect for item card */
 .wardrobe-item-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
 }
 
+/* Emoji / icon for the item */
 .wardrobe-item-image {
   font-size: 2rem;
 }
 
+/* Item name */
 .wardrobe-item-title {
   font-size: 1rem;
   font-weight: 600;
   color: #252552;
 }
 
+/* Item meta text (category, color, status, etc.) */
 .wardrobe-item-meta {
   font-size: 0.9rem;
   color: #777aa5;
 }
 
+/* Small pill button on the item card (e.g. Mark as Worn) */
 .wardrobe-item-btn {
   align-self: flex-start;
   font-size: 0.85rem;
@@ -166,12 +177,12 @@
   transform: translateY(-2px);
 }
 
+/* Make Bootstrap modal backdrop a bit darker */
 .modal-backdrop {
   opacity: .65 !important; /* normal dim like accessories */
 }
 
+/* Round modal corners a bit */
 .modal-content {
-  border-radius: .8rem; /* optional beauty */
+  border-radius: .8rem;
 }
-
-
