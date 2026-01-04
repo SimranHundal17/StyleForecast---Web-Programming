@@ -1,5 +1,5 @@
 # Style Forecast
-Style Forecast is a web-based platform developed as a group project for Module University Vienna.  
+Style Forecast is a web-based platform developed as a group project for Modul University Vienna.  
 The project was created as part of a university coursework assignment and demonstrates the practical
 application of web development concepts, including frontend–backend integration and database-driven design.
 

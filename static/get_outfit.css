@@ -178,4 +178,31 @@
   transform: scale(1.05);
 }
 
+/* ===============================
+   MOBILE RESPONSIVENESS FIX
+   =============================== */
+@media (max-width: 576px) {
+
+  /* Center header like Wardrobe & Accessories */
+  .header-row {
+    text-align: center;
+  }
+
+  .header-row .title {
+    text-align: center;
+  }
+
+  .header-row .subtitle {
+    text-align: center;
+  }
+
+  /* Improve weather box spacing on tiny screens */
+  .weather-box {
+    padding: 1.2rem 1rem;
+  }
+
+  .weather-location {
+    text-align: center;
+  }
+}
 
