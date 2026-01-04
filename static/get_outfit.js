@@ -8,7 +8,6 @@ const previewBox = document.getElementById("outfitPreview");
 const generateBtn = document.getElementById("generateOutfitBtn");
 
 const feedbackButtons = document.getElementById("feedbackButtons");
-const ratingBox = document.getElementById("ratingBox");
 const saveMessage = document.getElementById("saveMessage");
 
 const likeBtn = document.getElementById("likeBtn");
@@ -114,7 +113,6 @@ generateBtn.addEventListener("click", async () => {
     previewBox.innerHTML = "";
     saveMessage.classList.add("d-none");
     feedbackButtons.style.display = "none";
-    ratingBox.classList.add("d-none");
 
     const response = await fetch("/get_outfit/api/get_outfit", {
         method: "POST",
@@ -177,58 +175,26 @@ dislikeBtn.addEventListener("click", () => {
 
 
 // ======================================================
-// LIKE → show rating only (do not save yet)
+// LIKE → save immediately
 // ======================================================
-likeBtn.addEventListener("click", () => {
-    ratingBox.classList.remove("d-none");
-});
-
-
-// ======================================================
-// If user clicks LIKE again → save with rating = null
-// ======================================================
-likeBtn.addEventListener("dblclick", async () => {
+likeBtn.addEventListener("click", async () => {
     if (!lastGenerated) return;
 
-    if (!ratingBox.classList.contains("d-none")) {
-        const res = await fetch("/get_outfit/api/save_outfit", {
-            method: "POST",
-            credentials: "include",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ ...lastGenerated, rating: null })
-        });
+    const res = await fetch("/get_outfit/api/save_outfit", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            ...lastGenerated,
+            rating: null
+        })
+    });
 
-        const result = await res.json();
-        if (result.success) {
-            saveMessage.textContent = "Outfit saved (no rating)";
-            saveMessage.classList.remove("d-none");
-        }
+    const result = await res.json();
 
-        ratingBox.classList.add("d-none");
+    if (result.success) {
+        saveMessage.textContent = "Outfit saved to history!";
+        saveMessage.classList.remove("d-none");
     }
 });
 
-
-// ======================================================
-// STAR RATING → final save
-// ======================================================
-document.querySelectorAll("#starsContainer span").forEach(star => {
-    star.addEventListener("click", async () => {
-        const rating = star.dataset.v;
-
-        const res = await fetch("/get_outfit/api/save_outfit", {
-            method: "POST",
-            credentials: "include",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ ...lastGenerated, rating })
-        });
-
-        const result = await res.json();
-        if (result.success) {
-            saveMessage.textContent = "Outfit saved with rating!";
-            saveMessage.classList.remove("d-none");
-        }
-
-        ratingBox.classList.add("d-none");
-    });
-});
