@@ -110,3 +110,30 @@
   font-weight: 600;
   margin-bottom: 6px;
 }
+
+/* ===============================
+   EXTRA SMALL SCREENS (Fold)
+   =============================== */
+@media (max-width: 576px) {
+
+  .auth-wrapper {
+    padding: 1.2rem;
+  }
+
+  .auth-card {
+    padding: 1.8rem 1.5rem;
+    border-radius: 1.2rem;
+  }
+
+  .auth-title {
+    font-size: 1.6rem;
+  }
+
+  .auth-subtitle {
+    font-size: 0.95rem;
+  }
+
+  .auth-logo {
+    font-size: 2.2rem;
+  }
+}

@@ -165,3 +165,64 @@
   background: #e0e7ff;
   transform: translateY(-2px);
 }
+
+/* ================================
+   MOBILE RESPONSIVENESS FIXES
+================================ */
+
+/* Small devices show better spacing */
+@media (max-width: 576px) {
+
+  /* Reduce side padding so content does not feel cramped */
+  .card {
+    padding: 1.2rem 1rem;
+  }
+
+  /* Stack header button properly on mobile */
+  .wardrobe-header-action {
+    width: 100%;
+    margin-top: 1rem;
+  }
+
+  /* Make Add button full-width for touch usability */
+  .wardrobe-header-action button {
+    width: 100%;
+  }
+
+  /* Improve filter button touch size */
+  .filter-chip {
+    padding: 0.5rem 1.2rem;
+    font-size: 0.9rem;
+  }
+
+  /* Prevent ugly word-breaking inside buttons */
+  .add-item-button {
+    white-space: nowrap;
+    font-size: 0.95rem;
+  }
+}
+
+/* ===============================
+   MOBILE RESPONSIVENESS FIX
+   =============================== */
+@media (max-width: 576px) {
+
+  .wardrobe-header-row {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 0.75rem;
+  }
+
+  .wardrobe-header-text {
+    text-align: center;
+  }
+
+  .wardrobe-header-action {
+    width: 100%;
+  }
+
+  .wardrobe-header-action .add-item-button {
+    width: 100%;
+  }
+}

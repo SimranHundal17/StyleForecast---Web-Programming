@@ -186,3 +186,31 @@
 .modal-content {
   border-radius: .8rem;
 }
+
+/* ===============================
+   MOBILE RESPONSIVENESS FIX
+   =============================== */
+/* ===============================
+   MOBILE RESPONSIVENESS FIX
+   =============================== */
+@media (max-width: 576px) {
+
+  .wardrobe-header-row {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 0.75rem;
+  }
+
+  .wardrobe-header-text {
+    text-align: center;
+  }
+
+  .wardrobe-header-action {
+    width: 100%;
+  }
+
+  .wardrobe-header-action .add-item-button {
+    width: 100%;
+  }
+}

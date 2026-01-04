@@ -110,3 +110,25 @@
   opacity: 0.9;
   transform: scale(1.03);
 }
+
+/* ===============================
+   EXTRA SMALL SCREEN FIX (Fold)
+   =============================== */
+@media (max-width: 576px) {
+
+  .intro-container h1 {
+    font-size: 2.1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .intro-container p {
+    font-size: 1rem;
+  }
+
+  .get-started-btn {
+    width: 100%;
+    max-width: 280px;
+  }
+}

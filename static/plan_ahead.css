@@ -156,3 +156,82 @@
     margin: auto;
   }
 }
+
+/* =========================================
+   RESPONSIVE FIX — SMALL & FOLD DEVICES
+========================================= */
+@media (max-width: 576px) {
+
+  /* Page padding */
+  .section {
+    padding: 1.2rem;
+  }
+
+  .wardrobe-card {
+    padding: 1.5rem 1.2rem;
+  }
+
+  /* Header alignment */
+  .wardrobe-header-row {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 0.5rem;
+  }
+
+  .title {
+    font-size: 1.6rem;
+  }
+
+  .subtitle {
+    font-size: 0.95rem;
+  }
+
+  /* Top controls stack */
+  .plan-top-controls {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .date-selectors {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  /* Calendar sizing */
+  .calendar-grid {
+    gap: 6px;
+  }
+
+  .calendar-day {
+    padding: 10px 0;
+    font-size: 0.85rem;
+  }
+
+  /* Modal padding */
+  #planModal .modal-body {
+    padding: 1rem;
+  }
+
+  /* Slider controls spacing */
+  #prevSlide,
+  #nextSlide {
+    padding: 6px 12px;
+    font-size: 0.9rem;
+  }
+
+  .slider-slide {
+    padding: 12px;
+  }
+
+  /* Outfit items wrap better */
+  .outfit-preview {
+    justify-content: center;
+  }
+
+  .outfit-item {
+    font-size: 0.85rem;
+    padding: 6px 10px;
+  }
+}
