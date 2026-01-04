@@ -7,6 +7,7 @@
 
 /* -------------------- GLOBAL STATE ---------------------- */
 let savedPlans = {};          // Real saved plans from backend
+let tempPlans = {};          // Unsaved temporary plans during generation
 let selectedDates = [];       // User-picked date range
 let sliderDates = [];         // Used ONLY during generating
 let currentSlideIndex = 0;
@@ -18,28 +19,26 @@ let userManuallySelectedLocation = false;
 const today = new Date();
 
 /* -------------------- DOM ---------------------- */
-const planType         = document.getElementById("planType");
-const yearSelect       = document.getElementById("yearSelect");
-const monthSelect      = document.getElementById("monthSelect");
-const calendar         = document.getElementById("calendar");
-const planModal        = new bootstrap.Modal(document.getElementById("planModal"));
-
-const deleteTripBtn    = document.getElementById("deleteTripBtn");
+const planType = document.getElementById("planType");
+const yearSelect = document.getElementById("yearSelect");
+const monthSelect = document.getElementById("monthSelect");
+const calendar = document.getElementById("calendar");
+const planModal = new bootstrap.Modal(document.getElementById("planModal"));
 
 const planInputSection = document.getElementById("planInputSection");
 const singleDayContainer = document.getElementById("singleDayContainer");
 
-const sliderContainer  = document.getElementById("sliderContainer");
-const slider           = document.getElementById("slider");
-const sliderDots       = document.getElementById("sliderDots");
-const loadingSpinner   = document.getElementById("loadingSpinner");
+const sliderContainer = document.getElementById("sliderContainer");
+const slider = document.getElementById("slider");
+const sliderDots = document.getElementById("sliderDots");
+const loadingSpinner = document.getElementById("loadingSpinner");
 
-const locationInput    = document.getElementById("locationInput");
-const suggestionsBox   = document.getElementById("locationSuggestions");
-const occasionInput    = document.getElementById("occasionInput");
-const weatherInput     = document.getElementById("weatherInput");
-const weatherAlert     = document.getElementById("weatherAlert");
-const generateBtn      = document.getElementById("generateBtn");
+const locationInput = document.getElementById("locationInput");
+const suggestionsBox = document.getElementById("locationSuggestions");
+const occasionInput = document.getElementById("occasionInput");
+const weatherInput = document.getElementById("weatherInput");
+const weatherAlert = document.getElementById("weatherAlert");
+const generateBtn = document.getElementById("generateBtn");
 
 /* ============================================================
    INITIAL LOAD
@@ -53,6 +52,7 @@ async function loadSavedPlans() {
 
     generateCalendar();
 }
+
 loadSavedPlans();
 
 /* ============================================================
@@ -64,8 +64,8 @@ for (let y = today.getFullYear(); y <= today.getFullYear() + 2; y++) {
 yearSelect.value = today.getFullYear();
 
 [
- "January","February","March","April","May","June",
- "July","August","September","October","November","December"
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
 ].forEach((m, i) => {
     monthSelect.innerHTML += `<option value="${i}">${m}</option>`;
 });
@@ -94,12 +94,13 @@ function generateCalendar() {
         const div = document.createElement("div");
         div.className = "calendar-day";
 
-        const dateStr = `${y}-${String(m+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
-        const dateObj = new Date(dateStr);
+        const dateStr = `${y}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+        const dateObj = new Date(dateStr + "T00:00:00");
+        const todayDateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
 
         div.textContent = d;
 
-        if (dateObj < today) div.classList.add("disabled");
+        if (dateObj < todayDateOnly) div.classList.add("disabled");
 
         if (savedPlans[dateStr]?.outfit?.length > 0) {
             div.classList.add("selected");
@@ -143,12 +144,12 @@ function onCalendarClick(dateStr) {
         const end = new Date(dateStr);
 
         selectedDates = [];
-        let cur = new Date(Math.min(start,end));
-        const fin = new Date(Math.max(start,end));
+        let cur = new Date(Math.min(start, end));
+        const fin = new Date(Math.max(start, end));
 
         while (cur <= fin) {
             selectedDates.push(cur.toISOString().split("T")[0]);
-            cur.setDate(cur.getDate()+1);
+            cur.setDate(cur.getDate() + 1);
         }
 
         highlightRange();
@@ -171,7 +172,7 @@ function highlightRange() {
         const m = monthSelect.value;
         const d = day.textContent;
 
-        const dateStr = `${y}-${String(parseInt(m)+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+        const dateStr = `${y}-${String(parseInt(m) + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
 
         if (selectedDates.includes(dateStr)) {
             day.classList.add("range");
@@ -183,7 +184,9 @@ function highlightRange() {
    OPEN NEW PLAN INPUT
 ============================================================ */
 function openModalForNew() {
-    deleteTripBtn.classList.add("d-none");
+    tempPlans = {};
+    sliderDates = [];
+    currentSlideIndex = 0;
 
     planInputSection.classList.remove("d-none");
     singleDayContainer.classList.add("d-none");
@@ -335,7 +338,7 @@ async function generateSingleDay() {
 
     const outfitData = await fetch("/get_outfit/api/get_outfit", {
         method: "POST",
-        headers: { "Content-Type":"application/json" },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
             lat: selectedLat,
             lon: selectedLon,
@@ -349,7 +352,7 @@ async function generateSingleDay() {
     p.description = weatherData.description;
     p.tempOutfit = outfitData.outfit;
 
-    savedPlans[date] = p;
+    tempPlans[date] = p;
 
     showGeneratedSingle(date);
 }
@@ -363,7 +366,7 @@ function showGeneratedSingle(dateStr) {
     planInputSection.classList.add("d-none");
     singleDayContainer.classList.remove("d-none");
 
-    const p = savedPlans[dateStr];
+    const p = tempPlans[dateStr];
 
     document.querySelector(".sd-date").textContent = dateStr;
     document.querySelector(".sd-location").textContent = p.location;
@@ -376,6 +379,7 @@ function showGeneratedSingle(dateStr) {
 
     document.getElementById("singleBtnsNew").classList.remove("d-none");
     document.getElementById("singleBtnsSaved").classList.add("d-none");
+    document.querySelectorAll(".sd-delete").forEach(b => b.classList.add("d-none"));
 
     document.querySelector(".sd-like").onclick =
         () => saveFinalOutfit(dateStr);
@@ -383,8 +387,7 @@ function showGeneratedSingle(dateStr) {
     document.querySelector(".sd-dislike").onclick =
         () => regenerateSingleDay(dateStr);
 
-    document.querySelector(".sd-delete").onclick =
-        () => deletePlan(dateStr);
+    bindDeleteButtons(dateStr);
 }
 
 /* ============================================================
@@ -409,41 +412,57 @@ function openSavedSingleDay(dateStr) {
     document.getElementById("singleBtnsNew").classList.add("d-none");
     document.getElementById("singleBtnsSaved").classList.remove("d-none");
 
+    document.querySelectorAll(".sd-delete").forEach(b => b.classList.remove("d-none"));
+
     document.querySelector(".sd-regenerate").onclick =
         () => regenerateSingleDay(dateStr);
 
-    document.querySelector(".sd-delete").onclick =
-        () => deletePlan(dateStr);
+    bindDeleteButtons(dateStr);
 
     planModal.show();
 }
 
 /* ============================================================
-   REGENERATE SINGLE DAY
+   REGENERATE = DELETE + GENERATE (CLEAN RESET)
 ============================================================ */
 async function regenerateSingleDay(dateStr) {
-    const p = savedPlans[dateStr];
 
-    const outfitData = await fetch("/get_outfit/api/get_outfit", {
-        method: "POST",
-        headers: { "Content-Type":"application/json" },
-        body: JSON.stringify({
-            lat: p.lat,
-            lon: p.lon,
-            occasion: p.occasion,
-            weather: p.weather
-        })
-    }).then(r => r.json());
+    const saved = savedPlans[dateStr];
 
-    p.tempOutfit = outfitData.outfit;
+    // 1️⃣ If it exists in DB → delete it (same as delete button)
+    if (saved?.id) {
+        await fetch("/plan/delete", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id: saved.id })
+        });
+    }
 
-    showGeneratedSingle(dateStr);
+    // 2️⃣ Remove from savedPlans → calendar unhighlights
+    delete savedPlans[dateStr];
+    generateCalendar();
+
+    // 3️⃣ Treat as brand-new generation
+    selectedDates = [dateStr];
+    tempPlans = {};
+    sliderDates = [];
+
+    // 4️⃣ Re-generate like new
+    await generateSingleDay();
 }
 
 /* ============================================================
    GENERATE MULTI-DAY — wipe temp before generating
 ============================================================ */
 async function generateMultiDay() {
+
+    slider.innerHTML = "";
+    sliderDots.innerHTML = "";
+    sliderContainer.classList.add("d-none");
+
+    tempPlans = {};
+    sliderDates = [];
+    currentSlideIndex = 0;
 
     // 🔥 REMOVE ANY OLD TEMPORARY DATA
     sliderDates.forEach(d => {
@@ -458,11 +477,11 @@ async function generateMultiDay() {
     });
 
     sliderDates = [...selectedDates];
-    loadingSpinner.classList.remove("d-none");
-
-    sliderContainer.classList.remove("d-none");
     planInputSection.classList.add("d-none");
     singleDayContainer.classList.add("d-none");
+    sliderContainer.classList.remove("d-none");
+
+    loadingSpinner.classList.remove("d-none");
 
     const results = {};
     const occasion = occasionInput.value;
@@ -484,7 +503,7 @@ async function generateMultiDay() {
         } else {
             const outfitData = await fetch("/get_outfit/api/get_outfit", {
                 method: "POST",
-                headers: { "Content-Type":"application/json" },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     lat: selectedLat,
                     lon: selectedLon,
@@ -508,7 +527,7 @@ async function generateMultiDay() {
     sliderDates.forEach(date => {
         const r = results[date];
 
-        savedPlans[date] = {
+        tempPlans[date] = {
             date,
             location: locationInput.value,
             lat: selectedLat,
@@ -539,73 +558,81 @@ function buildSlider() {
 
     sliderDates.forEach((date, idx) => {
 
-        const p = savedPlans[date];
-        const slide = document.createElement("div");
-        slide.className = "slider-slide text-center";
+    const p = tempPlans[date];
+    const slide = document.createElement("div");
+    slide.className = "slider-slide text-center";
 
-        if (p.missingWeather) {
-
-            slide.innerHTML = `
-                <h4>${date}</h4>
-                <p class="text-danger fw-bold">Weather missing. Select manually:</p>
-
-                <select class="form-select weather-select mx-auto" style="max-width:250px;">
-                    <option value="">Select Weather</option>
-                    <option value="Clear">Clear</option>
-                    <option value="Clouds">Clouds</option>
-                    <option value="Rain">Rain</option>
-                    <option value="Snow">Snow</option>
-                </select>
-
-                <button class="btn btn-primary regen-btn mt-2">Generate</button>
-            `;
-
-            slide.querySelector(".regen-btn").onclick =
-                () => regenerateMissing(date, slide);
-
-        } else {
-
-            slide.innerHTML = `
-                <h4>${date}</h4>
-                <p><b>Location:</b> ${p.location}</p>
-                <p><b>Occasion:</b> ${p.occasion}</p>
-                <p><b>Weather:</b> ${p.weather}${p.temp ? ` (${p.temp}°C)` : ""}</p>
-
-                <div class="outfit-preview justify-content-center">
-                    ${p.tempOutfit.map(i => `<div class="outfit-item">${i}</div>`).join("")}
-                </div>
-
-                <div class="text-center mt-3">
-                    <button class="btn btn-success likeBtn me-2">👍 Like</button>
-                    <button class="btn btn-danger dislikeBtn me-2">👎 Dislike</button>
-                </div>
-            `;
-
-            slide.querySelector(".likeBtn").onclick = () => saveFinalOutfit(date);
-            slide.querySelector(".dislikeBtn").onclick = () => regenerateMultiDayOne(date);
-        }
-
+    if (!p) {
+        slide.innerHTML = `
+            <h4>${date}</h4>
+            <p class="text-success fw-bold">✔ Outfit saved</p>
+            <p>You can continue to the next day.</p>
+        `;
         slider.appendChild(slide);
+    } 
+    else if (p.missingWeather) {
+        slide.innerHTML = `
+            <h4>${date}</h4>
+            <p class="text-danger fw-bold">Weather missing. Select manually:</p>
+            <select class="form-select weather-select mx-auto" style="max-width:250px;">
+                <option value="">Select Weather</option>
+                <option value="Clear">Clear</option>
+                <option value="Clouds">Clouds</option>
+                <option value="Rain">Rain</option>
+                <option value="Snow">Snow</option>
+            </select>
+            <button class="btn btn-primary regen-btn mt-2">Generate</button>
+        `;
+        slide.querySelector(".regen-btn").onclick =
+            () => regenerateMissing(date, slide);
+        slider.appendChild(slide);
+    } 
+    else {
+        slide.innerHTML = `
+            <h4>${date}</h4>
+            <p><b>Location:</b> ${p.location}</p>
+            <p><b>Occasion:</b> ${p.occasion}</p>
+            <p><b>Weather:</b> ${p.weather}${p.temp ? ` (${p.temp}°C)` : ""}</p>
+            <div class="outfit-preview justify-content-center">
+                ${p.tempOutfit.map(i => `<div class="outfit-item">${i}</div>`).join("")}
+            </div>
+            <div class="text-center mt-3">
+                <button class="btn btn-success likeBtn me-2">👍 Like</button>
+                <button class="btn btn-danger dislikeBtn me-2">👎 Dislike</button>
+            </div>
+        `;
+        slide.querySelector(".likeBtn").onclick = () => saveFinalOutfit(date);
+        slide.querySelector(".dislikeBtn").onclick = () => regenerateMultiDayOne(date);
+        slider.appendChild(slide);
+    }
 
-        const dot = document.createElement("span");
-        dot.className = "slider-dot";
-        dot.textContent = "•";
-        dot.onclick = () => {
-            currentSlideIndex = idx;
-            updateSliderPosition();
-        };
-        sliderDots.appendChild(dot);
-    });
+    const dot = document.createElement("span");
+    dot.className = "slider-dot";
+    dot.textContent = "•";
+    dot.onclick = () => {
+        currentSlideIndex = idx;
+        updateSliderPosition();
+    };
+    sliderDots.appendChild(dot);
+});
+
 
     updateSliderPosition();
 }
 
 /* ============================================================
-   REGENERATE MISSING WEATHER
+   REGENERATE MISSING WEATHER (MULTI-DAY SLIDER)
 ============================================================ */
 async function regenerateMissing(dateStr, slideElement) {
 
-    const p = savedPlans[dateStr];
+    // ✅ MUST come from tempPlans, not savedPlans
+    const p = tempPlans[dateStr];
+
+    if (!p) {
+        alert("Something went wrong. Please try again.");
+        return;
+    }
+
     const sel = slideElement.querySelector(".weather-select");
     const chosen = sel.value;
 
@@ -616,7 +643,7 @@ async function regenerateMissing(dateStr, slideElement) {
 
     const outfitData = await fetch("/get_outfit/api/get_outfit", {
         method: "POST",
-        headers: {"Content-Type":"application/json"},
+        headers: { "Content-Type":"application/json" },
         body: JSON.stringify({
             lat: p.lat,
             lon: p.lon,
@@ -625,10 +652,12 @@ async function regenerateMissing(dateStr, slideElement) {
         })
     }).then(r => r.json());
 
+    // ✅ Update TEMP plan only
     p.weather = chosen;
     p.tempOutfit = outfitData.outfit;
     p.missingWeather = false;
 
+    // 🔄 Rebuild slider and stay on same date
     buildSlider();
     openSliderOn(dateStr);
 }
@@ -642,7 +671,7 @@ async function regenerateMultiDayOne(dateStr) {
 
     const outfitData = await fetch("/get_outfit/api/get_outfit", {
         method: "POST",
-        headers: {"Content-Type":"application/json"},
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
             lat: p.lat,
             lon: p.lon,
@@ -672,7 +701,7 @@ function updateSliderPosition() {
 
     slider.style.transform = `translateX(-${currentSlideIndex * 100}%)`;
 
-    [...sliderDots.children].forEach((dot,i) => {
+    [...sliderDots.children].forEach((dot, i) => {
         dot.style.color = (i === currentSlideIndex) ? "black" : "#bbb";
     });
 }
@@ -696,14 +725,14 @@ document.getElementById("nextSlide").onclick = () => {
 ============================================================ */
 async function saveFinalOutfit(dateStr) {
 
-    const p = savedPlans[dateStr];
+    const p = tempPlans[dateStr];
     const finalOutfit = p.tempOutfit;
 
+    // ---------- CREATE PLAN IF NEEDED ----------
     if (!p.id) {
-
         const res = await fetch("/plan/create", {
             method: "POST",
-            headers: {"Content-Type":"application/json"},
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 start: dateStr,
                 end: dateStr,
@@ -721,21 +750,51 @@ async function saveFinalOutfit(dateStr) {
         p.id = created[0].id;
     }
 
+    // ---------- SAVE OUTFIT ----------
+    // ---------- SAVE OUTFIT ----------
     await fetch("/plan/update", {
         method: "POST",
-        headers: {"Content-Type":"application/json"},
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
             id: p.id,
             outfit: finalOutfit
         })
     });
 
-    p.outfit = finalOutfit;
-    delete p.tempOutfit;
+    // 🔥 MOVE FROM TEMP → SAVED (IMMEDIATE UI SYNC)
+    savedPlans[dateStr] = {
+        ...p,
+        outfit: finalOutfit
+    };
 
+    // 🔥 REMOVE TEMP VERSION
+    delete tempPlans[dateStr];
+
+    // 🔥 UPDATE CALENDAR IMMEDIATELY
+    generateCalendar();
+
+    /* =====================================================
+       MULTI-DAY SLIDER LOGIC
+    ===================================================== */
+    if (sliderDates.length > 1) {
+
+        if (currentSlideIndex < sliderDates.length - 1) {
+            currentSlideIndex++;
+            updateSliderPosition();
+            return;
+        }
+
+        alert("Trip saved!");
+        planModal.hide();
+        return;
+    }
+
+    /* =====================================================
+       SINGLE DAY LOGIC
+    ===================================================== */
     alert("Saved!");
     planModal.hide();
-    loadSavedPlans();
+
 }
 
 /* ============================================================
@@ -747,7 +806,7 @@ async function deletePlan(dateStr) {
     if (p?.id) {
         await fetch("/plan/delete", {
             method: "POST",
-            headers: {"Content-Type":"application/json"},
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ id: p.id })
         });
     }
@@ -759,23 +818,26 @@ async function deletePlan(dateStr) {
     loadSavedPlans();
 }
 
+function bindDeleteButtons(dateStr) {
+    document.querySelectorAll(".sd-delete").forEach(btn => {
+        btn.onclick = () => deletePlan(dateStr);
+    });
+}
+
 /* ============================================================
    ON MODAL CLOSE → CLEAN ALL TEMPORARY UNSAVED DATA
 ============================================================ */
 document.getElementById("planModal").addEventListener("hidden.bs.modal", () => {
 
-    // 🔥 Clean ALL non-saved temp data
-    Object.keys(savedPlans).forEach(date => {
-        if (!savedPlans[date].id) {   // Means not saved in database
-            delete savedPlans[date].tempOutfit;
-            delete savedPlans[date].outfit;
-            delete savedPlans[date].weather;
-            delete savedPlans[date].temp;
-            delete savedPlans[date].description;
-            delete savedPlans[date].missingWeather;
-        }
-    });
+    // 🔥 Only clear UNSAVED temporary data
+    tempPlans = {};
+
+    // 🔥 Do NOT touch savedPlans — backend truth
+    // 🔥 Do NOT force reload here (save already did that)
 
     selectedDates = [];
     sliderDates = [];
+    currentSlideIndex = 0;
 });
+
+
