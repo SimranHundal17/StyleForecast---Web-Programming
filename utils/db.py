@@ -25,4 +25,3 @@ laundry_db = client[LAUNDRY_DB_NAME]
 
 print(f"✅ Connected to MongoDB main DB: {DB_NAME}")
 print(f"🧺 Connected to Laundry DB: {LAUNDRY_DB_NAME}")
-
