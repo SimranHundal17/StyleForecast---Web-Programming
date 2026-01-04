@@ -87,14 +87,24 @@ project/
 
 ## Team Members and Roles
 
-- **Simran**
+- Simran
   - Accessories module
   - Get Outfit module
   - Plan Ahead module
   - Authentication (Login / Signup)
 
-- **Sergei**
+- Sergei
   - Index (Landing Page)
   - Wardrobe module
   - Outfit History module
   - Profile module
+
+  ## Setup Instructions
+  ```bash
+  pip install -r requirements.txt
+  
+  Run the application:
+  python app.py
+  
+  Open the application in browser:
+  http://127.0.0.1:5000/
