@@ -34,8 +34,7 @@ async function loadHistory() {
             </div>
             <div class="history-item-outfit">${outfitText}</div>
             <div class="history-item-meta">
-              Mood: ${entry.mood || "—"} • Rating: ${entry.rating ?? "—"}
-              ${entry.liked ? " • ❤️ Liked" : ""}
+              Occasion: ${entry.occasion || "—"}
             </div>
             <button 
               class="history-item-btn" 
