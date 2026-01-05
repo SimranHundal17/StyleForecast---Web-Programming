@@ -91,3 +91,21 @@ def delete_plan(pid):
 def delete_group(gid):
     plans.delete_many({"group_id": int(gid)})
     return True
+
+from model.outfit_history_model import add_history_entry
+
+def archive_past_plans():
+    today = datetime.utcnow().date()
+    past_plans = plans.find({"date": {"$lt": today.strftime("%Y-%m-%d")}})
+
+    for p in past_plans:
+        if p.get("outfit"):
+            add_history_entry({
+                "date": p["date"],
+                "location": p.get("location"),
+                "occasion": p.get("occasion"),
+                "weather": p.get("weather"),
+                "temp": p.get("temp"),
+                "outfit": p.get("outfit")
+            })
+            plans.delete_one({"id": p["id"]})

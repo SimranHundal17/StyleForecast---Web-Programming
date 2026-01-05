@@ -7,7 +7,7 @@
   padding: 2rem;
   border-radius: 16px;
   background: #fff;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
 }
 
 /* HEADER LAYOUT */
@@ -48,6 +48,20 @@
   gap: 8px;
 }
 
+.calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  margin-bottom: 8px;
+  text-align: center;
+  font-weight: 600;
+  color: #4f46e5;
+}
+
+.calendar-weekdays div {
+  padding: 6px 0;
+}
+
 .calendar-day {
   padding: 12px 0;
   text-align: center;
@@ -76,6 +90,13 @@
 
 .calendar-day.range {
   background: #c7d2fe;
+}
+
+/* TODAY HIGHLIGHT */
+.calendar-day.today {
+  outline: 2px solid #f59e0b;     /* amber ring */
+  outline-offset: -2px;
+  font-weight: 700;
 }
 
 /* AUTOCOMPLETE */
@@ -199,6 +220,10 @@
     gap: 0.5rem;
   }
 
+  .calendar-wrapper {
+    width: 100%;
+  }
+
   /* Calendar sizing */
   .calendar-grid {
     gap: 6px;
@@ -233,5 +258,23 @@
   .outfit-item {
     font-size: 0.85rem;
     padding: 6px 10px;
+  }
+}
+
+/* EXTRA SMALL DEVICES (Fold, small phones) */
+@media (max-width: 380px) {
+
+  .calendar-grid {
+    gap: 4px;
+  }
+
+  .calendar-day {
+    padding: 8px 0;
+    font-size: 0.75rem;
+    border-radius: 8px;
+  }
+
+  .calendar-weekdays {
+    font-size: 0.7rem;
   }
 }
