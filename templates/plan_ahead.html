@@ -15,174 +15,195 @@
 </head>
 
 <body>
-<div class="page-wrapper">
+    <div class="page-wrapper">
 
-    <!-- NAVBAR -->
-    <nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(90deg,#6366f1,#8b5cf6);">
-        <div class="container-fluid">
+        <!-- NAVBAR -->
+        <nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(90deg,#6366f1,#8b5cf6);">
+            <div class="container-fluid">
 
-            <a class="navbar-brand fw-bold" href="{{ url_for('intro.intro') }}">☁️ Style Forecast</a>
+                <a class="navbar-brand fw-bold" href="{{ url_for('intro.intro') }}">☁️ Style Forecast</a>
 
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
 
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('wardrobe.wardrobe') }}">Wardrobe</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('accessories.accessories_page') }}">Accessories</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('outfit.get_outfit_page') }}">Get Outfit</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('history.outfit_history') }}">Outfit History</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="{{ url_for('plan.plan_ahead_page') }}">Plan Ahead</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('profile.profile') }}">Profile</a></li>
-                    <li class="nav-item"><a class="nav-link nav-logout" href="{{ url_for('auth.logout') }}">Logout</a></li>
-                </ul>
-            </div>
-
-        </div>
-    </nav>
-
-    <!-- MAIN -->
-    <main class="section">
-        <section class="card wardrobe-card">
-
-            <div class="wardrobe-header-row">
-                <div>
-                    <h1 class="title">Plan Ahead</h1>
-                    <p class="subtitle">Plan outfits for future dates</p>
-                </div>
-            </div>
-
-            <!-- TOP CONTROLS -->
-            <div class="plan-top-controls">
-
-                <select id="planType" class="form-select w-auto">
-                    <option value="one">Single Day</option>
-                    <option value="multi">Multi-Day Trip</option>
-                </select>
-
-                <div class="date-selectors">
-                    <select id="monthSelect" class="form-select"></select>
-                    <select id="yearSelect" class="form-select"></select>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('wardrobe.wardrobe') }}">Wardrobe</a>
+                        </li>
+                        <li class="nav-item"><a class="nav-link"
+                                href="{{ url_for('accessories.accessories_page') }}">Accessories</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('outfit.get_outfit_page') }}">Get
+                                Outfit</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('history.outfit_history') }}">Outfit
+                                History</a></li>
+                        <li class="nav-item"><a class="nav-link active"
+                                href="{{ url_for('plan.plan_ahead_page') }}">Plan Ahead</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('profile.profile') }}">Profile</a>
+                        </li>
+                        <li class="nav-item"><a class="nav-link nav-logout"
+                                href="{{ url_for('auth.logout') }}">Logout</a></li>
+                    </ul>
                 </div>
 
             </div>
+        </nav>
 
-            <!-- CALENDAR -->
-            <div id="calendar" class="calendar-grid"></div>
+        <!-- MAIN -->
+        <main class="section">
+            <section class="card wardrobe-card">
 
-        </section>
-    </main>
+                <div class="wardrobe-header-row">
+                    <div>
+                        <h1 class="title">Plan Ahead</h1>
+                        <p class="subtitle">Plan outfits for future dates</p>
+                    </div>
+                </div>
 
-</div>
+                <!-- TOP CONTROLS -->
+                <div class="plan-top-controls">
 
-<!-- ============================================================
+                    <select id="planType" class="form-select w-auto">
+                        <option value="one">Single Day</option>
+                        <option value="multi">Multi-Day Trip</option>
+                    </select>
+
+                    <div class="date-selectors">
+                        <select id="monthSelect" class="form-select"></select>
+                        <select id="yearSelect" class="form-select"></select>
+                    </div>
+
+                </div>
+
+                <div class="calendar-wrapper">
+
+                    <div class="calendar-weekdays">
+                        <div>Mon</div>
+                        <div>Tue</div>
+                        <div>Wed</div>
+                        <div>Thu</div>
+                        <div>Fri</div>
+                        <div>Sat</div>
+                        <div>Sun</div>
+                    </div>
+
+                    <div id="calendar" class="calendar-grid"></div>
+
+                </div>
+
+            </section>
+        </main>
+
+    </div>
+
+    <!-- ============================================================
      PLAN MODAL
 ============================================================ -->
-<div class="modal fade" id="planModal" tabindex="-1">
-    <div class="modal-dialog modal-xl modal-dialog-centered">
-        <div class="modal-content">
+    <div class="modal fade" id="planModal" tabindex="-1">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content">
 
-            <div class="modal-header d-flex justify-content-between align-items-center">
-                <h5 class="modal-title">Plan Outfit</h5>
+                <div class="modal-header d-flex justify-content-between align-items-center">
+                    <h5 class="modal-title">Plan Outfit</h5>
 
-                <div class="d-flex align-items-center gap-2">
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <div class="d-flex align-items-center gap-2">
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
                 </div>
-            </div>
 
-            <div class="modal-body">
+                <div class="modal-body">
 
-                <!-- =================== INPUT SECTION (NEW PLAN) =================== -->
-                <div id="planInputSection">
+                    <!-- =================== INPUT SECTION (NEW PLAN) =================== -->
+                    <div id="planInputSection">
 
-                    <div class="mb-3">
-                        <label class="form-label">Location</label>
-                        <input type="text" id="locationInput" class="form-control" placeholder="Search location">
-                        <div id="locationSuggestions" class="autocomplete-box"></div>
+                        <div class="mb-3">
+                            <label class="form-label">Location</label>
+                            <input type="text" id="locationInput" class="form-control" placeholder="Search location">
+                            <div id="locationSuggestions" class="autocomplete-box"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Occasion</label>
+                            <select id="occasionInput" class="form-select">
+                                <option value="Casual">Casual</option>
+                                <option value="Business">Business</option>
+                                <option value="Party">Party</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Weather (optional)</label>
+                            <select id="weatherInput" class="form-select">
+                                <option value="">Auto Detect</option>
+                                <option value="Clear">Clear</option>
+                                <option value="Clouds">Clouds</option>
+                                <option value="Rain">Rain</option>
+                                <option value="Snow">Snow</option>
+                            </select>
+
+                            <div id="weatherAlert" class="alert alert-danger mt-2 d-none">
+                                Weather not available. Choose manually.
+                            </div>
+                        </div>
+
+                        <button class="btn btn-purple w-100" id="generateBtn">Generate Outfit</button>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Occasion</label>
-                        <select id="occasionInput" class="form-select">
-                            <option value="Casual">Casual</option>
-                            <option value="Business">Business</option>
-                            <option value="Party">Party</option>
-                        </select>
-                    </div>
+                    <!-- =================== SINGLE DAY VIEW =================== -->
+                    <div id="singleDayContainer" class="d-none text-center">
 
-                    <div class="mb-3">
-                        <label class="form-label">Weather (optional)</label>
-                        <select id="weatherInput" class="form-select">
-                            <option value="">Auto Detect</option>
-                            <option value="Clear">Clear</option>
-                            <option value="Clouds">Clouds</option>
-                            <option value="Rain">Rain</option>
-                            <option value="Snow">Snow</option>
-                        </select>
+                        <h3 class="sd-date"></h3>
 
-                        <div id="weatherAlert" class="alert alert-danger mt-2 d-none">
-                            Weather not available. Choose manually.
+                        <p><b>Location:</b> <span class="sd-location"></span></p>
+                        <p><b>Occasion:</b> <span class="sd-occasion"></span></p>
+                        <p><b>Weather:</b> <span class="sd-weather"></span></p>
+
+                        <div class="outfit-preview sd-outfit"></div>
+
+                        <!-- NEW PLAN BUTTONS -->
+                        <div id="singleBtnsNew" class="mt-4">
+                            <button class="btn btn-success me-2 sd-like">👍 Like</button>
+                            <button class="btn btn-danger me-2 sd-dislike">👎 Dislike</button>
+                            <button class="btn btn-outline-danger sd-delete">Delete</button>
+                        </div>
+
+                        <!-- SAVED PLAN BUTTONS -->
+                        <div id="singleBtnsSaved" class="mt-4 d-none">
+                            <button class="btn btn-purple me-2 sd-regenerate">🔄 Regenerate</button>
+                            <button class="btn btn-outline-danger sd-delete">Delete</button>
                         </div>
                     </div>
 
-                    <button class="btn btn-purple w-100" id="generateBtn">Generate Outfit</button>
-                </div>
+                    <!-- =================== MULTI-DAY SLIDER =================== -->
+                    <div id="sliderContainer" class="d-none text-center">
 
-                <!-- =================== SINGLE DAY VIEW =================== -->
-                <div id="singleDayContainer" class="d-none text-center">
+                        <div id="loadingSpinner" class="d-none my-3">
+                            <div class="spinner-border text-primary" role="status"></div>
+                            <p>Generating outfits…</p>
+                        </div>
 
-                    <h3 class="sd-date"></h3>
+                        <div class="d-flex justify-content-between mb-3">
+                            <button id="prevSlide" class="btn btn-light">&lt;</button>
+                            <button id="nextSlide" class="btn btn-light">&gt;</button>
+                        </div>
 
-                    <p><b>Location:</b> <span class="sd-location"></span></p>
-                    <p><b>Occasion:</b> <span class="sd-occasion"></span></p>
-                    <p><b>Weather:</b> <span class="sd-weather"></span></p>
+                        <div id="slider" class="slider mx-auto"></div>
 
-                    <div class="outfit-preview sd-outfit"></div>
+                        <div id="sliderDots" class="slider-dots mx-auto mt-3"></div>
 
-                    <!-- NEW PLAN BUTTONS -->
-                    <div id="singleBtnsNew" class="mt-4">
-                        <button class="btn btn-success me-2 sd-like">👍 Like</button>
-                        <button class="btn btn-danger me-2 sd-dislike">👎 Dislike</button>
-                        <button class="btn btn-outline-danger sd-delete">Delete</button>
                     </div>
-
-                    <!-- SAVED PLAN BUTTONS -->
-                    <div id="singleBtnsSaved" class="mt-4 d-none">
-                        <button class="btn btn-purple me-2 sd-regenerate">🔄 Regenerate</button>
-                        <button class="btn btn-outline-danger sd-delete">Delete</button>
-                    </div>
-                </div>
-
-                <!-- =================== MULTI-DAY SLIDER =================== -->
-                <div id="sliderContainer" class="d-none text-center">
-
-                    <div id="loadingSpinner" class="d-none my-3">
-                        <div class="spinner-border text-primary" role="status"></div>
-                        <p>Generating outfits…</p>
-                    </div>
-
-                    <div class="d-flex justify-content-between mb-3">
-                        <button id="prevSlide" class="btn btn-light">&lt;</button>
-                        <button id="nextSlide" class="btn btn-light">&gt;</button>
-                    </div>
-
-                    <div id="slider" class="slider mx-auto"></div>
-
-                    <div id="sliderDots" class="slider-dots mx-auto mt-3"></div>
 
                 </div>
-
             </div>
         </div>
     </div>
-</div>
 
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- PAGE JS -->
-<script src="{{ url_for('static', filename='plan_ahead.js') }}"></script>
+    <!-- PAGE JS -->
+    <script src="{{ url_for('static', filename='plan_ahead.js') }}"></script>
 
 </body>
+
 </html>

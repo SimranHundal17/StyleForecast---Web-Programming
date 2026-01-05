@@ -83,7 +83,8 @@ function generateCalendar() {
     const y = parseInt(yearSelect.value);
     const m = parseInt(monthSelect.value);
 
-    const firstDay = new Date(y, m, 1).getDay();
+    let firstDay = new Date(y, m, 1).getDay();
+    firstDay = firstDay === 0 ? 6 : firstDay - 1;
     const lastDate = new Date(y, m + 1, 0).getDate();
 
     for (let i = 0; i < firstDay; i++) {
@@ -100,10 +101,23 @@ function generateCalendar() {
 
         div.textContent = d;
 
-        if (dateObj < todayDateOnly) div.classList.add("disabled");
+        if (dateObj < todayDateOnly) {
+            div.classList.add("disabled");
+        }
 
-        if (savedPlans[dateStr]?.outfit?.length > 0) {
+        /* Highlight saved future/today outfits */
+        if (
+            savedPlans[dateStr]?.outfit?.length > 0 &&
+            dateObj >= todayDateOnly
+        ) {
             div.classList.add("selected");
+        }
+
+        /* 🔥 Highlight TODAY always (even if selected) */
+        if (
+            dateObj.getTime() === todayDateOnly.getTime()
+        ) {
+            div.classList.add("today");
         }
 
         div.addEventListener("click", () => {
@@ -558,20 +572,20 @@ function buildSlider() {
 
     sliderDates.forEach((date, idx) => {
 
-    const p = tempPlans[date];
-    const slide = document.createElement("div");
-    slide.className = "slider-slide text-center";
+        const p = tempPlans[date];
+        const slide = document.createElement("div");
+        slide.className = "slider-slide text-center";
 
-    if (!p) {
-        slide.innerHTML = `
+        if (!p) {
+            slide.innerHTML = `
             <h4>${date}</h4>
             <p class="text-success fw-bold">✔ Outfit saved</p>
             <p>You can continue to the next day.</p>
         `;
-        slider.appendChild(slide);
-    } 
-    else if (p.missingWeather) {
-        slide.innerHTML = `
+            slider.appendChild(slide);
+        }
+        else if (p.missingWeather) {
+            slide.innerHTML = `
             <h4>${date}</h4>
             <p class="text-danger fw-bold">Weather missing. Select manually:</p>
             <select class="form-select weather-select mx-auto" style="max-width:250px;">
@@ -583,12 +597,12 @@ function buildSlider() {
             </select>
             <button class="btn btn-primary regen-btn mt-2">Generate</button>
         `;
-        slide.querySelector(".regen-btn").onclick =
-            () => regenerateMissing(date, slide);
-        slider.appendChild(slide);
-    } 
-    else {
-        slide.innerHTML = `
+            slide.querySelector(".regen-btn").onclick =
+                () => regenerateMissing(date, slide);
+            slider.appendChild(slide);
+        }
+        else {
+            slide.innerHTML = `
             <h4>${date}</h4>
             <p><b>Location:</b> ${p.location}</p>
             <p><b>Occasion:</b> ${p.occasion}</p>
@@ -601,20 +615,20 @@ function buildSlider() {
                 <button class="btn btn-danger dislikeBtn me-2">👎 Dislike</button>
             </div>
         `;
-        slide.querySelector(".likeBtn").onclick = () => saveFinalOutfit(date);
-        slide.querySelector(".dislikeBtn").onclick = () => regenerateMultiDayOne(date);
-        slider.appendChild(slide);
-    }
+            slide.querySelector(".likeBtn").onclick = () => saveFinalOutfit(date);
+            slide.querySelector(".dislikeBtn").onclick = () => regenerateMultiDayOne(date);
+            slider.appendChild(slide);
+        }
 
-    const dot = document.createElement("span");
-    dot.className = "slider-dot";
-    dot.textContent = "•";
-    dot.onclick = () => {
-        currentSlideIndex = idx;
-        updateSliderPosition();
-    };
-    sliderDots.appendChild(dot);
-});
+        const dot = document.createElement("span");
+        dot.className = "slider-dot";
+        dot.textContent = "•";
+        dot.onclick = () => {
+            currentSlideIndex = idx;
+            updateSliderPosition();
+        };
+        sliderDots.appendChild(dot);
+    });
 
 
     updateSliderPosition();
@@ -643,7 +657,7 @@ async function regenerateMissing(dateStr, slideElement) {
 
     const outfitData = await fetch("/get_outfit/api/get_outfit", {
         method: "POST",
-        headers: { "Content-Type":"application/json" },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
             lat: p.lat,
             lon: p.lon,

@@ -6,7 +6,7 @@ import traceback
 from model.plan_ahead_model import (
     serialize_plan, get_all_plans, get_plan_by_id,
     get_plans_for_date, add_plan_entry, add_plan_range,
-    update_plan, delete_plan, delete_group
+    update_plan, delete_plan, delete_group, archive_past_plans
 )
 
 plan_bp = Blueprint("plan", __name__)
@@ -18,6 +18,7 @@ def plan_ahead_page():
 @plan_bp.route("/plan/plans")
 def api_plans():
     try:
+        archive_past_plans()
         plans = get_all_plans()
         return jsonify([serialize_plan(p) for p in plans])
     except:
@@ -119,3 +120,4 @@ def weather_for_date():
     except:
         traceback.print_exc()
         return jsonify({"error": "failed"}), 500
+    
