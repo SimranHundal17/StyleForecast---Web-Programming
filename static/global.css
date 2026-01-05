@@ -89,3 +89,28 @@ p, .subtitle {
   font-weight: 600;
   color: #374151;
 }
+
+.btn-purple {
+  background: linear-gradient(90deg, #6366f1, #8b5cf6);
+  color: #fff;
+  border: none;
+}
+
+.btn-purple:hover {
+  background: linear-gradient(90deg, #4f46e5, #7c3aed);
+  color: #fff;
+}
+
+/* Logout button in navbar */
+.logout-btn {
+  border-color: rgba(255, 255, 255, 0.6);
+  color: #ffffff;
+  margin-left: 0.5rem;
+  transition: all 0.25s ease;
+}
+
+.logout-btn:hover {
+  background-color: #ef4444; /* red-500 */
+  border-color: #ef4444;
+  color: #ffffff;
+}
