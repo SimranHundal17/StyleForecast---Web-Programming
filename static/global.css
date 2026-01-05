@@ -101,16 +101,33 @@ p, .subtitle {
   color: #fff;
 }
 
-/* Logout button in navbar */
-.logout-btn {
-  border-color: rgba(255, 255, 255, 0.6);
-  color: #ffffff;
-  margin-left: 0.5rem;
-  transition: all 0.25s ease;
+/* Base navbar links */
+.navbar .nav-link {
+  color: rgba(255, 255, 255, 0.75);
+  font-weight: 400;
+  transition: color 0.2s ease, font-weight 0.2s ease;
 }
 
-.logout-btn:hover {
-  background-color: #ef4444; /* red-500 */
-  border-color: #ef4444;
+/* Hover for normal links */
+.navbar .nav-link:hover {
   color: #ffffff;
+  font-weight: 500;
+  background: none;
+}
+
+/* Active page link */
+.navbar .nav-link.active {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+/* Logout */
+.navbar .nav-logout {
+  font-weight: 400;          /* NOT bold */
+  color: rgba(255, 255, 255, 0.75);
+}
+
+/* Logout hover */
+.navbar .nav-logout:hover {
+  color: red;            /* soft red hint */
 }
