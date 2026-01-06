@@ -1,12 +1,11 @@
-# models/outfit_history_model.py
+# model/outfit_history_model.py
 from utils.db import db
 
 # Mongo collection
 history_col = db["outfit_history"]
 
-
+# Convert Mongo document to dictionary
 def _to_dict(doc):
-    """Normalize MongoDB document to plain dict."""
     if not doc:
         return None
 
@@ -22,23 +21,20 @@ def _to_dict(doc):
         "liked": doc.get("liked", False),
     }
 
-
+# Generate numeric ID like in wardrobe
 def _get_next_id():
-    """Generate numeric ID like in wardrobe."""
     last = history_col.find_one(sort=[("id", -1)])
     if last:
         return int(last["id"]) + 1
     return 1
 
-
+# Get all history entries sorted by newest first
 def get_all_history():
-    """Fetch all history entries sorted by newest first."""
     docs = history_col.find().sort("id", -1)
     return [_to_dict(d) for d in docs]
 
-
+# Add a new history entry
 def add_history_entry(entry):
-    """Insert new entry into MongoDB."""
     new_id = _get_next_id()
 
     doc = {
@@ -56,9 +52,7 @@ def add_history_entry(entry):
     history_col.insert_one(doc)
     return _to_dict(doc)
 
-
+# Delete history entry by ID
 def delete_history_entry(entry_id):
-    """Delete entry by id."""
     res = history_col.delete_one({"id": int(entry_id)})
     return res.deleted_count > 0
-
