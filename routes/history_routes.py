@@ -1,13 +1,9 @@
 # routes/history_routes.py
-
 from flask import render_template, jsonify, request
 from routes import history_bp
-from model.outfit_history_model import (
-    get_all_history,
-    delete_history_entry,
-    add_history_entry
-)
+from model.outfit_history_model import get_all_history, delete_history_entry, add_history_entry
 
+# Fallback auth decorator (used only if utils.auth is available)
 try:
     from utils.auth import token_required
 except ImportError:
@@ -19,56 +15,30 @@ except ImportError:
             return f(current_user="Guest", *args, **kwargs)
         return wrapper
 
-
-# ---------------------------------------------------------
-# PAGE
-# ---------------------------------------------------------
+# Page to view outfit history
 @history_bp.route("/")
 @token_required
 def outfit_history(current_user):
     return render_template("outfit_history.html", current_user=current_user)
 
-
-# ---------------------------------------------------------
-# FETCH ALL HISTORY
-# ---------------------------------------------------------
+# JSON API to get all history entries
 @history_bp.route("/data")
 @token_required
 def history_data(current_user):
     entries = get_all_history()
     return jsonify(entries)
 
-
-# ---------------------------------------------------------
-# DELETE HISTORY ENTRY
-# ---------------------------------------------------------
+# JSON API to delete a history entry by ID
 @history_bp.route("/api/delete/<int:entry_id>", methods=["DELETE"])
 @token_required
 def history_delete(current_user, entry_id):
     ok = delete_history_entry(entry_id)
     return jsonify({"ok": ok})
 
-
-# ---------------------------------------------------------
-# ADD HISTORY ENTRY (used by Plan Ahead auto-archive)
-# ---------------------------------------------------------
+# JSON API to add a history entry (called from Plan Ahead JS)
 @history_bp.route("/api/add_from_plan", methods=["POST"])
 @token_required
 def history_add_from_plan(current_user):
-    """
-    Called automatically when a planned date becomes a past date.
-    The Plan Ahead JS sends:
-        {
-            "date": "...",
-            "location": "...",
-            "weather": "...",
-            "outfit": [...],
-            "occasion": "...",
-            "mood": "",
-            "rating": 0,
-            "liked": true
-        }
-    """
 
     data = request.get_json() or {}
 
