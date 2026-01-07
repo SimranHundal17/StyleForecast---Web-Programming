@@ -3,7 +3,8 @@ from flask import render_template, jsonify, request
 from routes import history_bp
 from model.outfit_history_model import get_all_history, delete_history_entry, add_history_entry
 
-# Fallback auth decorator (used only if utils.auth is available)
+# Try to import real auth decorator
+## Fallback is used ONLY if utils.auth is not available
 try:
     from utils.auth import token_required
 except ImportError:
@@ -16,26 +17,27 @@ except ImportError:
         return wrapper
 
 # Page to view outfit history
+## Render HTML page (server-side)
 @history_bp.route("/")
 @token_required
 def outfit_history(current_user):
     return render_template("outfit_history.html", current_user=current_user)
 
-# JSON API to get all history entries
+# Return all history entries as JSON for frontend fetch
 @history_bp.route("/data")
 @token_required
 def history_data(current_user):
     entries = get_all_history()
     return jsonify(entries)
 
-# JSON API to delete a history entry by ID
+# Delete one history entry by numeric id
 @history_bp.route("/api/delete/<int:entry_id>", methods=["DELETE"])
 @token_required
 def history_delete(current_user, entry_id):
     ok = delete_history_entry(entry_id)
     return jsonify({"ok": ok})
 
-# JSON API to add a history entry (called from Plan Ahead JS)
+# This endpoint is called from Plan Ahead JS to archive an outfit
 @history_bp.route("/api/add_from_plan", methods=["POST"])
 @token_required
 def history_add_from_plan(current_user):
@@ -45,12 +47,12 @@ def history_add_from_plan(current_user):
     entry = {
         "date":        data.get("date"),
         "location":    data.get("location", ""),
-        "weather":     data.get("weather", ""),   # may include "(temp °C)"
+        "weather":     data.get("weather", ""),
         "outfit":      data.get("outfit", []),
         "occasion":    data.get("occasion", ""),
         "mood":        data.get("mood", ""),
         "rating":      data.get("rating", 0),
-        "liked":       data.get("liked", True),   # archived outfits are always "liked"
+        "liked":       data.get("liked", True),
     }
 
     new_entry = add_history_entry(entry)
