@@ -1,4 +1,5 @@
 # routes/profile_routes.py
+## Profile routes: render HTML page and provide JSON APIs for profile.js
 from flask import render_template, request, jsonify
 from routes import profile_bp
 from utils.auth import token_required
@@ -6,12 +7,14 @@ from model.login_model import get_user_by_email
 from utils.db import db
 import bcrypt
 
+# MongoDB collection for users
 users = db["users"]
 
-# Render profile page for the current user
+# Create profile page for the current user
 @profile_bp.route("/", methods=["GET"])
 @token_required
 def profile(current_user):
+# current_user is email from JWT token
     user = get_user_by_email(current_user)
 
     if not user:
@@ -23,7 +26,7 @@ def profile(current_user):
 @profile_bp.route("/data", methods=["GET"])
 @token_required
 def profile_data(current_user):
-    """Return current user data as JSON for profile.js."""
+# Return current user data as JSON for profile.js
     user = get_user_by_email(current_user)
     if not user:
         return jsonify({"error": "User not found"}), 404
@@ -71,7 +74,7 @@ def profile_update(current_user):
                 "success": False,
                 "message": "Both password and confirm_password are required"
             }), 400
-
+# Passwords must match
         if password != confirm_password:
             return jsonify({
                 "success": False,
