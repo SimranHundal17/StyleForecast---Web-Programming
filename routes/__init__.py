@@ -1,5 +1,4 @@
 # routes/__init__.py
-
 from flask import Blueprint
 
 # Public landing page (intro)

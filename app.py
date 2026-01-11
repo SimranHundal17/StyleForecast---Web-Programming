@@ -1,5 +1,4 @@
 # app.py
-
 import os
 from utils.db import db   # initializes MongoDB one time
 from dotenv import load_dotenv
