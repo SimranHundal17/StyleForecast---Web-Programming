@@ -1,6 +1,6 @@
 # routes/history_routes.py
 from flask import render_template, jsonify, request
-from routes import history_bp
+from routes import history_bp # Blueprint for history routes
 from model.outfit_history_model import get_all_history, delete_history_entry, add_history_entry
 
 # Try to import real auth decorator
@@ -37,7 +37,8 @@ def history_delete(current_user, entry_id):
     ok = delete_history_entry(entry_id)
     return jsonify({"ok": ok})
 
-# This endpoint is called from Plan Ahead JS to archive an outfit
+# Add a new history from Plan Ahead
+## This endpoint is called from Plan Ahead JS to archive an outfit
 @history_bp.route("/api/add_from_plan", methods=["POST"])
 @token_required
 def history_add_from_plan(current_user):
@@ -54,6 +55,6 @@ def history_add_from_plan(current_user):
         "rating":      data.get("rating", 0),
         "liked":       data.get("liked", True),
     }
-
+# Saving in the database
     new_entry = add_history_entry(entry)
     return jsonify(new_entry), 201

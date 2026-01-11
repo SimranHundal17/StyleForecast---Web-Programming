@@ -33,7 +33,8 @@ def get_all_history():
     docs = history_col.find().sort("id", -1)
     return [_to_dict(d) for d in docs]
 
-# Add a new history entry
+# Add a new history entry to MongoDB
+## ID is generated manually using _get_next_id()
 def add_history_entry(entry):
     new_id = _get_next_id()
 
@@ -48,8 +49,9 @@ def add_history_entry(entry):
         "rating": entry.get("rating", 0),
         "liked": entry.get("liked", False),
     }
-
+# Add document into the collection
     history_col.insert_one(doc)
+# Return normalized dict
     return _to_dict(doc)
 
 # Delete history entry by ID

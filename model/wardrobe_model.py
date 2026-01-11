@@ -2,13 +2,14 @@
 from datetime import datetime
 from utils.db import db, laundry_db  # main DB and laundry DB
 
-# Main collection for wardrobe items
+# Main collection where all wardrobe items are stored
 wardrobe_col = db["wardrobe_items"]
 
 # Separate collection for items that need wash
 dirty_col = laundry_db["dirty_items"]
 
-# Convert MongoDB document to plain dict for JSON
+# Convert MongoDB document to a clean Python dict
+## This avoids sending Mongo-specific fields to the frontend
 def _to_dict(doc):
     if not doc:
         return None
@@ -23,7 +24,7 @@ def _to_dict(doc):
         "icon": doc.get("icon", "👚"),
     }
 
-# Get the next available numeric ID for a new item
+# Generate a numeric ID similar to SQL auto-increment
 def _get_next_id():
     last = wardrobe_col.find_one(sort=[("id", -1)])
     if last and "id" in last:
@@ -53,10 +54,11 @@ def get_items_by_filter(filter_value):
 # Category filter (case-insensitive exact match)
     docs = wardrobe_col.find(
         {"category": {"$regex": f"^{filter_lower}$", "$options": "i"}}
+# Regex allows us to avoid manual lower()/upper() logic. 
     )
     return [_to_dict(d) for d in docs]
 
-# Get items by status using case-insensitive match
+# Get items by status using case-insensitive regex match
 def get_items_by_status(status):
     docs = wardrobe_col.find(
         {"status": {"$regex": f"^{status}$", "$options": "i"}}
@@ -93,10 +95,10 @@ def add_item(name: str, category: str, status: str, color: str = ""):
         "icon": icon,
     }
 
-# insert into main wardrobe collection
+# Insert into main wardrobe collection
     wardrobe_col.insert_one(doc)
 
-# if item is created as "Needs Wash" -> add to dirty collection
+# If item is created as "Needs Wash" -> add to dirty collection
     if str(status).lower() == "needs wash":
         dirty_col.update_one(
             {"item_id": new_id},
@@ -112,8 +114,9 @@ def add_item(name: str, category: str, status: str, color: str = ""):
     return _to_dict(doc)
 
 # Update item status between 'Clean' and 'Needs Wash'
+## Also keep dirty_items collection in sync
 def update_item_status(item_id: int):
-# Find existing item in main collection
+# Find item in main collection
     doc = wardrobe_col.find_one({"id": int(item_id)})
     if not doc:
         return None
@@ -141,7 +144,7 @@ def update_item_status(item_id: int):
 # Mark item as clean
         new_status = "Clean"
 
-# Remove from dirty_items if present
+# Remove item from dirty_items when it becomes clean
         dirty_col.delete_one({"item_id": int(item_id)})
 
 # Update status and wear_count in main wardrobe collection

@@ -2,10 +2,10 @@
 ## Profile routes: render HTML page and provide JSON APIs for profile.js
 from flask import render_template, request, jsonify
 from routes import profile_bp
-from utils.auth import token_required
-from model.login_model import get_user_by_email
+from utils.auth import token_required   # to protect routes with JWT
+from model.login_model import get_user_by_email   # search user by email in MongoDB
 from utils.db import db
-import bcrypt
+import bcrypt   # for password hashing
 
 # MongoDB collection for users
 users = db["users"]
