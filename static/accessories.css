@@ -1,8 +1,15 @@
 /* =========================================
-   ACCESSORIES PAGE
+   ACCESSORIES PAGE — Styles & Structure
+   ========================================
+   Purpose: Styles for the Accessories/Wardrobe page. Key areas:
+   - Main card layout and page header
+   - Filter chips (category), empty state, and item cards
+   - Touch-friendly mobile overrides and accessibility considerations
+   Exam notes: Interactive controls include transitions; maintain
+   clear visual hierarchy with .card and .wardrobe-item-card.
 ========================================= */
 
-/* Общая карточка (весь контент страницы) */
+/* Main card — layout, spacing and shadow for page content */
 .card {
   background: #fff;
   border-radius: 1rem;
@@ -11,7 +18,8 @@
   margin-bottom: 2rem;
 }
 
-/* Заголовок и кнопка "Add Item" */
+/* Header area — page title and primary Add Item control
+   Notes: header uses flex layout, stacks on small screens for accessibility */
 .wardrobe-header-row {
   display: flex;
   justify-content: space-between;
@@ -41,7 +49,8 @@
   transform: scale(1.05);
 }
 
-/* Фильтры (All, Casual, Gym и т.д.) */
+/* Filters — category chips and active state
+   Notes: chips are pill-shaped and use .filter-active to indicate selection */
 .filter-row {
   display: flex;
   align-items: center;
@@ -73,7 +82,7 @@
   color: white;
 }
 
-/* Пустое состояние ("No items yet") */
+/* Empty state — friendly messaging and CTA when no items are available */
 .empty-state {
   text-align: center;
   padding: 3rem 1rem;
@@ -111,7 +120,7 @@
   background: #7c3aed;
 }
 
-/* Мини-карточки вещей */
+/* Item cards — compact presentation for each wardrobe accessory */
 .wardrobe-items-section {
   margin-top: 3rem;
 }
@@ -167,7 +176,8 @@
 }
 
 /* ================================
-   MOBILE RESPONSIVENESS FIXES
+   MOBILE — small device overrides & touch optimizations
+   Ensure buttons and chips have accessible hit areas and stacked layout
 ================================ */
 
 /* Small devices show better spacing */
@@ -202,9 +212,7 @@
   }
 }
 
-/* ===============================
-   MOBILE RESPONSIVENESS FIX
-   =============================== */
+/* MOBILE CONTROLS — header stacking and full-width action buttons for small screens */
 @media (max-width: 576px) {
 
   .wardrobe-header-row {

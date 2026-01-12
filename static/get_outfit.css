@@ -1,5 +1,12 @@
 /* =========================================
-   GET OUTFIT PAGE — MATCHING WARDROBE LOOK
+   static/get_outfit.css — Get Outfit page styles
+   ========================================
+   Purpose: styles for the Get Outfit page, including the generate control,
+   weather summary, location autocomplete, and outfit preview chips.
+   Exam notes:
+   - Keep visual hierarchy with `.outfit-card` and `.outfit-item` styles
+   - Autocomplete dropdown should be above other content and be keyboard-friendly
+   - Weather box presents quick weather summary used by generation logic
 ========================================= */
 
 /* Main card structure */
@@ -11,7 +18,9 @@
   margin-bottom: 2rem;
 }
 
-/* Header row (title + subtitle) */
+/* Header area — page title and subtitle
+   Notes: Title uses prominent color and spacing; subtitle provides context for
+   the generate flow (location + occasion) */
 .header-row {
   margin-bottom: 1.5rem;
 }
@@ -26,12 +35,15 @@
   color: #6b7280;
 }
 
-/* Inputs container */
+/* Inputs container — location/autocomplete, occasion input, generate button
+   Keep spacing consistent with header and preview; inputs should be accessible */
 .input-section {
   margin-bottom: 2rem;
 }
 
-/* Buttons (matching Add Item button) */
+/* Generate button — primary CTA for outfit generation
+   Uses a bold purple gradient in other files; ensure hover and focus states
+   are visible for keyboard users and touch devices. */
 .generate-btn {
   background: #6366f1;
   color: #fff;
@@ -47,7 +59,10 @@
   transform: scale(1.05);
 }
 
-/* WEATHER BOX */
+/* Weather box — compact weather summary displayed after generation
+   Contains icon, temp, brief description, and location label. Icons provide
+   visual cue for conditions (Clear, Rain, Snow, etc.). Keep high contrast text
+   for readability. */
 .weather-box {
   background: linear-gradient(90deg, #eef2ff, #f5f3ff);
   border-radius: 1rem;
@@ -85,7 +100,8 @@
   color: #4b5563;
 }
 
-/* OUTFIT PREVIEW CONTAINER */
+/* Outfit preview container — renders suggested items as chips/cards
+   Items are focusable and present clear affordances for saving or reacting. */
 .outfit-preview {
   display: flex;
   flex-wrap: wrap;
@@ -94,7 +110,9 @@
   justify-content: center;
 }
 
-/* Outfit chips/cards */
+/* Outfit chip/card — individual suggested clothing/accessory items
+   Hover and focus produce lift and a stronger border for clarity; consider
+   keyboard accessibility when adding interactive behaviors. */
 .outfit-item {
   background: #ffffff;
   border-radius: 1rem;
@@ -111,7 +129,8 @@
   box-shadow: 0 8px 24px rgba(99, 102, 241, 0.15);
 }
 
-/* Loading spinner text */
+/* Loading spinner — communicates generation in progress; keep visible color
+   and avoid layout shifts when showing/hiding. */
 #loadingSpinner p {
   color: #4f46e5;
   font-weight: 500;
@@ -130,6 +149,8 @@
   }
 }
 
+/* Autocomplete dropdown — appears under location input with keyboard and
+   mouse operability. Ensure z-index keeps it above other UI components. */
 #locationSuggestions {
     background: white;
     border: 1px solid #ddd;
@@ -178,9 +199,8 @@
   transform: scale(1.05);
 }
 
-/* ===============================
-   MOBILE RESPONSIVENESS FIX
-   =============================== */
+/* MOBILE — responsive tweaks for small screens: stack elements, reduce padding,
+   and center weather and header text for clearer display on phones */
 @media (max-width: 576px) {
 
   /* Center header like Wardrobe & Accessories */

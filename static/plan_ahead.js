@@ -1,8 +1,24 @@
 /* ============================================================
-   PLAN AHEAD — FINAL STABLE VERSION
-   Mode A Only: Slider is used ONLY during generation.
-   Saved days always open single view.
-   No old outfits appear during spinner.
+   static/plan_ahead.js — Plan-Ahead page client behavior
+   ===========================================================
+   Purpose: Allow users to plan outfits across single or multi-day ranges.
+   Key concepts (exam notes):
+   - Dates are represented as ISO date strings (YYYY-MM-DD) when stored and
+     compared. Be mindful of local time vs UTC when converting Date objects.
+   - savedPlans: the source of truth from the backend (persisted).
+   - tempPlans: ephemeral plans generated during the session (not saved until
+     user confirms). UI shows slider only for generated (temp) multi-day plans.
+   - Slider is used only during generation; saved days always open single view.
+   - Weather gaps: when the server cannot provide a forecast for a date,
+     the UI marks the day as missingWeather and asks the user to select manually.
+   - Server endpoints used by this file (examples):
+     * GET /plan/plans -> [ { date, id, outfit, weather, ... } ]
+     * POST /plan/create -> returns created plan(s) array
+     * POST /plan/update -> accepts { id, outfit }
+     * POST /plan/delete -> accepts { id }
+   Notes: This file intentionally separates temp/saved state to avoid overwriting
+   backend truth until the user explicitly saves. Do not change savedPlans
+   directly when a plan is still temporary.
 ============================================================ */
 
 /* -------------------- GLOBAL STATE ---------------------- */
@@ -44,15 +60,21 @@ const generateBtn = document.getElementById("generateBtn");
    INITIAL LOAD
 ============================================================ */
 async function loadSavedPlans() {
+    // Fetch all saved plans from the server. Expected response is an array of
+    // plan objects like { date: 'YYYY-MM-DD', id, outfit, weather, ... }.
+    // Note: if your server requires cookies/session, you may need to include
+    // `{ credentials: 'include' }` depending on auth setup.
     const res = await fetch("/plan/plans");
     const list = await res.json();
 
+    // Rebuild savedPlans map for quick lookup by date
     savedPlans = {};
     list.forEach(p => savedPlans[p.date] = p);
 
     generateCalendar();
 }
 
+// Load saved plans on page load
 loadSavedPlans();
 
 /* ============================================================
@@ -83,6 +105,11 @@ function generateCalendar() {
     const y = parseInt(yearSelect.value);
     const m = parseInt(monthSelect.value);
 
+    // getDay(): 0 = Sunday, 1 = Monday, ...
+    // We transform so Monday is the first column (0 = Monday)
+    // (firstDay === 0 ? 6 : firstDay - 1) maps Sunday -> 6 and shifts others down.
+    // Note: constructing `new Date(y, m, d)` uses local timezone; be careful with
+    // comparisons if your backend stores dates in UTC.
     let firstDay = new Date(y, m, 1).getDay();
     firstDay = firstDay === 0 ? 6 : firstDay - 1;
     const lastDate = new Date(y, m + 1, 0).getDate();
@@ -133,7 +160,9 @@ function generateCalendar() {
 ============================================================ */
 function onCalendarClick(dateStr) {
 
-    // 🔥 If saved day → ALWAYS open single view, never slider.
+    // 🔥 If this date already has a saved outfit (persisted in DB), always
+    // open the saved single-day view (never re-open as a multi-day slider).
+    // This preserves backend truth and prevents accidental overwrites.
     if (savedPlans[dateStr] && savedPlans[dateStr].id && savedPlans[dateStr].outfit?.length > 0) {
         openSavedSingleDay(dateStr);
         return;
@@ -186,6 +215,10 @@ function highlightRange() {
         const m = monthSelect.value;
         const d = day.textContent;
 
+        // Some cells are empty placeholders (no day text); skip them safely
+        if (!d) return;
+
+        // Build an ISO-style date string for comparison
         const dateStr = `${y}-${String(parseInt(m) + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
 
         if (selectedDates.includes(dateStr)) {
@@ -210,6 +243,7 @@ function openModalForNew() {
     suggestionsBox.innerHTML = "";
     generateBtn.disabled = true;
 
+    // Reset coordinates & trigger auto-detect (unless user types their own location)
     selectedLat = selectedLon = null;
     userManuallySelectedLocation = false;
 
@@ -223,10 +257,12 @@ function openModalForNew() {
 async function autoDetectLocation() {
     if (userManuallySelectedLocation) return;
 
+    // Try to use browser geolocation; user may deny permission or it may fail.
     navigator.geolocation.getCurrentPosition(async pos => {
         const lat = pos.coords.latitude;
         const lon = pos.coords.longitude;
 
+        // Server reverse-geocoding endpoint should return { label, lat, lon } or { error }
         const res = await fetch(`/get_outfit/api/location/reverse?lat=${lat}&lon=${lon}`);
         const data = await res.json();
 
@@ -255,6 +291,7 @@ locationInput.addEventListener("input", () => {
 
     if (!q) return;
 
+    // Debounced autocomplete (250ms) to reduce server load while typing.
     autocompleteTimeout = setTimeout(async () => {
         const res = await fetch(`/get_outfit/api/location/autocomplete?q=${encodeURIComponent(q)}`);
         const list = await res.json();
@@ -266,12 +303,14 @@ locationInput.addEventListener("input", () => {
             return;
         }
 
+        // Each item is expected to have { label, lat, lon }
         list.forEach(item => {
             const div = document.createElement("div");
             div.className = "autocomplete-item";
             div.textContent = item.label;
 
             div.onclick = () => {
+                // Selecting a suggestion stores coordinates used for generation
                 locationInput.value = item.label;
                 selectedLat = item.lat;
                 selectedLon = item.lon;
@@ -317,7 +356,8 @@ async function generateSingleDay() {
 
     const date = selectedDates[0];
 
-    // 🔥 Remove all old unsaved data for this date
+    // 🔥 Remove any transient fields from a previously saved plan so that
+    // re-generation starts from a clean slate (prevents showing stale temp data).
     if (savedPlans[date]) {
         delete savedPlans[date].tempOutfit;
         delete savedPlans[date].outfit;
@@ -328,6 +368,9 @@ async function generateSingleDay() {
     }
 
     weatherAlert.classList.add("d-none");
+
+    // If the user manually entered a weather override, we skip the getWeatherFor API
+    // and pass the provided weather string to the get_outfit generation endpoint.
 
     const p = {
         date,
@@ -500,9 +543,11 @@ async function generateMultiDay() {
     const results = {};
     const occasion = occasionInput.value;
 
-    for (const d of sliderDates) {
+// For each day in the slider, attempt to obtain weather and then an outfit.
+        for (const d of sliderDates) {
         let weatherData;
 
+        // Allow manual weather override for all generated days
         if (weatherInput.value) {
             weatherData = { weather: weatherInput.value, temp: null, description: null };
         } else {
@@ -512,9 +557,11 @@ async function generateMultiDay() {
         let outfit = [];
         let missing = false;
 
+        // If the weather API couldn't provide a forecast for this date, mark it missing
         if (weatherData.error) {
             missing = true;
         } else {
+            // Call outfit-generation endpoint with lat/lon and the chosen weather
             const outfitData = await fetch("/get_outfit/api/get_outfit", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -529,6 +576,7 @@ async function generateMultiDay() {
             outfit = outfitData.outfit;
         }
 
+        // Store results for later building of tempPlans and slider
         results[d] = {
             missingWeather: missing,
             weather: weatherData.weather,
@@ -568,7 +616,6 @@ function buildSlider() {
 
     slider.innerHTML = "";
     sliderDots.innerHTML = "";
-    deleteTripBtn.classList.add("d-none");
 
     sliderDates.forEach((date, idx) => {
 
@@ -585,6 +632,8 @@ function buildSlider() {
             slider.appendChild(slide);
         }
         else if (p.missingWeather) {
+            // When weather is missing for a date, let the user pick weather manually
+            // and re-generate for just that day via `regenerateMissing`.
             slide.innerHTML = `
             <h4>${date}</h4>
             <p class="text-danger fw-bold">Weather missing. Select manually:</p>
@@ -602,6 +651,9 @@ function buildSlider() {
             slider.appendChild(slide);
         }
         else {
+            // Normal generated slide: shows preview and provides Like/Dislike actions
+            // Like saves this date's outfit to the backend (via saveFinalOutfit)
+            // Dislike regenerates this single day (non-destructive to other days)
             slide.innerHTML = `
             <h4>${date}</h4>
             <p><b>Location:</b> ${p.location}</p>
@@ -639,7 +691,7 @@ function buildSlider() {
 ============================================================ */
 async function regenerateMissing(dateStr, slideElement) {
 
-    // ✅ MUST come from tempPlans, not savedPlans
+    // ✅ This must operate on tempPlans (ephemeral) — do NOT modify savedPlans here
     const p = tempPlans[dateStr];
 
     if (!p) {
@@ -655,6 +707,7 @@ async function regenerateMissing(dateStr, slideElement) {
         return;
     }
 
+    // Request a fresh outfit for the manually chosen weather and update temp-only state
     const outfitData = await fetch("/get_outfit/api/get_outfit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -671,7 +724,7 @@ async function regenerateMissing(dateStr, slideElement) {
     p.tempOutfit = outfitData.outfit;
     p.missingWeather = false;
 
-    // 🔄 Rebuild slider and stay on same date
+    // 🔄 Rebuild slider UI and remain on the same date so the user can review
     buildSlider();
     openSliderOn(dateStr);
 }
@@ -681,6 +734,8 @@ async function regenerateMissing(dateStr, slideElement) {
 ============================================================ */
 async function regenerateMultiDayOne(dateStr) {
 
+    // NOTE: This operates on the persisted savedPlans entry — in some flows
+    // you may prefer to operate on tempPlans if working within a generation session.
     const p = savedPlans[dateStr];
 
     const outfitData = await fetch("/get_outfit/api/get_outfit", {
@@ -694,6 +749,7 @@ async function regenerateMultiDayOne(dateStr) {
         })
     }).then(r => r.json());
 
+    // Apply regenerated outfit to the tempOutfit field so UI reflects the change
     p.tempOutfit = outfitData.outfit;
 
     buildSlider();
@@ -743,6 +799,7 @@ async function saveFinalOutfit(dateStr) {
     const finalOutfit = p.tempOutfit;
 
     // ---------- CREATE PLAN IF NEEDED ----------
+    // If the server hasn't created a plan entry yet, create one first
     if (!p.id) {
         const res = await fetch("/plan/create", {
             method: "POST",
@@ -760,12 +817,12 @@ async function saveFinalOutfit(dateStr) {
             })
         });
 
+        // The create endpoint returns an array of created plan objects (hence created[0].id)
         const created = await res.json();
         p.id = created[0].id;
     }
 
-    // ---------- SAVE OUTFIT ----------
-    // ---------- SAVE OUTFIT ----------
+    // Save the outfit to the plan record
     await fetch("/plan/update", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -775,16 +832,15 @@ async function saveFinalOutfit(dateStr) {
         })
     });
 
-    // 🔥 MOVE FROM TEMP → SAVED (IMMEDIATE UI SYNC)
+    // 🔥 Move the plan from temp -> saved and update the calendar so the day shows as persisted
     savedPlans[dateStr] = {
         ...p,
         outfit: finalOutfit
     };
 
-    // 🔥 REMOVE TEMP VERSION
+    // 🔥 Remove temporary entry and refresh calendar UI
     delete tempPlans[dateStr];
 
-    // 🔥 UPDATE CALENDAR IMMEDIATELY
     generateCalendar();
 
     /* =====================================================
@@ -843,11 +899,11 @@ function bindDeleteButtons(dateStr) {
 ============================================================ */
 document.getElementById("planModal").addEventListener("hidden.bs.modal", () => {
 
-    // 🔥 Only clear UNSAVED temporary data
+    // 🔥 Only clear UNSAVED temporary data — this prevents losing persisted plans
     tempPlans = {};
 
-    // 🔥 Do NOT touch savedPlans — backend truth
-    // 🔥 Do NOT force reload here (save already did that)
+    // 🔥 Do NOT modify `savedPlans` here — backend is the truth of persisted plans
+    // 🔥 Avoid forcing a full reload; saved operations already kept the UI in sync
 
     selectedDates = [];
     sliderDates = [];
