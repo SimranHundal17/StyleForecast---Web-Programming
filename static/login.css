@@ -1,6 +1,17 @@
-/* =========================================
-   AUTH PAGE (Login / Sign-up)
-========================================= */
+/* ============================================================
+   static/login.css — Login & Signup page styles
+   ============================================================
+   Purpose: Styles for authentication UI (login and signup). Key areas:
+   - Auth wrapper and centered card
+   - Branding / animation (subtle) and header typography
+   - Primary CTA and input styling
+   - Responsive rules for small screens (fold & mobile)
+
+   Exam notes:
+   - Login posts form-encoded data while signup sends JSON (see client JS).
+   - Keep client-side validation minimal; server-side validation is authoritative.
+   - UI uses subtle motion (floatCloud) — keep duration short to avoid motion sickness.
+   ============================================================ */
 .auth-wrapper {
   min-height: 100vh;
   display: flex;
@@ -10,6 +21,9 @@
   padding: 2rem;
 }
 
+/* AUTH CARD — centered container for the form
+   Purpose: provide a readable, focused form area with subtle elevation
+   and an entrance animation. Keep width constrained for legibility. */
 .auth-card {
   background: #fff;
   padding: 2.5rem;
@@ -21,6 +35,9 @@
   animation: fadeInUp 0.6s ease forwards;
 }
 
+/* LOGO & MOTION — the auth logo receives a subtle float animation
+   Keep this animation light and optional; it is decorative and should not
+   distract or be essential to understanding the form content. */
 .auth-logo {
   font-size: 2.5rem;
   animation: floatCloud 3s ease-in-out infinite;
@@ -30,7 +47,7 @@
 @keyframes floatCloud {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-6px); }
-}
+} 
 
 .auth-title {
   font-size: 1.8rem;
@@ -44,6 +61,9 @@
   margin-bottom: 2rem;
 }
 
+/* PRIMARY CTA — auth-button
+   Used for Login and Sign Up actions. It is full-width to be touch-friendly;
+   hover and focus states increase contrast and provide a clear affordance. */
 .auth-button {
   background: linear-gradient(90deg, #6366f1, #8b5cf6);
   color: #fff;
@@ -60,7 +80,7 @@
 .auth-button:hover {
   transform: scale(1.03);
   box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
-}
+} 
 
 .auth-footer {
   margin-top: 1.5rem;
@@ -111,9 +131,9 @@
   margin-bottom: 6px;
 }
 
-/* ===============================
-   EXTRA SMALL SCREENS (Fold)
-   =============================== */
+/* RESPONSIVE — extra small screens (fold & small phones)
+   Notes: reduce padding and font sizes so the auth card fits smaller viewports
+   while preserving touch target sizes and readability. */
 @media (max-width: 576px) {
 
   .auth-wrapper {

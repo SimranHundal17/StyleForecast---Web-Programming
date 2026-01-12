@@ -1,4 +1,14 @@
-// static/login.js
+// ======================================================
+// static/login.js — Login / Signup page client behavior
+// ======================================================
+// Purpose: manage the login/signup UI, validate input, and submit
+// credentials to the server. Keep client validation minimal and
+// rely on server-side checks for security.
+// Exam notes:
+// - Signup sends JSON (application/json) with extra profile fields.
+// - Login posts form-encoded data (application/x-www-form-urlencoded).
+// - The server sets session cookies or JWT on successful login; fetches
+//   here do not need to manage tokens explicitly in the client.
 
 document.addEventListener("DOMContentLoaded", () => {
   // Basic DOM elements
@@ -35,6 +45,8 @@ document.addEventListener("DOMContentLoaded", () => {
     successAlert.classList.add("d-none");
   }
 
+  // Toggle UI between loading and idle states. Disables the submit button
+  // to prevent duplicate submissions and updates the label based on mode.
   function setLoading(isLoading) {
     if (isLoading) {
       loadingSpinner.classList.remove("d-none");
@@ -149,6 +161,8 @@ document.addEventListener("DOMContentLoaded", () => {
           days_until_dirty: daysDirty,
         };
 
+        // Send JSON signup payload. Server should validate and return
+        // { success: true } on success or { success: false, message } on failure.
         const response = await fetch("/auth/signup", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -161,11 +175,12 @@ document.addEventListener("DOMContentLoaded", () => {
         if (data.success) {
           showAlert("🎉 Account created! You can now log in.", "success");
 
-          // Switch back to login mode after short delay
+          // Switch back to login mode after short delay so the user can log in
           setTimeout(() => {
             toggleForm();
           }, 1500);
         } else {
+          // Server-provided message is shown when available
           showAlert(data.message || "Registration failed. Please try again.", "danger");
         }
 
@@ -175,6 +190,8 @@ document.addEventListener("DOMContentLoaded", () => {
       // -----------------------------
       // LOGIN MODE
       // -----------------------------
+      // Post form-encoded credentials. The server typically sets a session cookie
+      // or returns a token on success; the client then redirects to the protected page.
       const response = await fetch("/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -199,7 +216,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Expose toggleForm to window for inline onclick
+  // Expose toggleForm to window for any inline onclick links in the template.
+  // This keeps the template simple (anchors can call `toggleForm()`); in a larger app
+  // you'd wire events purely via JS to avoid global namespace pollution.
   window.toggleForm = toggleForm;
 
   // Initial listeners

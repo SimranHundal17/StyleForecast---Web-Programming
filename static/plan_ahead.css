@@ -1,4 +1,23 @@
-/* PAGE LAYOUT CONSISTENCY */
+/* ============================================================
+   static/plan_ahead.css — Plan Ahead page styles
+   ============================================================
+   Purpose: Styles for the Plan Ahead calendar, generation modal, and
+   multi-day slider used during trip generation.
+
+   Exam notes:
+   - The calendar grid maps days to ISO date strings (YYYY-MM-DD) in JS;
+     CSS highlights selected/disabled/today states via classes (.selected, .disabled, .today).
+   - Slider is used only during generation (temporary state); saved plans are
+     displayed via the single-day modal view. Keep these styles separate.
+   - Autocomplete and modal sizing are important for small-screen usability.
+
+   Sections:
+   - Layout & header, top controls
+   - Calendar grid and day states
+   - Autocomplete box
+   - Slider (generation UI)
+   - Responsive rules for small & extra-small devices
+   ============================================================ */
 .section {
   padding: 2rem;
 }
@@ -10,7 +29,8 @@
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
 }
 
-/* HEADER LAYOUT */
+/* HEADER & PAGE TITLING — layout for title, subtitle and top controls
+   Notes: header is flexible for actions like date selectors and generating trips */
 .wardrobe-header-row {
   display: flex;
   justify-content: space-between;
@@ -26,9 +46,11 @@
 .subtitle {
   margin-top: -4px;
   color: #555;
-}
+} 
 
-/* TOP CONTROLS */
+/* TOP CONTROLS — date selectors and action buttons
+   Includes planType selector and month/year controls; keep spacing clear
+   so users can pick ranges quickly. */
 .plan-top-controls {
   display: flex;
   align-items: center;
@@ -39,9 +61,13 @@
 .date-selectors {
   display: flex;
   gap: 0.75rem;
-}
+} 
 
-/* CALENDAR GRID */
+/* CALENDAR GRID — 7-column month view and day cell states
+   - `.calendar-day.disabled` denotes past dates and is not clickable
+   - `.selected` highlights saved outfits for future dates
+   - `.range` is used when the user selects an inclusive multi-day range
+   Keep hover and focus states accessible and avoid relying on color alone. */
 .calendar-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -90,16 +116,20 @@
 
 .calendar-day.range {
   background: #c7d2fe;
-}
+} 
 
-/* TODAY HIGHLIGHT */
+/* TODAY HIGHLIGHT — visually distinguishes today's date with an amber ring
+   Important for users to orient themselves on the calendar; ensure contrast and
+   don't rely solely on color for accessibility. */
 .calendar-day.today {
   outline: 2px solid #f59e0b;     /* amber ring */
   outline-offset: -2px;
   font-weight: 700;
-}
+} 
 
-/* AUTOCOMPLETE */
+/* AUTOCOMPLETE — dropdown styling for location suggestions
+   Notes: keep z-index and scrolling behavior predictable; items should be
+   keyboard-navigable and provide clear hover/focus states. */
 .autocomplete-box {
   position: relative;
   background: white;
@@ -117,11 +147,13 @@
 
 .autocomplete-item:hover {
   background: #eef2ff;
-}
+} 
 
-/* ============================================================
-   SLIDER — FIXED VERSION (FULL WORKING)
-   ============================================================ */
+/* SLIDER — generation UI used only during multi-day generation
+   Notes:
+   - Slider slides correspond to dates in `sliderDates` and display tempPlans content
+   - Navigation dots and prev/next controls switch slides by translating the container
+   - Keep transitions short for quick feedback during multi-day generation */
 
 #sliderContainer {
   width: 100%;
@@ -145,7 +177,7 @@
   font-size: 22px;
   cursor: pointer;
   margin: 0 4px;
-}
+} 
 
 /* OUTFIT PREVIEW */
 .outfit-preview {
@@ -167,6 +199,9 @@
   border-width: 2px;
 }
 
+/* MODAL & SAVE/DELETE — modal sizing and button styling
+   - Modal center and maximum width selected for readable layouts on desktop
+   - Buttons and form controls are styled to fit inside the modal comfortably */
 #planModal .modal-dialog {
   max-width: 850px;
 }
@@ -178,9 +213,8 @@
   }
 }
 
-/* =========================================
-   RESPONSIVE FIX — SMALL & FOLD DEVICES
-========================================= */
+/* RESPONSIVE — small & fold devices: stack controls and reduce spacing
+   Ensure touch targets remain large enough and content remains readable. */
 @media (max-width: 576px) {
 
   /* Page padding */
