@@ -8,7 +8,7 @@
 // - All fetch calls include `{ credentials: "include" }` so server-side session/JWT cookies
 //   are sent with requests (important for authenticated endpoints).
 // - Server responses used here are expected to include fields like:
-//     { temp, condition, weather, outfit: Array<string> }
+//     { temp, condition, weather, outfit: Array<object|string>, source?, explanation?, error? }
 // - Like = save (POST to server), Dislike = regenerate (clicks generate again).
 // Key DOM IDs: `locationInput`, `locationSuggestions`, `generateOutfitBtn`,
 // `loadingSpinner`, `outfitPreview`, `feedbackButtons`, `likeBtn`, `dislikeBtn`.
@@ -22,9 +22,10 @@ const suggestionsBox = document.getElementById("locationSuggestions");
 const spinner = document.getElementById("loadingSpinner");
 const previewBox = document.getElementById("outfitPreview");
 const generateBtn = document.getElementById("generateOutfitBtn");
+const resultsWrap = document.getElementById("outfitResults");
+const outfitSource = document.getElementById("outfitSource");
 
 const feedbackButtons = document.getElementById("feedbackButtons");
-const saveMessage = document.getElementById("saveMessage");
 
 const likeBtn = document.getElementById("likeBtn");
 const dislikeBtn = document.getElementById("dislikeBtn");
@@ -33,8 +34,30 @@ const dislikeBtn = document.getElementById("dislikeBtn");
 let selectedLat = null;
 let selectedLon = null;
 let lastGenerated = null;
+// When the user clicks Dislike, we regenerate while avoiding the previous outfit IDs.
+let excludeIdsNext = null;
+// Track whether the next generation is a regenerate (Dislike) vs first generate.
+let generationMode = "generate";
 // Used by the autocomplete debounce; cleared on subsequent keystrokes
 let autocompleteTimeout = null;
+
+
+// ======================================================
+// OUTFIT ITEM LABELING (consistent across pages)
+// ======================================================
+// AI-generated outfits return objects like { name, color, icon, role, category }.
+// For consistency with Plan Ahead + History, we display items as "Color Name".
+function formatOutfitItemTitle(item) {
+    if (typeof item === 'string') return item;
+    if (!item || typeof item !== 'object') return String(item ?? '');
+
+    const colorRaw = item.color ? String(item.color).trim() : '';
+    const name = item.name ? String(item.name).trim() : (item.role ? String(item.role).trim() : 'Item');
+
+    if (!colorRaw) return name;
+    if (name.toLowerCase().startsWith(colorRaw.toLowerCase())) return name;
+    return `${colorRaw} ${name}`.trim();
+}
 
 
 // ======================================================
@@ -138,79 +161,246 @@ generateBtn.addEventListener("click", async () => {
     // Ensure coordinates are available (user must select an autocomplete item or allow geolocation)
     if (!selectedLat || !selectedLon) return;
 
+    // Lock the button while generating to prevent double-clicks
+    generateBtn.disabled = true;
+
     const occasion = document.getElementById("occasionInput").value;
 
-    // Show spinner and clear previous preview/state
-    spinner.classList.remove("d-none");
+    // Show spinner (in results area) and clear previous preview/state
     previewBox.innerHTML = "";
-    saveMessage.classList.add("d-none");
+    if (resultsWrap) resultsWrap.style.display = "block";
+    if (outfitSource) outfitSource.style.display = "none";
+
+    // Set spinner text immediately (before the request)
+    const spinnerText = spinner ? spinner.querySelector('p') : null;
+    if (spinnerText) {
+        spinnerText.textContent = (generationMode === "regenerate")
+            ? 'Regenerating outfit with AI...'
+            : 'Generating outfit with AI...';
+    }
+    spinner.classList.remove("d-none");
+
+    // Avoid duplicate spinners: the page already shows the main results spinner.
+
     feedbackButtons.style.display = "none";
 
-    // Call server API to generate an outfit. Server needs lat/lon and optional occasion.
-    const response = await fetch("/get_outfit/api/get_outfit", {
-        method: "POST",
-        credentials: "include", // important to include auth cookies/session
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            lat: selectedLat,
-            lon: selectedLon,
-            occasion
-        })
-    });
+    // Disable feedback while request is in flight
+    likeBtn.disabled = true;
+    dislikeBtn.disabled = true;
 
-    const data = await response.json();
-    // Stop spinner after response received
-    spinner.classList.add("d-none");
-
-    // Server can return { error } on failure
-    if (data.error) {
-        previewBox.innerHTML = `<div class="text-danger">${data.error}</div>`;
-        return;
+    // Call server API to generate an outfit using the LLM.
+    const payload = {
+        lat: selectedLat,
+        lon: selectedLon,
+        occasion: occasion || "Casual"
+    };
+    
+    // Add exclude_ids if available BEFORE resetting
+    if (Array.isArray(excludeIdsNext) && excludeIdsNext.length) {
+        payload.exclude_ids = excludeIdsNext;
     }
 
-    // --- Weather UI updates ---
-    // Expect fields like data.temp, data.condition, data.weather (a fuller string)
-    document.getElementById("weatherTemp").textContent = `${data.temp}°C`;
-    document.getElementById("weatherDesc").textContent = data.condition;
-    document.getElementById("weatherLocation").textContent = locationInput.value;
-    document.getElementById("weatherFull").textContent = data.weather;
+    // Reset after consuming so normal Generate isn't permanently constrained.
+    excludeIdsNext = null;
+    
+    console.log("Sending outfit request with payload:", payload);
+    console.log("lat:", selectedLat, "lon:", selectedLon, "occasion:", occasion);
 
-    // Map a simple weather condition to an emoji icon for quick visual feedback
-    let icon = "☁️";
-    if (data.condition.includes("Rain")) icon = "🌧️";
-    if (data.condition.includes("Clear")) icon = "☀️";
-    if (data.condition.includes("Snow")) icon = "❄️";
+    try {
+        // Add a 45-second timeout (longer than backend's 30s, but catches hanging requests)
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 45000);
 
-    document.getElementById("weatherIcon").textContent = icon;
+        const response = await fetch("/get_outfit/api/get_outfit", {
+            method: "POST",
+            credentials: "include", // important to include auth cookies/session
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+            signal: controller.signal
+        });
 
-    // --- Outfit preview ---
-    // Expect data.outfit to be an array of strings; render each item
-    previewBox.innerHTML = "";
-    (data.outfit || []).forEach(item => {
-        const div = document.createElement("div");
-        div.className = "outfit-item";
-        div.textContent = item;
-        previewBox.appendChild(div);
-    });
+        clearTimeout(timeoutId);
+        
+        let data;
+        try {
+            data = await response.json();
+        } catch (parseErr) {
+            console.error("Failed to parse JSON response:", parseErr);
+            throw new Error("Invalid response from server");
+        }
+        
+        console.log("Response status:", response.status);
+        console.log("Outfit data received:", data);
+        
+        // Check if response has an error (even if status is 200)
+        if (!response.ok || data.error) {
+            throw new Error(data.error || `HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        // Stop spinner after response received
+        spinner.classList.add("d-none");
 
-    // Save the relevant metadata locally so the Like button can save it later
-    lastGenerated = {
-        location: locationInput.value,
-        weather: data.weather,
-        occasion,
-        outfit: data.outfit
-    };
+        // Re-enable only if location is still valid (input change resets coords)
+        generateBtn.disabled = !(selectedLat && selectedLon);
 
-    // Show like/dislike controls to gather quick feedback
-    feedbackButtons.style.display = "block";
+        // If the server included weather fields (even on error), update the weather card.
+        if (data && typeof data === 'object' && (data.temp !== undefined || data.condition || data.weather)) {
+            if (data.temp !== undefined) document.getElementById("weatherTemp").textContent = `${data.temp}°C`;
+            if (data.condition) document.getElementById("weatherDesc").textContent = data.condition;
+            document.getElementById("weatherLocation").textContent = locationInput.value || "📍 Select location";
+            if (data.weather) document.getElementById("weatherFull").textContent = data.weather;
+
+            let icon = "☁️";
+            if (String(data.condition || '').includes("Rain")) icon = "🌧️";
+            if (String(data.condition || '').includes("Clear")) icon = "☀️";
+            if (String(data.condition || '').includes("Snow")) icon = "❄️";
+            document.getElementById("weatherIcon").textContent = icon;
+        }
+
+        // Server can return { error } on failure
+        if (data.error) {
+            if (resultsWrap) resultsWrap.style.display = "block";
+            if (outfitSource) outfitSource.style.display = "none";
+            previewBox.innerHTML = "";
+            const err = document.createElement('div');
+            err.className = 'alert alert-danger outfit-alert';
+            err.textContent = data.error;
+            previewBox.appendChild(err);
+
+            // Restore feedback state
+            likeBtn.disabled = false;
+            dislikeBtn.disabled = false;
+            generationMode = "generate";
+            return;
+        }
+
+        // --- Outfit preview ---
+        previewBox.innerHTML = "";
+
+        // Show warning if model suggests it
+        if (data.warning) {
+            const warn = document.createElement('div');
+            warn.className = 'alert alert-warning outfit-alert';
+            warn.textContent = data.warning;
+            previewBox.appendChild(warn);
+        }
+
+        if (resultsWrap) resultsWrap.style.display = "block";
+
+        // Show AI source badge when present
+        if (outfitSource) {
+            outfitSource.style.display = (data.source && data.source === 'llm') ? "inline-flex" : "none";
+        }
+
+        // Show AI explanation when present
+        const aiEl = document.getElementById('aiExplanation');
+        if (aiEl) {
+            if (data.explanation) {
+                aiEl.style.display = '';
+                aiEl.classList.remove('is-empty');
+                aiEl.textContent = data.explanation;
+            } else {
+                // Keep space reserved to avoid layout shift between generations.
+                aiEl.style.display = '';
+                aiEl.classList.add('is-empty');
+                aiEl.textContent = '';
+            }
+        }
+
+        (data.outfit || []).forEach(item => {
+            const div = document.createElement("div");
+            div.className = "outfit-item d-flex align-items-center gap-3 p-2";
+
+            if (typeof item === 'string') {
+                div.textContent = item;
+            } else {
+                const icon = document.createElement('div');
+                icon.className = 'outfit-item-icon fs-3';
+                icon.textContent = item.icon || '👗';
+
+                const info = document.createElement('div');
+                info.className = 'outfit-item-info';
+
+                const name = document.createElement('div');
+                name.className = 'fw-semibold';
+                name.textContent = formatOutfitItemTitle(item);
+
+                const meta = document.createElement('div');
+                meta.className = 'text-muted small';
+                const parts = [];
+                if (item.role) parts.push(item.role);
+                if (item.category) parts.push(item.category);
+                meta.textContent = parts.join(' • ');
+
+                info.appendChild(name);
+                info.appendChild(meta);
+                div.appendChild(icon);
+                div.appendChild(info);
+            }
+
+            previewBox.appendChild(div);
+        });
+
+        // Save the relevant metadata locally so the Like button can save it later
+        lastGenerated = {
+            location: locationInput.value,
+            weather: data.weather,
+            occasion,
+            outfit: data.outfit
+        };
+
+        // Show like/dislike controls to gather quick feedback
+        feedbackButtons.style.display = "block";
+
+        // Flash to show something changed after regeneration
+        if (generationMode === "regenerate") {
+            previewBox.classList.add("outfit-updated-flash");
+            setTimeout(() => previewBox.classList.remove("outfit-updated-flash"), 700);
+        }
+
+        // Restore buttons
+        likeBtn.disabled = false;
+        dislikeBtn.disabled = false;
+        generationMode = "generate";
+    } catch (error) {
+        console.error("Outfit generation error:", error);
+        spinner.classList.add("d-none");
+        generateBtn.disabled = !(selectedLat && selectedLon);
+        
+        // Handle timeout or network error
+        if (resultsWrap) resultsWrap.style.display = "block";
+        if (outfitSource) outfitSource.style.display = "none";
+        previewBox.innerHTML = "";
+        const err = document.createElement('div');
+        err.className = 'alert alert-danger outfit-alert';
+        
+        if (error.name === 'AbortError') {
+            err.textContent = 'Request took too long. The AI server is slow right now. Please try again in a moment.';
+        } else {
+            err.textContent = `Error: ${error.message || 'Failed to generate outfit'}`;
+        }
+        previewBox.appendChild(err);
+        
+        // Restore feedback state
+        likeBtn.disabled = false;
+        dislikeBtn.disabled = false;
+        generationMode = "generate";
+    }
 });
 
 
 // ======================================================
 // DISLIKE → regenerate
-// ======================================================
-// Dislike simply triggers generation again — keeps current coords/occasion
 dislikeBtn.addEventListener("click", () => {
+    // UX: mark next generation as a regenerate
+    generationMode = "regenerate";
+
+    // Exclude previous outfit IDs so the backend can force a different combination.
+    const prev = (lastGenerated && Array.isArray(lastGenerated.outfit)) ? lastGenerated.outfit : [];
+    const ids = prev
+        .map(x => (x && typeof x === 'object') ? x.id : null)
+        .filter(x => Number.isFinite(x));
+    excludeIdsNext = ids.length ? ids : null;
     generateBtn.click();
 });
 
@@ -238,8 +428,7 @@ likeBtn.addEventListener("click", async () => {
 
     // Show a confirmation message on successful save
     if (result.success) {
-        saveMessage.textContent = "Outfit saved to history!";
-        saveMessage.classList.remove("d-none");
+        alert("Outfit saved to history!");
     }
 });
 

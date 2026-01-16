@@ -16,10 +16,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const grid = document.getElementById("accessories-grid");
     const empty = document.getElementById("empty-accessories");
     const form = document.getElementById("addAccessoryForm");
+    const editForm = document.getElementById("editAccessoryForm");
+
+    // Track current filter so edits/deletes keep the same view
+    let currentFilter = "all";
 
     // Load accessories from server and render them.
     // - `filter` is a type string (or "all") used to show a subset.
     async function loadAccessories(filter = "all") {
+        currentFilter = filter;
         // `credentials: 'include'` ensures session cookie is sent with the request.
         const res = await fetch("/accessories/api/accessories", { credentials: "include" });
         const accessories = await res.json(); // parse JSON response into array
@@ -61,19 +66,33 @@ document.addEventListener("DOMContentLoaded", () => {
                     <div class="wardrobe-item-image">${icon}</div>
                     <div class="wardrobe-item-title">${acc.name}</div>
                     <div class="wardrobe-item-meta">${acc.type}</div>
-                    <button class="wardrobe-item-btn" data-id="${acc._id}">Remove</button>
+                    <div class="d-flex gap-2 mt-2 wardrobe-item-actions">
+                        <button class="wardrobe-item-btn js-edit" data-id="${acc._id}">Edit</button>
+                        <button class="wardrobe-item-btn js-remove" data-id="${acc._id}">Remove</button>
+                    </div>
                 </div>
             `;
 
-            // Attach delete handler to the Remove button. After deletion we reload
-            // the list to keep client and server state in sync (avoids local mutations).
-            card.querySelector(".wardrobe-item-btn").addEventListener("click", async () => {
+            // Edit handler opens modal and pre-fills fields
+            card.querySelector(".js-edit").addEventListener("click", () => {
+                const modalEl = document.getElementById("editAccessoryModal");
+                if (!modalEl) return;
+
+                document.getElementById("editAccId").value = acc._id;
+                document.getElementById("editAccName").value = acc.name || "";
+                document.getElementById("editAccType").value = acc.type || "Jewellery";
+
+                const modal = new bootstrap.Modal(modalEl);
+                modal.show();
+            });
+
+            // Delete handler
+            card.querySelector(".js-remove").addEventListener("click", async () => {
                 await fetch(`/accessories/api/accessories/${acc._id}`, {
                     method: "DELETE",
                     credentials: "include"
                 });
-                // Re-fetch and render the updated list
-                loadAccessories(filter);
+                loadAccessories(currentFilter);
             });
 
             grid.appendChild(card);
@@ -116,8 +135,35 @@ document.addEventListener("DOMContentLoaded", () => {
         form.reset();
 
         // Refresh the list to show the new accessory
-        loadAccessories();
+        loadAccessories(currentFilter);
     });
+
+    // Edit accessory submission
+    if (editForm) {
+        editForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const id = document.getElementById("editAccId").value;
+            const name = document.getElementById("editAccName").value;
+            const type = document.getElementById("editAccType").value;
+
+            if (!id) return;
+
+            await fetch(`/accessories/api/accessories/${id}`, {
+                method: "POST",
+                credentials: "include",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name, type })
+            });
+
+            const modal = document.getElementById("editAccessoryModal");
+            if (modal && bootstrap.Modal.getInstance(modal)) {
+                bootstrap.Modal.getInstance(modal).hide();
+            }
+
+            loadAccessories(currentFilter);
+        });
+    }
 
     // Initial load
     loadAccessories();

@@ -19,6 +19,10 @@
 html {
   scroll-behavior: smooth;
   overflow-y: scroll; /* Prevent layout jump from scrollbar */
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100vw;
+  box-sizing: border-box;
 } 
 
 body {
@@ -27,6 +31,10 @@ body {
   margin: 0;
   padding: 0;
   color: #1f2937;
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100vw;
+  box-sizing: border-box;
 }
 
 /* LAYOUT WRAPPER — central page container
@@ -39,17 +47,32 @@ body {
   justify-content: space-between;
   min-height: 100vh;
   max-width: 1200px;
+  width: 100%;
   margin: 0 auto;
   background: #fff;
   border-radius: 1rem;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-  overflow: hidden;
+  overflow-x: hidden;
+  box-sizing: border-box;
 } 
 
 main.section {
   flex: 1;
   padding: 2.5rem;
   animation: fadeInUp 0.6s ease forwards;
+  max-width: 100%;
+  width: 100%;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+/* Ensure all content respects viewport */
+* {
+  max-width: 100%;
+}
+
+*:not(html):not(body) {
+  box-sizing: border-box;
 }
 
 /* Smooth entrance animation (fadeInUp)
@@ -63,6 +86,84 @@ main.section {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+/* Fix dropdowns on all screens - force constrain */
+select.form-select, select.form-control, select {
+  max-width: 100% !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Ensure input groups and form groups don't overflow */
+.form-group, .mb-3, .mb-4, .input-section {
+  max-width: 100%;
+  overflow: visible; /* Allow native dropdown overlays to render properly */
+  box-sizing: border-box;
+}
+
+/* Constrain all form controls to viewport */
+.form-control, .form-select {
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+/* ============================================================
+   RESPONSIVE DESIGN - Mobile and Tablet Breakpoints
+   ===========================================================
+   Galaxy Fold (412x914) is our primary mobile target.
+   CSS media queries prevent horizontal overflow and ensure
+   readable text/controls on all screen sizes.
+============================================================ */
+
+/* Mobile adjustments for very small screens (Galaxy Fold: 412x914) */
+@media (max-width: 360px) {
+  main.section {
+    padding: 1rem 0.75rem;
+  }
+  
+  .page-wrapper {
+    padding: 0;
+    border-radius: 0;
+    margin: 0;
+  }
+  
+  /* Reduce select sizing on ultra-small screens */
+  select.form-select, select.form-control, select {
+    font-size: 0.85rem !important;
+    padding: 0.4rem 2rem 0.4rem 0.6rem !important;
+    min-width: 0;
+    background-size: 12px 12px !important;
+    background-position: right 0.5rem center !important;
+  }
+  
+  .outfit-card, .card {
+    padding: 1rem 0.75rem;
+    border-radius: 0.5rem;
+  }
+  
+  /* Ensure all form elements fit within viewport */
+  input, textarea, button {
+    max-width: 100%;
+    font-size: 0.85rem;
+    box-sizing: border-box;
+  }
+  
+  /* Force options to wrap if needed */
+  select option {
+    white-space: normal;
+    word-wrap: break-word;
+  }
+}
+
+/* Medium mobile screens */
+@media (max-width: 576px) {
+  main.section {
+    padding: 1.5rem 1rem;
   }
 } 
 
@@ -157,4 +258,33 @@ p, .subtitle {
 /* Logout hover */
 .navbar .nav-logout:hover {
   color: red;            /* soft red hint */
+}
+
+/* =========================================
+   OUTFIT UI FEEDBACK (shared)
+   ========================================= */
+.outfit-loading-inline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #f3f4f6;
+  color: #374151;
+  font-weight: 600;
+}
+
+@keyframes outfitUpdatedFlash {
+  0% {
+    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.45);
+  }
+  100% {
+    box-shadow: 0 0 0 14px rgba(99, 102, 241, 0);
+  }
+}
+
+.outfit-updated-flash {
+  animation: outfitUpdatedFlash 650ms ease-out;
+  border-radius: 12px;
 }

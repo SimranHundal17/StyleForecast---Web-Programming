@@ -99,6 +99,10 @@
 
       </section>
     </main>
+
+    <footer class="footer">
+      <p class="footer-text">© 2025 Style Forecast</p>
+    </footer>
   </div>
 
   <!-- ADD ACCESSORY MODAL -->
@@ -135,6 +139,50 @@
             <div class="modal-footer px-0">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
               <button type="submit" class="btn btn-purple">Add Accessory</button>
+            </div>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- EDIT ACCESSORY MODAL -->
+  <div class="modal fade" id="editAccessoryModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+
+        <div class="modal-header">
+          <h5 class="modal-title">Edit Accessory</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+
+        <div class="modal-body">
+          <form id="editAccessoryForm">
+            <input type="hidden" id="editAccId" />
+
+            <div class="mb-3">
+              <label class="form-label">Accessory Name</label>
+              <input type="text" id="editAccName" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Type</label>
+              <select id="editAccType" class="form-select" required>
+                <option value="Jewellery">Jewellery</option>
+                <option value="Purse">Purse</option>
+                <option value="Hat">Hat</option>
+                <option value="Utility">Utility</option>
+                <option value="Belt">Belt</option>
+                <option value="Watch">Watch</option>
+                <option value="Scarf">Scarf</option>
+                <option value="Sunglasses">Sunglasses</option>
+              </select>
+            </div>
+
+            <div class="modal-footer px-0">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+              <button type="submit" class="btn btn-purple">Save Changes</button>
             </div>
           </form>
         </div>
