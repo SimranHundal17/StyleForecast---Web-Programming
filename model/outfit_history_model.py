@@ -29,13 +29,14 @@ def _get_next_id():
     return 1
 
 # Get all history entries sorted by newest first
-def get_all_history():
-    docs = history_col.find().sort("id", -1)
+def get_all_history(user_email: str = None):
+    query = {"user_email": user_email} if user_email else {}
+    docs = history_col.find(query).sort("id", -1)
     return [_to_dict(d) for d in docs]
 
 # Add a new history entry to MongoDB
 ## ID is generated manually using _get_next_id()
-def add_history_entry(entry):
+def add_history_entry(entry, user_email: str = None):
     new_id = _get_next_id()
 
     doc = {
@@ -48,6 +49,7 @@ def add_history_entry(entry):
         "mood": entry.get("mood", ""),
         "rating": entry.get("rating", 0),
         "liked": entry.get("liked", False),
+        "user_email": user_email,
     }
 # Add document into the collection
     history_col.insert_one(doc)
@@ -55,6 +57,9 @@ def add_history_entry(entry):
     return _to_dict(doc)
 
 # Delete history entry by ID
-def delete_history_entry(entry_id):
-    res = history_col.delete_one({"id": int(entry_id)})
+def delete_history_entry(entry_id, user_email: str = None):
+    query = {"id": int(entry_id)}
+    if user_email:
+        query["user_email"] = user_email
+    res = history_col.delete_one(query)
     return res.deleted_count > 0

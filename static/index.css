@@ -10,6 +10,13 @@
   min-height: 85vh;             /* almost full-screen height */
   text-align: center;
   padding: 2.5rem 1rem;
+  background: #fff;            /* white background like other pages */
+  border-radius: 1rem;          /* rounded corners on all 4 sides */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);  /* subtle shadow */
+  max-width: 1200px;
+  width: 100%;
+  margin: 2rem auto;            /* center with spacing */
+  overflow-x: hidden;
 }
 
 .intro-container h1 {

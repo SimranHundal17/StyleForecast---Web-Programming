@@ -19,6 +19,7 @@ from datetime import datetime
 import requests
 import traceback
 
+from utils.auth import token_required
 from model.plan_ahead_model import (
     serialize_plan, get_all_plans,
     add_plan_range, update_plan, delete_plan, delete_group, archive_past_plans
@@ -27,30 +28,33 @@ from model.plan_ahead_model import (
 plan_bp = Blueprint("plan", __name__)
 
 @plan_bp.route("/plan_ahead")
-def plan_ahead_page():
+@token_required
+def plan_ahead_page(current_user):
     """Render the Plan Ahead UI page."""
     return render_template("plan_ahead.html")
 
 @plan_bp.route("/plan/plans")
-def api_plans():
-    """Return a serialized list of plans.
+@token_required
+def api_plans(current_user):
+    """Return a serialized list of plans for current user.
 
     Calls `archive_past_plans()` to move past plans into history before
     returning the current plan set.
     """
     try:
         # Archive any past plans first (moves them into outfit history)
-        archive_past_plans()
+        archive_past_plans(current_user)
 
-        plans = get_all_plans()
+        plans = get_all_plans(current_user)
         return jsonify([serialize_plan(p) for p in plans])
     except Exception:
         traceback.print_exc()
         return jsonify([])
 
 @plan_bp.route("/plan/create", methods=["POST"])
-def api_create():
-    """Create one or more plan entries for a date or date range.
+@token_required
+def api_create(current_user):
+    """Create one or more plan entries for a date or date range for current user.
 
     Expected JSON: start (YYYY-MM-DD), optional end (YYYY-MM-DD), and
     optional metadata (location, lat, lon, occasion, weather, temp, description).
@@ -74,7 +78,7 @@ def api_create():
         }
 
         # add_plan_range handles date ordering and group id assignment
-        created = add_plan_range(start, end, base)
+        created = add_plan_range(start, end, base, current_user)
         return jsonify([serialize_plan(c) for c in created]), 201
 
     except Exception as e:
@@ -82,8 +86,9 @@ def api_create():
         return jsonify({"error": "failed"}), 500
 
 @plan_bp.route("/plan/update", methods=["POST"])
-def api_update():
-    """Update an existing plan's allowed fields.
+@token_required
+def api_update(current_user):
+    """Update an existing plan's allowed fields for current user.
 
     Expects JSON with `id` plus any subset of the allowed update fields.
     Returns the serialized updated plan.
@@ -97,7 +102,7 @@ def api_update():
 
         update_fields = {k: data[k] for k in allowed if k in data}
 
-        updated = update_plan(pid, **update_fields)
+        updated = update_plan(pid, current_user, **update_fields)
         return jsonify(serialize_plan(updated))
 
     except Exception:
@@ -105,20 +110,22 @@ def api_update():
         return jsonify({"error": "failed"}), 500
 
 @plan_bp.route("/plan/delete", methods=["POST"])
-def api_delete():
-    """Delete a single plan by numeric ID. Expects JSON { id }."""
+@token_required
+def api_delete(current_user):
+    """Delete a single plan by numeric ID for current user. Expects JSON { id }."""
     try:
-        delete_plan(request.json["id"])
+        delete_plan(request.json["id"], current_user)
         return jsonify({"success": True})
     except Exception:
         traceback.print_exc()
         return jsonify({"success": False})
 
 @plan_bp.route("/plan/delete_group", methods=["POST"])
-def api_delete_group():
-    """Delete all plans in a group. Expects JSON { group_id }."""
+@token_required
+def api_delete_group(current_user):
+    """Delete all plans in a group for current user. Expects JSON { group_id }."""
     try:
-        delete_group(request.json["group_id"])
+        delete_group(request.json["group_id"], current_user)
         return jsonify({"success": True})
     except Exception:
         traceback.print_exc()
@@ -126,7 +133,8 @@ def api_delete_group():
 
 
 @plan_bp.route("/plan_ahead/api/weather_for_date")
-def weather_for_date():
+@token_required
+def weather_for_date(current_user):
     """Return forecasted weather for a given date and coordinates.
 
     Query params:
@@ -134,7 +142,7 @@ def weather_for_date():
       - lon: longitude
       - date: ISO date string (YYYY-MM-DD)
 
-    This uses OpenWeather's 5-day/3-hour forecast and searches for any
+    This uses OpenWeather 5-day/3-hour forecast and searches for any
     timestamp matching the requested date. If found, it returns weather,
     description and temp; otherwise returns 404.
     """
@@ -176,4 +184,3 @@ def weather_for_date():
     except Exception:
         traceback.print_exc()
         return jsonify({"error": "failed"}), 500
-    

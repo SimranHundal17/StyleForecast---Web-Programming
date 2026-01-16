@@ -19,6 +19,8 @@ from flask import render_template, request, jsonify
 from routes import outfit_bp
 from model.get_outfit_model import generate_outfit
 from model.outfit_history_model import add_history_entry   # used to persist saved outfits
+from model.login_model import get_user_by_email
+from model.wardrobe_model import record_outfit_worn, refresh_dirty_items_by_days
 from utils.auth import token_required
 import requests  # used to call third-party OpenWeather APIs
 import os
@@ -142,16 +144,58 @@ def api_generate_outfit(current_user):
     Returns JSON result from the model; if missing coords, returns 400.
     """
     data = request.get_json()
+    print(f"DEBUG: Received payload: {data}")
+    
     lat = data.get("lat")
     lon = data.get("lon")
     occasion = data.get("occasion")
+    exclude_ids = data.get("exclude_ids")
+    weather_override = None
+
+    # Optional: allow callers (e.g., Plan Ahead) to pass forecast weather.
+    # Shape: { weather: "Rain", temp: 8 } (temp optional)
+    if isinstance(data, dict) and (data.get("weather") or data.get("temp") is not None):
+        weather_override = {
+            "weather": data.get("weather"),
+            "temp": data.get("temp"),
+        }
+    # Always use LLM generation for outfits (AI-first behavior)
+    use_llm = True
 
     # Validate required inputs
     if not lat or not lon:
+        print(f"DEBUG: Missing location - lat: {lat}, lon: {lon}")
         return jsonify({"error": "Missing location"}), 400
 
+    # Refresh wardrobe statuses based on day threshold (so generation uses correct Clean items)
+    try:
+        user = get_user_by_email(current_user)
+        days_until_dirty = user.get('days_until_dirty') if user else None
+        if days_until_dirty is not None:
+            refresh_dirty_items_by_days(int(days_until_dirty))
+    except Exception:
+        pass
+
+    # Determine whether LLM generation is allowed by environment
+    llm_allowed = os.getenv('USE_LLM_OUTFITS', '').lower() in ('1', 'true', 'yes') or bool(os.getenv('GROQ_API_KEY'))
+    if use_llm and not llm_allowed:
+        return jsonify({"error": "LLM generation is not enabled on this server"}), 403
+
     # Call into the business logic (model) to generate outfit suggestions
-    result = generate_outfit(lat, lon, occasion)
+    result = generate_outfit(
+        lat,
+        lon,
+        occasion,
+        user_email=current_user,
+        use_llm=use_llm,
+        exclude_ids=exclude_ids,
+        weather_override=weather_override,
+    )
+
+    # If model returns an error, forward appropriate status code for client handling
+    if isinstance(result, dict) and 'error' in result:
+        return jsonify(result), 400
+
     return jsonify(result)
 
 
@@ -191,6 +235,14 @@ def save_outfit(current_user):
     }
 
     # Add to the in-memory history store via the model layer
-    add_history_entry(entry)
+    add_history_entry(entry, current_user)
+
+    # Day-based behavior:
+    # Like implies the user wore the outfit now -> store last_worn_at for each item.
+    # Items are auto-marked as "Needs Wash" after N days via refresh_dirty_items_by_days.
+    try:
+        record_outfit_worn(outfit)
+    except Exception:
+        pass
 
     return jsonify({"success": True})

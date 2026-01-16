@@ -40,7 +40,15 @@
 
 .add-item-button:hover {
   background-color: #4f46e5;
-  transform: scale(1.05);
+}
+
+/* Action buttons layout — keep consistent across pages (stacked buttons) */
+.wardrobe-item-actions {
+  flex-direction: column;
+}
+
+.wardrobe-item-actions .wardrobe-item-btn {
+  width: 100%;
 }
 
 /* Filters row (All, Casual, Gym, etc.) */

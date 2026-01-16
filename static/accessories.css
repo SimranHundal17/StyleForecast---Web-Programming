@@ -46,7 +46,6 @@
 
 .add-item-button:hover {
   background-color: #4f46e5;
-  transform: scale(1.05);
 }
 
 /* Filters — category chips and active state
@@ -173,6 +172,15 @@
 .wardrobe-item-btn:hover {
   background: #e0e7ff;
   transform: translateY(-2px);
+}
+
+/* Action buttons layout — keep consistent across pages (stacked buttons) */
+.wardrobe-item-actions {
+  flex-direction: column;
+}
+
+.wardrobe-item-actions .wardrobe-item-btn {
+  width: 100%;
 }
 
 /* ================================

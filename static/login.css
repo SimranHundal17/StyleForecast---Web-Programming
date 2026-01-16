@@ -19,6 +19,7 @@
   align-items: center;
   background: linear-gradient(180deg, #eef2ff 0%, #f9fafb 100%);
   padding: 2rem;
+  overflow-x: hidden;           /* prevent overflow */
 }
 
 /* AUTH CARD — centered container for the form
@@ -27,7 +28,7 @@
 .auth-card {
   background: #fff;
   padding: 2.5rem;
-  border-radius: 1.5rem;
+  border-radius: 1rem;          /* consistent rounded corners */
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
   max-width: 400px;
   width: 100%;

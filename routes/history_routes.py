@@ -27,14 +27,14 @@ def outfit_history(current_user):
 @history_bp.route("/data")
 @token_required
 def history_data(current_user):
-    entries = get_all_history()
+    entries = get_all_history(current_user)
     return jsonify(entries)
 
 # Delete one history entry by numeric id
 @history_bp.route("/api/delete/<int:entry_id>", methods=["DELETE"])
 @token_required
 def history_delete(current_user, entry_id):
-    ok = delete_history_entry(entry_id)
+    ok = delete_history_entry(entry_id, current_user)
     return jsonify({"ok": ok})
 
 # Add a new history from Plan Ahead
@@ -56,5 +56,5 @@ def history_add_from_plan(current_user):
         "liked":       data.get("liked", True),
     }
 # Saving in the database
-    new_entry = add_history_entry(entry)
+    new_entry = add_history_entry(entry, current_user)
     return jsonify(new_entry), 201

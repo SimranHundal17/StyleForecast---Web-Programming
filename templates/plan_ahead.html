@@ -22,8 +22,7 @@
 
     <!-- CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='global.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='plan_ahead.css') }}">
-</head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='plan_ahead.css') }}">  <link rel="stylesheet" href="{{ url_for('static', filename='custom-dropdown.css') }}"></head>
 
 <body>
     <div class="page-wrapper">
@@ -74,7 +73,7 @@
                 <!-- TOP CONTROLS -->
                 <div class="plan-top-controls">
 
-                    <select id="planType" class="form-select w-auto">
+                    <select id="planType" class="form-select" style="width: 150px;">
                         <option value="one">Single Day</option>
                         <option value="multi">Multi-Day Trip</option>
                     </select>
@@ -105,6 +104,10 @@
             </section>
         </main>
 
+        <footer class="footer">
+            <p class="footer-text">© 2025 Style Forecast</p>
+        </footer>
+
     </div>
 
     <!-- ============================================================
@@ -127,6 +130,11 @@
                     <!-- =================== INPUT SECTION (NEW PLAN) =================== -->
                     <div id="planInputSection">
 
+                        <div class="text-center mb-3">
+                            <h3 id="planDateHeading" class="mb-0"></h3>
+                        </div>
+
+
                         <div class="mb-3">
                             <label class="form-label">Location</label>
                             <input type="text" id="locationInput" class="form-control" placeholder="Search location">
@@ -137,8 +145,10 @@
                             <label class="form-label">Occasion</label>
                             <select id="occasionInput" class="form-select">
                                 <option value="Casual">Casual</option>
-                                <option value="Business">Business</option>
+                                <option value="Formal">Formal</option>
                                 <option value="Party">Party</option>
+                                <option value="Gym">Gym</option>
+                                <option value="Rainy">Rainy</option>
                             </select>
                         </div>
 
@@ -156,6 +166,8 @@
                                 Weather not available. Choose manually.
                             </div>
                         </div>
+
+                        <div id="planErrorAlert" class="alert alert-danger d-none" style="white-space: pre-line;"></div>
 
                         <button class="btn btn-purple w-100" id="generateBtn">Generate Outfit</button>
                     </div>
@@ -193,14 +205,14 @@
                             <p>Generating outfits…</p>
                         </div>
 
-                        <div class="d-flex justify-content-between mb-3">
+                        <div id="sliderNav" class="d-flex justify-content-between">
                             <button id="prevSlide" class="btn btn-light">&lt;</button>
                             <button id="nextSlide" class="btn btn-light">&gt;</button>
                         </div>
 
                         <div id="slider" class="slider mx-auto"></div>
 
-                        <div id="sliderDots" class="slider-dots mx-auto mt-3"></div>
+                        <div id="sliderDots" class="slider-dots mx-auto"></div>
 
                     </div>
 

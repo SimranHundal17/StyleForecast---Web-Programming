@@ -54,28 +54,35 @@ def _next_group_id():
     return (last["group_id"] + 1) if last else 1
 
 
-def get_all_plans():
+def get_all_plans(user_email: str = None):
     """
-    Fetch all plan entries.
+    Fetch all plan entries for a specific user.
     """
-    return list(plans.find())
+    query = {"user_email": user_email} if user_email else {}
+    return list(plans.find(query))
 
 
-def get_plans_for_date(date_str):
+def get_plans_for_date(date_str, user_email: str = None):
     """
-    Fetch plans for a specific date.
+    Fetch plans for a specific date and user.
     """
-    return list(plans.find({"date": date_str}))
+    query = {"date": date_str}
+    if user_email:
+        query["user_email"] = user_email
+    return list(plans.find(query))
 
 
-def get_plan_by_id(pid):
+def get_plan_by_id(pid, user_email: str = None):
     """
-    Fetch a single plan using its numeric ID.
+    Fetch a single plan using its numeric ID and verify user ownership.
     """
-    return plans.find_one({"id": int(pid)})
+    query = {"id": int(pid)}
+    if user_email:
+        query["user_email"] = user_email
+    return plans.find_one(query)
 
 
-def add_plan_entry(entry):
+def add_plan_entry(entry, user_email: str = None):
     """
     Add a single plan entry with default values for missing fields.
     """
@@ -93,15 +100,16 @@ def add_plan_entry(entry):
     new_entry.setdefault("description", None)
     new_entry.setdefault("outfit", [])
     new_entry.setdefault("group_id", None)
+    new_entry["user_email"] = user_email
 
     plans.insert_one(new_entry)
     return new_entry
 
 
-def add_plan_range(start_date, end_date, entry_template):
+def add_plan_range(start_date, end_date, entry_template, user_email: str = None):
     """
     Add multiple plan entries for a given date range.
-    All entries share the same group ID.
+    All entries share the same group ID and user email.
     """
 
     start = datetime.strptime(start_date, "%Y-%m-%d").date()
@@ -119,7 +127,7 @@ def add_plan_range(start_date, end_date, entry_template):
     while cur <= end:
         entry = dict(entry_template)
         entry["date"] = cur.strftime("%Y-%m-%d")
-        new_entry = add_plan_entry(entry)
+        new_entry = add_plan_entry(entry, user_email)
 
         # Assign group ID to link related plans
         plans.update_one(
@@ -134,42 +142,52 @@ def add_plan_range(start_date, end_date, entry_template):
     return created
 
 
-def update_plan(pid, **fields):
+def update_plan(pid, user_email: str = None, **fields):
     """
-    Update selected fields of an existing plan.
+    Update selected fields of an existing plan, verifying user ownership.
     """
-    plans.update_one({"id": int(pid)}, {"$set": fields})
-    return get_plan_by_id(pid)
+    query = {"id": int(pid)}
+    if user_email:
+        query["user_email"] = user_email
+    plans.update_one(query, {"$set": fields})
+    return get_plan_by_id(pid, user_email)
 
 
-def delete_plan(pid):
+def delete_plan(pid, user_email: str = None):
     """
-    Delete a single plan entry.
+    Delete a single plan entry, verifying user ownership.
     """
-    plans.delete_one({"id": int(pid)})
+    query = {"id": int(pid)}
+    if user_email:
+        query["user_email"] = user_email
+    plans.delete_one(query)
     return True
 
 
-def delete_group(gid):
+def delete_group(gid, user_email: str = None):
     """
-    Delete all plans belonging to the same group.
+    Delete all plans belonging to the same group, verifying user ownership.
     """
-    plans.delete_many({"group_id": int(gid)})
+    query = {"group_id": int(gid)}
+    if user_email:
+        query["user_email"] = user_email
+    plans.delete_many(query)
     return True
 
 
 from model.outfit_history_model import add_history_entry
 
 
-def archive_past_plans():
+def archive_past_plans(user_email: str = None):
     """
-    Archive past plans by moving them into outfit history.
+    Archive past plans by moving them into outfit history for a specific user.
     """
 
     today = datetime.utcnow().date()
-    past_plans = plans.find(
-        {"date": {"$lt": today.strftime("%Y-%m-%d")}}
-    )
+    query = {"date": {"$lt": today.strftime("%Y-%m-%d")}}
+    if user_email:
+        query["user_email"] = user_email
+    past_plans = plans.find(query)
 
     for p in past_plans:
         if p.get("outfit"):
@@ -180,5 +198,5 @@ def archive_past_plans():
                 "weather": p.get("weather"),
                 "temp": p.get("temp"),
                 "outfit": p.get("outfit")
-            })
+            }, user_email)
             plans.delete_one({"id": p["id"]})

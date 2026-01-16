@@ -42,7 +42,7 @@ function createCardElement(item) {
 
   // Button row container
   const btnRow = document.createElement('div');
-  btnRow.className = 'd-flex gap-2 mt-2';
+  btnRow.className = 'd-flex gap-2 mt-2 wardrobe-item-actions';
 
   // Toggle status button
   const toggleBtn = document.createElement('button');
@@ -53,6 +53,38 @@ function createCardElement(item) {
 
   toggleBtn.addEventListener('click', async () => {
     await updateItemStatus(item.id);
+  });
+
+  // Edit button
+  const editBtn = document.createElement('button');
+  editBtn.className = 'wardrobe-item-btn';
+  editBtn.textContent = 'Edit';
+
+  editBtn.addEventListener('click', () => {
+    // Prefill modal fields and show modal
+    const modalEl = document.getElementById('editItemModal');
+    if (!modalEl) return;
+    
+    // Clear form first
+    const form = document.getElementById('editItemForm');
+    if (form) form.reset();
+    
+    // Helper to capitalize first letter
+    const capitalize = (str) => {
+      if (!str) return '';
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    };
+    
+    // Now populate with item data
+    document.getElementById('editItemId').value = item.id;
+    document.getElementById('editItemName').value = item.name || '';
+    document.getElementById('editItemCategory').value = item.category || '';
+    document.getElementById('editItemType').value = (item.type || '').toLowerCase() || 'top';
+    document.getElementById('editItemColor').value = item.color || '';
+    document.getElementById('editItemStatus').value = capitalize(item.status) || 'Clean';
+
+    const modal = new bootstrap.Modal(modalEl);
+    modal.show();
   });
 
   // Remove button
@@ -66,6 +98,7 @@ function createCardElement(item) {
 
   // Assemble buttons row
   btnRow.appendChild(toggleBtn);
+  btnRow.appendChild(editBtn);
   btnRow.appendChild(removeBtn);
 
   // Assemble card
@@ -189,7 +222,20 @@ function setupAddForm() {
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
- 
+
+    // Clear previous server error
+    const errorEl = document.getElementById('addItemError');
+    if (errorEl) {
+      errorEl.style.display = 'none';
+      errorEl.textContent = '';
+    }
+
+    // Client-side validity check
+    if (!form.checkValidity()) {
+      form.classList.add('was-validated');
+      return;
+    }
+
     const formData = new FormData(form);
     
     // Disable submit button to prevent double submission
@@ -205,7 +251,26 @@ function setupAddForm() {
       });
       
       if (!res.ok) {
-        throw new Error(`HTTP error! status: ${res.status}`);
+        // Try to parse JSON error from server
+        let errMsg = `HTTP error! status: ${res.status}`;
+        try {
+          const errJson = await res.json();
+          if (errJson && errJson.error) errMsg = errJson.error;
+        } catch (parseErr) {
+          // ignore JSON parse errors
+        }
+
+        // Show server validation message inline and re-enable submit button
+        if (errorEl) {
+          errorEl.textContent = errMsg;
+          errorEl.style.display = '';
+        } else {
+          alert(errMsg);
+        }
+
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText;
+        return;
       }
 
       // Get modal instance
@@ -218,6 +283,7 @@ function setupAddForm() {
         // Reset form after modal is hidden
         modalEl.addEventListener('hidden.bs.modal', function cleanup() {
           form.reset();
+          form.classList.remove('was-validated');
           submitBtn.disabled = false;
           submitBtn.textContent = originalText;
           modalEl.removeEventListener('hidden.bs.modal', cleanup);
@@ -225,6 +291,7 @@ function setupAddForm() {
       } else {
         // Fallback if no instance
         form.reset();
+        form.classList.remove('was-validated');
         submitBtn.disabled = false;
         submitBtn.textContent = originalText;
       }
@@ -234,7 +301,13 @@ function setupAddForm() {
       
     } catch (error) {
       console.error('Failed to add item:', error);
-      alert('Failed to add item. Please try again.');
+
+      if (errorEl) {
+        errorEl.textContent = 'Failed to add item. Please try again.';
+        errorEl.style.display = '';
+      } else {
+        alert('Failed to add item. Please try again.');
+      }
       
       // Re-enable button on error
       submitBtn.disabled = false;
@@ -243,9 +316,55 @@ function setupAddForm() {
   });
 }
 
+// Setup edit form submission handler
+function setupEditForm() {
+  const form = document.getElementById('editItemForm');
+  if (!form) return;
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const id = document.getElementById('editItemId').value;
+    const payload = {
+      id: id,
+      name: document.getElementById('editItemName').value,
+      category: document.getElementById('editItemCategory').value,
+      type: document.getElementById('editItemType').value,
+      color: document.getElementById('editItemColor').value,
+      status: document.getElementById('editItemStatus').value
+    };
+
+    try {
+      const res = await fetch('/wardrobe/edit-item', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      
+      if (!res.ok) {
+        const err = await res.json();
+        alert(err.error || 'Failed to update item');
+        return;
+      }
+
+      // Close modal and reload wardrobe
+      const modalEl = document.getElementById('editItemModal');
+      const modal = bootstrap.Modal.getInstance(modalEl);
+      if (modal) modal.hide();
+      
+      // Reload wardrobe to show updated item
+      await loadWardrobe(currentFilter);
+    } catch (err) {
+      console.error('Failed to update item:', err);
+      alert('Failed to update item. Please try again.');
+    }
+  });
+}
+
 // Initialize on DOM ready
 document.addEventListener('DOMContentLoaded', () => {
   setupFilters();
   setupAddForm();
+  setupEditForm();
   loadWardrobe('all');
 });

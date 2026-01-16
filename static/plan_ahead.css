@@ -58,6 +58,11 @@
   margin-bottom: 1.25rem;
 }
 
+#planType {
+  width: 150px !important;
+  flex-shrink: 0;
+}
+
 .date-selectors {
   display: flex;
   gap: 0.75rem;
@@ -158,19 +163,43 @@
 #sliderContainer {
   width: 100%;
   overflow: hidden;
+  position: relative;
+  padding: 0 50px;
+  box-sizing: border-box;
+}
+
+/* Multi-day slider controls: overlay so they don't add vertical height */
+#sliderNav {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  transform: translateY(-50%);
+  padding: 0 12px;
+  pointer-events: none; /* allow clicks only on buttons */
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+}
+
+#sliderNav button {
+  pointer-events: auto;
+  opacity: 0.92;
 }
 
 .slider {
   display: flex;
   width: 100%;
-  transition: transform 0.35s ease-in-out;
+  align-items: flex-start;
+  transition: transform 0.35s ease-in-out, height 0.2s ease;
 }
 
 .slider-slide {
   min-width: 100%;
   max-width: 100%;
-  padding: 20px;
+  padding: 16px;
   box-sizing: border-box;
+  overflow: hidden;
 }
 
 .slider-dots span {
@@ -179,10 +208,15 @@
   margin: 0 4px;
 } 
 
+.slider-dots {
+  margin-top: 10px;
+}
+
 /* OUTFIT PREVIEW */
 .outfit-preview {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 10px;
   margin-top: 1rem;
 }
@@ -191,6 +225,19 @@
   padding: 8px 14px;
   background: #eef2ff;
   border-radius: 8px;
+  font-weight: 600;
+}
+
+.plan-outfit-loading {
+  /* Backward-compat alias (older JS used this class) */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #f3f4f6;
+  color: #374151;
   font-weight: 600;
 }
 
