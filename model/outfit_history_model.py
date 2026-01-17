@@ -16,8 +16,6 @@ def _to_dict(doc):
         "weather": doc.get("weather", ""),
         "outfit": doc.get("outfit", []),
         "occasion": doc.get("occasion", ""),
-        "mood": doc.get("mood", ""),
-        "rating": doc.get("rating", 0),
         "liked": doc.get("liked", False),
     }
 
@@ -46,8 +44,6 @@ def add_history_entry(entry, user_email: str = None):
         "weather": entry.get("weather"),
         "outfit": entry.get("outfit", []),
         "occasion": entry.get("occasion", ""),
-        "mood": entry.get("mood", ""),
-        "rating": entry.get("rating", 0),
         "liked": entry.get("liked", False),
         "user_email": user_email,
     }

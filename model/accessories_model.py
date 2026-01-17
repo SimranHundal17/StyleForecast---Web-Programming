@@ -58,18 +58,22 @@ def add_accessory(name, type_, user_email=None):
     return item
 
 
-def remove_accessory(accessory_id):
+def remove_accessory(accessory_id, user_email=None):
     """
     Remove an accessory using its unique ID.
+    Only deletes if it belongs to the current user (if user_email provided).
     """
+    query = {"_id": ObjectId(accessory_id)}
+    if user_email:
+        query["user_email"] = user_email
+    
+    return accessories.delete_one(query)
 
-    return accessories.delete_one(
-        {"_id": ObjectId(accessory_id)}
-    )
 
-
-def update_accessory(accessory_id, name=None, type_=None):
-    """Update accessory fields (name, type) and return updated doc."""
+def update_accessory(accessory_id, name=None, type_=None, user_email=None):
+    """Update accessory fields (name, type) and return updated doc.
+    Only updates if it belongs to the current user (if user_email provided).
+    """
     update = {}
     if name is not None:
         update['name'] = name
@@ -78,8 +82,12 @@ def update_accessory(accessory_id, name=None, type_=None):
     if not update:
         return None
 
-    accessories.update_one({'_id': ObjectId(accessory_id)}, {'$set': update})
-    doc = accessories.find_one({'_id': ObjectId(accessory_id)})
+    query = {'_id': ObjectId(accessory_id)}
+    if user_email:
+        query['user_email'] = user_email
+    
+    accessories.update_one(query, {'$set': update})
+    doc = accessories.find_one(query)
     if not doc:
         return None
     doc['_id'] = str(doc['_id'])

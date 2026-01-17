@@ -61,6 +61,36 @@ function formatOutfitItemTitle(item) {
 
 
 // ======================================================
+// FETCH AND DISPLAY WEATHER
+// ======================================================
+async function updateWeatherDisplay(lat, lon) {
+    try {
+        // Call the backend to get weather for the selected location
+        const url = `/get_outfit/api/location/reverse?lat=${lat}&lon=${lon}`;
+        const response = await fetch(url, { credentials: "include" });
+        const data = await response.json();
+
+        if (data && (data.temp !== undefined || data.condition || data.weather)) {
+            // Update weather display
+            if (data.temp !== undefined) document.getElementById("weatherTemp").textContent = `${data.temp}°C`;
+            if (data.condition) document.getElementById("weatherDesc").textContent = data.condition;
+            document.getElementById("weatherLocation").textContent = locationInput.value || "📍 Select location";
+            
+            // Update weather icon based on condition
+            let icon = "☁️";
+            if (String(data.condition || '').includes("Rain")) icon = "🌧️";
+            if (String(data.condition || '').includes("Clear")) icon = "☀️";
+            if (String(data.condition || '').includes("Snow")) icon = "❄️";
+            document.getElementById("weatherIcon").textContent = icon;
+        }
+    } catch (err) {
+        console.log("Error fetching weather:", err);
+        // Silently fail - weather will be shown when outfit is generated
+    }
+}
+
+
+// ======================================================
 // AUTOCOMPLETE
 // ======================================================
 locationInput.addEventListener("input", () => {
@@ -108,6 +138,9 @@ locationInput.addEventListener("input", () => {
 
                 suggestionsBox.innerHTML = "";
                 generateBtn.disabled = false;
+                
+                // Immediately fetch and display weather for the selected location
+                updateWeatherDisplay(item.lat, item.lon);
             });
 
             suggestionsBox.appendChild(div);
@@ -146,6 +179,9 @@ window.addEventListener("DOMContentLoaded", () => {
             selectedLat = data.lat;
             selectedLon = data.lon;
             generateBtn.disabled = false;
+            
+            // Immediately fetch and display weather for the auto-detected location
+            updateWeatherDisplay(data.lat, data.lon);
         }
     }, err => {
         // If geolocation fails (permission denied or timeout), do nothing — user can type a location
