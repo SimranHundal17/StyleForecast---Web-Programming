@@ -208,7 +208,7 @@ def save_outfit(current_user):
     """Persist a liked outfit into the in-memory outfit history.
 
     Expected JSON body contains: outfit (array), weather (str), location (str),
-    optional: occasion, rating, date. Uses `add_history_entry` from model.
+    optional: occasion, date. Uses `add_history_entry` from model.
     """
     data = request.get_json()
 
@@ -216,7 +216,6 @@ def save_outfit(current_user):
     weather = data.get("weather")
     location = data.get("location")
     occasion = data.get("occasion")
-    rating = data.get("rating")
 
     # Basic validation to ensure required fields are present
     if not outfit or not weather or not location:
@@ -228,10 +227,7 @@ def save_outfit(current_user):
         "weather": weather,
         "outfit": outfit,
         "occasion": occasion,
-        "rating": rating,
         "liked": True,
-        # mood defaults to occasion for now; this can be updated by UI later
-        "mood": occasion
     }
 
     # Add to the in-memory history store via the model layer
@@ -241,7 +237,7 @@ def save_outfit(current_user):
     # Like implies the user wore the outfit now -> store last_worn_at for each item.
     # Items are auto-marked as "Needs Wash" after N days via refresh_dirty_items_by_days.
     try:
-        record_outfit_worn(outfit)
+        record_outfit_worn(outfit, current_user)
     except Exception:
         pass
 

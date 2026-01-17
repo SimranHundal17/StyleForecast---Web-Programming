@@ -184,14 +184,22 @@ def add_item(name: str, category: str, status: str, color: str, item_type: str, 
 
 # Update item status between 'Clean' and 'Needs Wash'
 ## Also keep dirty_items collection in sync
-def update_item_status(item_id: int):
+def update_item_status(item_id: int, user_email: str = None):
 # Find item in main collection
-    doc = wardrobe_col.find_one({"id": int(item_id)})
+    query = {"id": int(item_id)}
+    if user_email:
+        query["user_email"] = user_email
+    
+    doc = wardrobe_col.find_one(query)
     if not doc:
         return None
 # Normalize current status to lower-case string
     current_status = str(doc.get("status", "Clean")).lower()
     wear_count = int(doc.get("wear_count", 0))
+    
+    # Initialize wear_count if missing (for items added before this feature)
+    if "wear_count" not in doc:
+        wardrobe_col.update_one({"id": int(item_id)}, {"$set": {"wear_count": 0}})
 
     if current_status == "clean":
 # Mark item as dirty
@@ -222,19 +230,20 @@ def update_item_status(item_id: int):
 
 # Update status and wear_count in main wardrobe collection
     wardrobe_col.update_one(
-        {"id": int(item_id)},
+        query,
         {"$set": {"status": new_status, "wear_count": wear_count, "last_worn_at": last_worn_at}},
     )
 
 # Read back updated document to return fresh data
-    updated = wardrobe_col.find_one({"id": int(item_id)})
+    updated = wardrobe_col.find_one(query)
     return _to_dict(updated)
 
 
-def record_outfit_worn(outfit_items):
+def record_outfit_worn(outfit_items, user_email: str = None):
     """Record that the user wore an entire outfit now.
 
     Stores timestamps so items can be auto-marked as "Needs Wash" after N days.
+    Only updates items belonging to the specified user (if user_email provided).
     """
     if not isinstance(outfit_items, list):
         return
@@ -260,10 +269,18 @@ def record_outfit_worn(outfit_items):
         ids.append(item_id_int)
 
     for item_id_int in ids:
-        # Only update timestamp for items that currently exist.
+        # Only update timestamp for items that currently exist and belong to user.
+        # Also increment wear_count to track how many times worn since last wash
+        query = {"id": int(item_id_int)}
+        if user_email:
+            query["user_email"] = user_email
+        
         wardrobe_col.update_one(
-            {"id": int(item_id_int)},
-            {"$set": {"last_worn_at": now}},
+            query,
+            {
+                "$set": {"last_worn_at": now},
+                "$inc": {"wear_count": 1}  # Increment wear_count by 1
+            },
         )
 
 

@@ -131,13 +131,14 @@ def add_item_route(current_user):
         if not color:
             return jsonify({"error": "Color is required"}), 400
 
-# Type is required
+        # Type is required
         if not item_type:
             return jsonify({"error": "Type is required"}), 400
 
-# Call model function to insert item into MongoDB
-        new_item = add_item(name, category, status, color, item_type)
-# Return created item and HTTP 201 status
+        # Call model function to insert item into MongoDB
+        # Pass current_user email so item is associated with this user
+        new_item = add_item(name, category, status, color, item_type, user_email=current_user)
+        # Return created item and HTTP 201 status
         return jsonify(new_item), 201
     
     except Exception as e:
@@ -185,7 +186,7 @@ def wardrobe_update(current_user):
             return jsonify({"error": "ID is required"}), 400
 
 # Call model function to update status in MongoDB
-        updated_item = update_item_status(int(item_id))
+        updated_item = update_item_status(int(item_id), current_user)
 
 # If item does not exist
         if not updated_item:
@@ -206,7 +207,7 @@ def delete_item_route(current_user, item_id):
 
     try:
 # Call model function to delete item from MongoDB
-        ok = delete_item_model(item_id)
+        ok = delete_item_model(item_id, current_user)
 
         if ok:
 # Successfully deleted

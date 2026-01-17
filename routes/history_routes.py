@@ -51,8 +51,6 @@ def history_add_from_plan(current_user):
         "weather":     data.get("weather", ""),
         "outfit":      data.get("outfit", []),
         "occasion":    data.get("occasion", ""),
-        "mood":        data.get("mood", ""),
-        "rating":      data.get("rating", 0),
         "liked":       data.get("liked", True),
     }
 # Saving in the database
