@@ -1,7 +1,11 @@
-from utils.db import db
+### Utility script to seed lookup collections in MongoDB
+## This script populates the 'lookup_categories' and 'lookup
 
+from utils.db import db
+   
+# Collection for wardrobe categories (Casual, Formal, etc.)
 def seed_lookup_categories():
-    # Collection for wardrobe categories (Casual, Formal, etc.)
+
     col = db["lookup_categories"]
 
     categories = [
@@ -15,15 +19,16 @@ def seed_lookup_categories():
 
     inserted = 0
     updated = 0
-
+       
+# Upsert = update if exists, create if not exists
     for item in categories:
-        # Upsert = update if exists, insert if not exists
+ 
         result = col.update_one(
             {"key": item["key"]},
             {"$set": item},
             upsert=True
         )
-        # If upsert happened, Mongo gives upserted_id
+# If upsert happened, Mongo gives upserted_id
         if result.upserted_id is not None:
             inserted += 1
         else:
@@ -31,8 +36,9 @@ def seed_lookup_categories():
 
     print(f"✅ lookup_categories: inserted {inserted}, updated {updated}")
 
+# Collection for gender values (used in Profile settings)
 def seed_lookup_genders():
-    # Collection for gender values (used in Profile settings)
+
     col = db["lookup_genders"]
 
     genders = [
@@ -59,7 +65,7 @@ def seed_lookup_genders():
     print(f"✅ lookup_genders: inserted {inserted}, updated {updated}")
 
 def main():
-    # Run both seed functions
+# Run both seed functions
     seed_lookup_categories()
     seed_lookup_genders()
     print("🎉 Done! Lookup collections are ready.")

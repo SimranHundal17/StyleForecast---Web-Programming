@@ -1,4 +1,19 @@
 <!DOCTYPE html>
+<!--
+  templates/wardrobe.html — Wardrobe page
+  Purpose: Show the user wardrobe items and allow CRUD actions (add, update status, delete).
+  Key UI parts:
+    - Filters row: buttons with data-filter (All, Needs Wash, categories)
+    - Empty state: shown only when there are no items
+    - Grid container: #wardrobe-grid (cards are rendered by JS)
+    - Add Item modal: #addItemModal (form #addItemForm)
+  Behavior:
+    - Data is loaded by static/wardrobe.js using fetch:
+        GET    /wardrobe/data?filter=...
+        POST   /wardrobe/add-item
+        POST   /wardrobe/update
+        DELETE /wardrobe/api/items/<id>
+-->
 <html lang="en">
 
 <head>
