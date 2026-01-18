@@ -41,8 +41,28 @@ def api_add_accessory(current_user):
     Expects accessory data in JSON format.
     Accessory will be associated with current user.
     """
-    data = request.get_json()
-    return jsonify(add_accessory(data["name"], data["type"], current_user)), 201
+    try:
+        # VALIDATION: Check if JSON data is provided
+        data = request.get_json()
+        if not data:
+            return jsonify({"error": "No data provided"}), 400
+        
+        # VALIDATION: Ensure required fields are present
+        name = data.get("name", "").strip()
+        type_ = data.get("type", "").strip()
+        
+        if not name:
+            return jsonify({"error": "Accessory name is required"}), 400
+        if not type_:
+            return jsonify({"error": "Accessory type is required"}), 400
+        
+        # Add accessory to database
+        result = add_accessory(name, type_, current_user)
+        return jsonify(result), 201
+    
+    except Exception as e:
+        # ERROR HANDLING: Catch database or processing errors
+        return jsonify({"error": f"Failed to add accessory: {str(e)}"}), 500
 
 
 @accessories_bp.route('/api/accessories/<accessory_id>', methods=['DELETE'])
@@ -52,22 +72,47 @@ def api_delete_accessory(current_user, accessory_id):
     API endpoint to delete an accessory using its ID.
     Only deletes if accessory belongs to current user.
     """
-    remove_accessory(accessory_id, current_user)
-    return jsonify({"success": True})
+    try:
+        # VALIDATION: Ensure accessory ID is provided
+        if not accessory_id or not accessory_id.strip():
+            return jsonify({"error": "Accessory ID is required"}), 400
+        
+        # Delete accessory from database
+        remove_accessory(accessory_id, current_user)
+        return jsonify({"success": True}), 200
+    
+    except Exception as e:
+        # ERROR HANDLING: Catch database or permission errors
+        return jsonify({"error": f"Failed to delete accessory: {str(e)}"}), 500
 
 
 @accessories_bp.route('/api/accessories/<accessory_id>', methods=['POST'])
 @token_required
 def api_update_accessory(current_user, accessory_id):
     """Update an accessory (name/type). Expects JSON body with 'name' and/or 'type'."""
-    data = request.get_json() or {}
-    name = data.get('name')
-    type_ = data.get('type')
-    if name is None and type_ is None:
-        return jsonify({'error': 'No updatable fields provided'}), 400
-
-    updated = update_accessory(accessory_id, name=name, type_=type_, user_email=current_user)
-    if not updated:
-        return jsonify({'error': 'Update failed'}), 500
-
-    return jsonify(updated), 200
+    try:
+        # VALIDATION: Check if JSON data exists
+        data = request.get_json() or {}
+        name = data.get('name')
+        type_ = data.get('type')
+        
+        # VALIDATION: Ensure at least one field is being updated
+        if name is None and type_ is None:
+            return jsonify({'error': 'No updatable fields provided'}), 400
+        
+        # Strip whitespace if provided
+        if name:
+            name = name.strip()
+        if type_:
+            type_ = type_.strip()
+        
+        # Update accessory in database
+        updated = update_accessory(accessory_id, name=name, type_=type_, user_email=current_user)
+        if not updated:
+            return jsonify({'error': 'Accessory not found or update failed'}), 404
+        
+        return jsonify(updated), 200
+    
+    except Exception as e:
+        # ERROR HANDLING: Catch database or processing errors
+        return jsonify({'error': f'Failed to update accessory: {str(e)}'}), 500
