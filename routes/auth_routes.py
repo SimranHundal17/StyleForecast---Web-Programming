@@ -3,9 +3,6 @@ auth_routes.py
 
 Authentication routes for the app: login (GET), login (POST), signup (POST), and logout (GET).
 
-Comments are block-style for readability, but the more intricate operations
-(e.g., JWT construction/encoding, session persistence, and input casting)
-include short line-level comments so you can explain them precisely in an exam.
 """
 
 from flask import render_template, request, redirect, url_for, session, jsonify
