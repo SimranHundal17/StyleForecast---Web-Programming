@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 
+<!-- Page metadata: encoding, responsive settings, and browser title -->
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -15,9 +16,9 @@
 </head>
 
 <body>
-
+<!-- Main page wrapper for consistent layout across the app -->
   <div class="page-wrapper">
-    <!-- Navbar -->
+    <!-- Navigation bar with Flask-generated links -->
     <nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(90deg, #6366f1, #8b5cf6);">
       <div class="container-fluid">
         <a class="navbar-brand fw-bold" href="{{ url_for('intro.intro') }}">☁️ Style Forecast</a>
@@ -41,7 +42,7 @@
         </div>
       </div>
     </nav>
-
+<!-- Main content area for Outfit History -->
     <main class="section">
       <section class="card outfit-history-card">
         <div class="header-row">
@@ -62,11 +63,12 @@
 
         <!-- History grid (JS will inject cards here) -->
         <section class="history-items-section">
+          <!-- Container for dynamically rendered history cards -->
           <div class="row g-3" id="history-grid"></div>
         </section>
       </section>
     </main>
-
+<!-- Application footer -->
     <footer class="footer">
       <p class="footer-text">© 2025 Style Forecast</p>
     </footer>
