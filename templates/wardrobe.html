@@ -1,4 +1,19 @@
 <!DOCTYPE html>
+<!--
+  templates/wardrobe.html — Wardrobe page
+  Purpose: Show the user wardrobe items and allow CRUD actions (add, update status, delete).
+  Key UI parts:
+    - Filters row: buttons with data-filter (All, Needs Wash, categories)
+    - Empty state: shown only when there are no items
+    - Grid container: #wardrobe-grid (cards are rendered by JS)
+    - Add Item modal: #addItemModal (form #addItemForm)
+  Behavior:
+    - Data is loaded by static/wardrobe.js using fetch:
+        GET    /wardrobe/data?filter=...
+        POST   /wardrobe/add-item
+        POST   /wardrobe/update
+        DELETE /wardrobe/api/items/<id>
+-->
 <html lang="en">
 
 <head>
@@ -6,28 +21,31 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>My Wardrobe - Style Forecast</title>
 
-  <!-- Bootstrap CSS -->
+  <!-- Bootstrap CSS (UI components, grid, modal, navbar) -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
 
-  <!-- Styles -->
+  <!-- Project styles -->
   <link rel="stylesheet" href="{{ url_for('static', filename='global.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='wardrobe.css') }}">
 </head>
 
 <body>
   <div class="page-wrapper">
-    <!-- Navbar -->
+
+    <!-- Navbar (same across pages) -->
     <nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(90deg, #6366f1, #8b5cf6);">
       <div class="container-fluid">
+        <!-- Logo links back to intro page -->
         <a class="navbar-brand fw-bold" href="{{ url_for('intro.intro') }}">☁️ Style Forecast</a>
-
+<!-- Burger button for mobile navbar -->
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
           <span class="navbar-toggler-icon"></span>
         </button>
-
+<!-- Collapsible navbar links -->
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav ms-auto">
+            <!-- Active page: Wardrobe -->
             <li class="nav-item"><a class="nav-link active" href="{{ url_for('wardrobe.wardrobe') }}">Wardrobe</a></li>
             <li class="nav-item"><a class="nav-link"
                 href="{{ url_for('accessories.accessories_page') }}">Accessories</a></li>
@@ -41,7 +59,7 @@
         </div>
       </div>
     </nav>
-
+<!-- Main page content -->
     <main class="section">
       <section class="card wardrobe-card">
 
@@ -52,6 +70,7 @@
             <p class="subtitle">Manage your clothing collection</p>
           </div>
           <div class="wardrobe-header-action">
+            <!-- Button uses Bootstrap modal attributes -->
             <button type="button" class="btn add-item-button btn-primary" data-bs-toggle="modal"
               data-bs-target="#addItemModal">
               + Add Item
@@ -59,7 +78,7 @@
           </div>
         </div>
 
-        <!-- Filters -->
+        <!-- Filters row (JS reads data-filter and reloads the grid) -->
         <div class="filter-row" id="filters">
           <span class="filter-label">🔍 Filter:</span>
           <button class="filter-chip filter-active" data-filter="all">All</button>
@@ -79,12 +98,14 @@
           <div class="empty-state-desc">
             Start building your digital wardrobe by adding your first clothing item.
           </div>
+           <!-- Opens Add Item modal -->
           <button class="btn empty-state-button" type="button" data-bs-toggle="modal" data-bs-target="#addItemModal">
             + Add Your First Item
           </button>
         </div>
 
         <!-- List container: JS injects cards here -->
+        <!-- Wardrobe items grid -->
         <div class="wardrobe-items-section">
           <div class="row g-3" id="wardrobe-grid"></div>
         </div>
@@ -92,14 +113,14 @@
       </section>
 
     </main>
-
+<!-- Footer -->
     <footer class="footer">
       <p class="footer-text">© 2025 Style Forecast</p>
     </footer>
   </div>
 
   <!-- EDIT ITEM MODAL -->
-  <div class="modal fade" id="editItemModal" tabindex="-1" aria-labelledby="editItemLabel" aria-hidden="true">
+   <div class="modal fade" id="editItemModal" tabindex="-1" aria-labelledby="editItemLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
@@ -154,7 +175,7 @@
     </div>
   </div>
 
-  <!-- Add Item Modal -->
+  <!-- ADD ITEM MODAL (main modal used by wardrobe.js) -->
   <div class="modal fade" id="addItemModal" tabindex="-1" aria-labelledby="addItemLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -210,7 +231,7 @@
                 <option value="shoes">Shoes</option>
               </select>
             </div>
-
+<!-- Error container (optional; JS can show errors here) -->
             <div id="addItemError" class="text-danger small mb-2" role="alert" style="display:none;"></div>
 
           </div>
@@ -230,9 +251,8 @@
     integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
     crossorigin="anonymous"></script>
 
-  <!-- Wardrobe dynamic rendering -->
+  <!-- Page logic: loads items, handles filter clicks, add/update/delete via fetch -->
   <script src="{{ url_for('static', filename='wardrobe.js') }}"></script>
 
 </body>
-
 </html>

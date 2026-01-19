@@ -8,8 +8,6 @@
   Behavior: Uses JS to manage `savedPlans` (backend) vs `tempPlans` (session-generated),
   and calls endpoints such as `/plan/plans`, `/plan/create`, `/plan/update`,
   `/plan/delete`, and `/plan_ahead/api/weather_for_date` via `static/plan_ahead.js`.
-  Exam notes: Be prepared to explain date ISO handling (YYYY-MM-DD), temp vs saved state,
-  and how missing weather is handled in the slider UI.
 -->
 <html lang="en">
 
@@ -227,5 +225,4 @@
     <script src="{{ url_for('static', filename='plan_ahead.js') }}"></script>
 
 </body>
-
 </html>
