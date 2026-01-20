@@ -1,99 +1,113 @@
 /* ============================
    OUTFIT HISTORY PAGE
-============================ */
+   Styles for the Outfit History screen
+   ============================ */
 .outfit-history-card {
-  background: #fff;
-  border-radius: 1rem;
-  padding: 2rem;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-  margin-bottom: 2rem;
+  background: #fff;                     /* white card background */
+  border-radius: 1rem;                 /* rounded corners */
+  padding: 2rem;                       /* inner spacing */
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05); /* soft shadow */
+  margin-bottom: 2rem;                 /* space below card */
 }
 
-/* Header row (title + subtitle) */
+/* Header row (title + subtitle)
+   Top section with page title and description */
 .header-row {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.5rem;               /* space under header */
 }
 
 .header-row .title {
-  font-size: 1.8rem;
-  color: #4338ca;
+  font-size: 1.8rem;                   /* large title text */
+  color: #4338ca;                      /* primary purple color */
   margin-bottom: 0.2rem;
 }
 
 .header-row .subtitle {
-  color: #6b7280;
+  color: #6b7280;                      /* muted gray text */
 }
 
-/* Grid section */
+/* Grid section
+   Container where history cards are placed */
 .history-items-section {
-  margin-top: 2.5rem;
+  margin-top: 2.5rem;                 /* space above grid */
 }
 
-/* Card look – similar to wardrobe-item-card */
+/* Card look – similar to wardrobe-item-card
+   Single outfit history card */
 .history-item-card {
   background: #ffffff;
-  border-radius: 18px;
+  border-radius: 18px;                /* rounded card */
   padding: 1.5rem;
   box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
   border: 1px solid #f0f2ff;
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;   /* text сверху, кнопка у нижнего края */
-  min-height: 260px;                /* немного выше, чтобы всё влезало */
-  transition: all 0.25s ease;
+  flex-direction: column;             /* vertical layout */
+  justify-content: space-between;     /* text on top, button at bottom */
+  min-height: 260px;                  /* fixed height for layout balance */
+  transition: all 0.25s ease;         /* smooth hover animation */
 }
 
+/* Hover effect for card
+   Card moves slightly up on hover */
 .history-item-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
 }
 
-/* Внутренний блок с текстом */
+/* Inner text container
+   Holds date, outfit text and meta info */
 .history-item-body {
-  flex: 1;
+  flex: 1;                            /* take available space */
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.75rem;                       /* space between text rows */
 }
 
-/* Дата / город / погода – резервируем 2 строки */
+/* Date / location / weather text
+   Styled as small uppercase metadata */
 .history-item-date {
   font-size: 0.85rem;
   color: #9ca3af;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   line-height: 1.4;
-  min-height: 2.4em;   /* ≈ две строки текста */
+  min-height: 2.4em;                  /* reserve space for 2 lines */
 }
 
+/* Outfit description
+   Main outfit text */
 .history-item-outfit {
   font-size: 0.98rem;
   font-weight: 600;
   color: #252552;
 }
 
+/* Additional metadata (occasion, mood, etc.) */
 .history-item-meta {
   font-size: 0.9rem;
   color: #777aa5;
 }
 
-/* Нижняя зона с кнопкой */
+/* Bottom section of card
+   Used for buttons */
 .history-item-footer {
   margin-top: 1rem;
 }
 
-/* Actions row under text (если потом добавишь ещё кнопки) */
+/* Actions row
+   Layout for future buttons */
 .history-item-actions {
   display: flex;
   gap: 0.5rem;
 }
 
-/* Pill button – как на Wardrobe */
+/* Button style
+   Same pill-style buttons as Wardrobe */
 .history-item-btn {
   align-self: flex-start;
   font-size: 0.85rem;
   padding: 0.4rem 0.9rem;
-  border-radius: 999px;
+  border-radius: 999px;               /* pill shape */
   background: #eef2ff;
   color: #4f46e5;
   border: none;
@@ -102,23 +116,27 @@
   transition: all 0.3s ease;
 }
 
+/* Button hover effect */
 .history-item-btn:hover {
   background: #e0e7ff;
   transform: translateY(-2px);
 }
 
-/* Empty state */
+/* Empty state
+   Shown when there is no history data */
 .empty-state {
   text-align: center;
   padding: 3rem 1rem;
   color: #6b7280;
 }
 
+/* Empty state icon */
 .empty-state-icon {
   font-size: 2.5rem;
   margin-bottom: 0.5rem;
 }
 
+/* Empty state title */
 .empty-state-title {
   font-size: 1.3rem;
   font-weight: 600;
@@ -126,6 +144,7 @@
   margin-bottom: 0.5rem;
 }
 
+/* Empty state description text */
 .empty-state-desc {
   max-width: 420px;
   margin: 0 auto;
@@ -133,11 +152,12 @@
 
 /* ===============================
    EXTRA SMALL SCREENS (Fold)
+   Mobile layout adjustments
    =============================== */
 @media (max-width: 576px) {
 
   .outfit-history-card {
-    padding: 1.5rem 1.2rem;
+    padding: 1.5rem 1.2rem;            /* smaller padding on mobile */
   }
 
   .header-row .title {
@@ -151,7 +171,7 @@
   }
 
   .history-item-card {
-    min-height: auto;          /* remove fixed height */
+    min-height: auto;                 /* remove fixed height */
     padding: 1.2rem;
   }
 
@@ -164,6 +184,6 @@
   }
 
   .history-item-btn {
-    align-self: center;        /* button centered on small screens */
+    align-self: center;               /* center button on mobile */
   }
 }
