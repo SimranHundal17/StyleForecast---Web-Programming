@@ -1,4 +1,37 @@
 <!DOCTYPE html>
+<!--
+  templates/profile.html — User Profile page
+
+  Purpose:
+  Authenticated user profile page where users can view and update
+  their personal information and preferences.
+
+  Key features:
+  - Displays user avatar generated from initials (handled in profile.js).
+  - Shows basic account data: name and email.
+  - Allows editing non-sensitive profile fields:
+    first name, last name, gender, age, and laundry cycle settings.
+  - Supports optional password change with confirmation.
+  - Email is displayed but not editable (used as a unique user identifier).
+
+  Key DOM elements:
+  - #profileAvatar: avatar circle with user initials.
+  - #profileNameDisplay: live-updated full name in header.
+  - #profileForm: main profile form handled by profile.js.
+  - #firstName, #lastName: inputs used to derive full name dynamically.
+  - #daysUntilDirty: user preference for laundry cycle logic.
+
+  Behavior:
+  - Page is protected by authentication (JWT-based).
+  - Initial user data is injected server-side via Jinja (Flask).
+  - Form submission is handled asynchronously by static/profile.js,
+    which sends updates to POST /profile/update.
+  - Passwords are never pre-filled and are hashed server-side.
+
+  Notes:
+  - Styling is provided by Bootstrap and custom profile.css.
+  - This page reuses the global navigation and layout for consistency.
+-->
 <html lang="en">
 
 <head>
