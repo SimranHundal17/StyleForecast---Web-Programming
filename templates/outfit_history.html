@@ -1,4 +1,22 @@
 <!DOCTYPE html>
+<!--
+  templates/outfit_history.html — Outfit History page
+  Purpose: Display a list of outfits previously generated and saved by the user.
+  Behavior:
+  - Renders a protected page (JWT required) with navigation and layout.
+  - Shows an empty state when no history entries exist.
+  - Uses client-side JavaScript (outfit_history.js) to:
+    • fetch history data from `/outfit_history/data`
+    • render outfit cards dynamically
+    • allow deleting individual history entries via API
+  Key DOM IDs:
+  - #history-grid — container where history cards are injected
+  - #empty-state — shown when history list is empty
+  Related backend routes:
+  - GET  /outfit_history        -> render this page
+  - GET  /outfit_history/data   -> return history entries as JSON
+  - DELETE /outfit_history/api/delete/<id> -> delete one entry
+-->
 <html lang="en">
 
 <!-- Page metadata: encoding, responsive settings, and browser title -->
