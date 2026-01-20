@@ -4,7 +4,7 @@
    Purpose: Centralized base styles, layout wrapper, typography, and
    shared design tokens used across pages (buttons, nav, spacing).
 
-   Exam notes:
+   Key ideas:
    - `.page-wrapper` is the canonical centered container used by pages.
    - Animations (fadeInUp) are subtle and intended for visual continuity.
    - `.btn-purple` is the primary CTA style used by several pages.

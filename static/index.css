@@ -1,3 +1,23 @@
+/* ============================================================
+   static/index.css — Intro (Landing) page styles
+   ============================================================
+   Purpose:
+   - Style the public landing (intro) page of the application.
+   - Create a clean, modern first impression for new users.
+
+   What this file does:
+   - Centers the main intro content on the page.
+   - Styles the title, subtitle, and feature cards.
+   - Adds hover effects and simple animations.
+   - Makes the layout responsive for small screens.
+
+   Key ideas:
+   - Flexbox is used to center content vertically and horizontally.
+   - CSS Grid is used for the feature cards layout.
+   - Media queries handle small screen adjustments.
+   - Visual effects (shadow, hover, animation) improve UX.
+============================================================ */
+
 /* =========================================
    INTRO PAGE STYLES
 ========================================= */

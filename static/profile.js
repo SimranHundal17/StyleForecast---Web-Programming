@@ -1,4 +1,29 @@
-// static/profile.js
+/* ============================================================
+   static/profile.js — Profile page client behavior
+   ============================================================
+   Purpose:
+   - Handle Profile page UI logic on the client side.
+   - Display user initials as an avatar with a stable color.
+   - Sync first name + last name into a full name field.
+   - Send profile updates (name, gender, age, preferences, password)
+     to the backend via JSON API.
+
+   Key concepts:
+   - Avatar initials are generated from first and last name.
+   - Avatar color is deterministic: same name → same color.
+   - Full name field is read-only and derived from first + last name.
+   - Password is never stored on the client, only sent to server
+     when user explicitly enters a new one.
+   - Basic validation is done on the frontend before sending data.
+
+   Server endpoints used by this file:
+   - POST /profile/update → update user profile in MongoDB
+
+   Notes:
+   - This file does not handle authentication itself.
+   - All sensitive operations (password hashing, validation)
+     are handled on the server side.
+============================================================ */
 
 // Colors used for avatar backgrounds
 const avatarColors = ["#6366F1", "#EC4899", "#F59E0B", "#10B981", "#3B82F6"];

@@ -1,4 +1,30 @@
-// static/wardrobe.js
+/* ============================================================
+   static/wardrobe.js — Wardrobe page client behavior
+   ============================================================
+   Purpose:
+   - Load wardrobe items from the backend and render item cards.
+   - Handle filtering by category (Casual, Gym, Party, etc.).
+   - Allow users to add, edit, remove items and update item status.
+
+   Key concepts:
+   - currentFilter stores the active filter and is reused after actions.
+   - Items are fetched from the server using fetch API.
+   - UI is updated after each action to stay in sync with backend state.
+   - DocumentFragment is used for better rendering performance.
+   - Forms are validated on the client before sending data to the server.
+
+   User actions:
+   - Filter items using filter chips.
+   - Mark items as Clean or Worn.
+   - Add new items via modal form.
+   - Edit existing items via modal form.
+   - Remove items from the wardrobe.
+
+   Notes:
+   - This file handles only client-side logic (DOM + fetch).
+   - All data persistence is handled by backend routes.
+============================================================ */
+
 
 // Current filter state
 let currentFilter = 'all';

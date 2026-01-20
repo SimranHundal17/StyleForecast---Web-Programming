@@ -1,8 +1,38 @@
-# routes/history_routes.py
+"""
+============================================================
+routes/history_routes.py — Outfit History HTTP routes
+============================================================
+
+Purpose:
+- This file defines all HTTP endpoints related to Outfit History.
+- It connects frontend requests (HTML + JS) with the history data model.
+
+What this file does:
+- Renders the Outfit History page.
+- Provides JSON API to load history entries.
+- Allows deleting history entries.
+- Allows adding history entries from Plan Ahead.
+
+Key concepts (exam notes):
+- Flask Blueprint is used to group all history-related routes.
+- token_required decorator protects routes so only logged-in users
+  can access their personal history.
+- This file does NOT talk to MongoDB directly.
+  All database logic is delegated to the model layer.
+
+Typical flow:
+1. User opens /outfit_history → HTML page is rendered.
+2. Frontend JS calls /outfit_history/data → JSON history is returned.
+3. User clicks "Remove" → DELETE request to /api/delete/<id>.
+4. Plan Ahead automatically archives outfits via /api/add_from_plan.
+"""
+
 from flask import render_template, jsonify, request
 from routes import history_bp # Blueprint for history routes
 from model.outfit_history_model import get_all_history, delete_history_entry, add_history_entry
-
+# ---------------------------------------------------------
+# AUTHENTICATION DECORATOR
+# ---------------------------------------------------------
 # Try to import real auth decorator
 ## Fallback is used ONLY if utils.auth is not available
 try:
@@ -22,7 +52,9 @@ except ImportError:
 @token_required
 def outfit_history(current_user):
     return render_template("outfit_history.html", current_user=current_user)
-
+# ---------------------------------------------------------
+# FETCH HISTORY DATA
+# ---------------------------------------------------------
 # Return all history entries as JSON for frontend fetch
 @history_bp.route("/data")
 @token_required

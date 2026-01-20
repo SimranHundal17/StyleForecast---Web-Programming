@@ -1,3 +1,24 @@
+/* ============================================================
+   static/outfit_history.js — Outfit History page client logic
+   ============================================================
+   Purpose:
+   - Load saved outfit history from the backend.
+   - Render outfit history cards on the page.
+   - Allow the user to remove saved outfits.
+
+   Key concepts (exam notes):
+   - Data is fetched from the backend as JSON.
+   - The page uses client-side rendering (DOM manipulation).
+   - Empty state is shown when no history exists.
+   - Outfit items are formatted and sorted before display.
+   - HTML is escaped to prevent XSS attacks.
+   - After deleting an item, the list is reloaded from the server.
+
+   Server endpoints used:
+   - GET    /outfit_history/data
+   - DELETE /outfit_history/api/delete/<id>
+============================================================ */
+
 // Load and render outfit history cards
 // This function gets outfit history from backend and shows it on the page
 async function loadHistory() {

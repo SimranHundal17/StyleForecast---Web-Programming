@@ -1,3 +1,25 @@
+/* ============================================================
+   outfit_history.css — Outfit History page styles
+   ============================================================
+   Purpose:
+   - Define the visual layout and styling for the Outfit History page.
+   - Display saved outfits as clean, readable cards in a responsive grid.
+
+   What this file controls:
+   - Main history container (card layout)
+   - Individual outfit history cards
+   - Typography for date, outfit text, and metadata
+   - Action buttons (Remove)
+   - Empty state when no history exists
+   - Responsive behavior for small screens
+
+   Key ideas
+   - Uses Flexbox for vertical alignment inside cards.
+   - Uses CSS Grid (via Bootstrap rows) for card layout.
+   - Fixed min-height keeps cards visually balanced.
+   - Mobile styles override desktop styles using media queries.
+============================================================ */
+
 /* ============================
    OUTFIT HISTORY PAGE
    Styles for the Outfit History screen

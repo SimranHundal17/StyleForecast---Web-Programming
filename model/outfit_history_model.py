@@ -1,4 +1,31 @@
-# model/outfit_history_model.py
+"""
+============================================================
+model/outfit_history_model.py — Outfit History data layer
+============================================================
+
+Purpose:
+- This file handles all database operations related to outfit history.
+- It is responsible for saving, loading, and deleting past outfits
+  that the user liked or wore.
+
+Key concepts (exam notes):
+- MongoDB is used as the persistent storage.
+- Each history entry is stored as a document in the `outfit_history` collection.
+- A manual numeric `id` is used instead of Mongo's ObjectId
+  to keep consistency with other parts of the app (e.g. wardrobe items).
+- Entries can optionally be scoped to a specific user using `user_email`.
+
+Why this file exists:
+- Separates database logic from routes (clean architecture).
+- Routes only call these functions and do not talk to MongoDB directly.
+- Makes the code easier to test, reuse, and explain.
+
+Typical flow:
+1. Route calls `get_all_history()` to show history page.
+2. Route calls `add_history_entry()` when user likes an outfit.
+3. Route calls `delete_history_entry()` when user removes an entry.
+"""
+
 from utils.db import db
 
 # Mongo collection

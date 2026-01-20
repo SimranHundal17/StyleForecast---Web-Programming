@@ -4,7 +4,7 @@
 // Purpose: manage the login/signup UI, validate input, and submit
 // credentials to the server. Keep client validation minimal and
 // rely on server-side checks for security.
-// Exam notes:
+// Key ideas:
 // - Signup sends JSON (application/json) with extra profile fields.
 // - Login posts form-encoded data (application/x-www-form-urlencoded).
 // - The server sets session cookies or JWT on successful login; fetches

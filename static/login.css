@@ -7,7 +7,7 @@
    - Primary CTA and input styling
    - Responsive rules for small screens (fold & mobile)
 
-   Exam notes:
+   Key ideas:
    - Login posts form-encoded data while signup sends JSON (see client JS).
    - Keep client-side validation minimal; server-side validation is authoritative.
    - UI uses subtle motion (floatCloud) — keep duration short to avoid motion sickness.

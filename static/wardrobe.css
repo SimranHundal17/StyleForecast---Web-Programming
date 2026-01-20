@@ -1,7 +1,25 @@
-/* =========================================
-   WARDROBE PAGE
-   Styles for wardrobe main page and item cards
-========================================= */
+/* ============================================================
+   wardrobe.css — Wardrobe page styles
+   ============================================================
+   Purpose:
+   - Define the visual layout and styles for the Wardrobe page.
+   - Style the main page card, header, filters, and wardrobe item cards.
+   - Keep UI consistent with other pages (Accessories, History).
+
+   Key concepts:
+   - Uses card-based layout for clear visual separation.
+   - Filter chips show active state using a special class.
+   - Empty state is shown when the wardrobe has no items.
+   - Item cards use hover effects for better user experience.
+   - Buttons use pill shape to keep a modern and friendly UI.
+
+   Responsive behavior:
+   - Header and buttons stack vertically on small screens.
+   - Layout adapts for mobile devices using media queries.
+
+   Notes:
+   - This file contains only presentation logic (CSS).
+============================================================ */
 
 /* General card - wrapper for page content */
 .card {

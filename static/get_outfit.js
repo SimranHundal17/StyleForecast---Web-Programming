@@ -3,7 +3,7 @@
 // ======================================================
 // Purpose: handle location autocomplete, optional browser geolocation,
 // outfit generation via server API, preview rendering, and saving to history.
-// Exam notes:
+// Key ideas:
 // - Autocomplete is debounced (250ms) to avoid excessive API calls while typing.
 // - All fetch calls include `{ credentials: "include" }` so server-side session/JWT cookies
 //   are sent with requests (important for authenticated endpoints).

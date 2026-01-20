@@ -6,7 +6,7 @@
   - Provides simple client-side filtering by type
   - Adds and removes accessories via API calls
 
-  Notes for exam:
+ Key ideas:
   - All fetch calls send credentials so the server-side session/cookie is included.
   - The UI re-loads the accessory list after a modification to keep client state
     in sync with the server (simple but reliable approach).

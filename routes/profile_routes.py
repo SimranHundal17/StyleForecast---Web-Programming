@@ -1,4 +1,32 @@
-# routes/profile_routes.py
+"""
+============================================================
+routes/profile_routes.py — User profile routes
+============================================================
+
+Purpose:
+- This file handles everything related to the user profile.
+- It renders the Profile page and provides JSON APIs for frontend updates.
+
+What this file does:
+- Shows the profile page for the logged-in user.
+- Returns user profile data as JSON for profile.js.
+- Allows the user to update profile information.
+- Handles optional password changes securely.
+
+Key concepts (exam notes):
+- All routes are protected with token_required (JWT authentication).
+- current_user is extracted from the JWT token and represents the user email.
+- Passwords are never stored in plain text — bcrypt is used for hashing.
+- Only allowed fields are updated to prevent accidental or unsafe changes.
+
+Typical flow:
+1. User opens the Profile page.
+2. JWT token is validated.
+3. Backend loads user data from MongoDB.
+4. Profile page is rendered with existing user data.
+5. Frontend can request or update profile data via JSON APIs.
+"""
+
 ## Profile routes: render HTML page and provide JSON APIs for profile.js
 from flask import render_template, request, jsonify
 from routes import profile_bp
